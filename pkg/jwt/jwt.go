@@ -2,7 +2,7 @@ package jwt
 
 import (
 	"errors"
-	"github.com/Renewdxin/selfMade/global"
+	"github.com/Renewdxin/selfMade/internal/global"
 	"github.com/Renewdxin/selfMade/pkg/util"
 	"github.com/dgrijalva/jwt-go"
 	"github.com/gin-gonic/gin"

@@ -4,7 +4,7 @@ import (
 	"time"
 )
 
-type Employee struct {
+type User struct {
 	ID          uint `gorm:"primarykey" json:"id"`
 	CreatedAt   time.Time
 	State       int    `json:"state" gorm:"type:tinyint" validate:"oneof=0 1"`
@@ -15,6 +15,6 @@ type Employee struct {
 	Account     Account
 }
 
-func (employee *Employee) TableName() string {
+func (employee *User) TableName() string {
 	return "employee"
 }

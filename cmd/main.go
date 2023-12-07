@@ -1,7 +1,7 @@
 package main
 
 import (
-	"github.com/Renewdxin/selfMade/global"
+	"github.com/Renewdxin/selfMade/internal/global"
 	"github.com/Renewdxin/selfMade/internal/router"
 	"github.com/Renewdxin/selfMade/pkg/jwt"
 	setting2 "github.com/Renewdxin/selfMade/pkg/setting"
