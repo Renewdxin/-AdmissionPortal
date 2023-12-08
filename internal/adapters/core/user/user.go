@@ -31,6 +31,14 @@ func (user *UserService) FindByID(id string) (*user.User, error) {
 	return newUser, nil
 }
 
+func (user *UserService) FindByEmail(email string) (*user.User, error) {
+	newUser, err := user.repo.FindByEmail(email)
+	if err != nil {
+		log.Fatalf("Failed to find the User with the email: %v, plz try again", email)
+	}
+	return newUser, nil
+}
+
 func (user *UserService) Update(id string) (*user.User, error) {
 	newUser, err := user.repo.Update(id)
 	if err != nil {
@@ -46,12 +54,4 @@ func (user *UserService) Delete(id string) error {
 		return err
 	}
 	return nil
-}
-
-func (user *UserService) FindByEmail(id string) (*user.User, error) {
-	newUser, err := user.repo.FindByEmail(id)
-	if err != nil {
-		log.Fatalf("Failed to find the User with the id: %v, plz try again", id)
-	}
-	return newUser, nil
 }
