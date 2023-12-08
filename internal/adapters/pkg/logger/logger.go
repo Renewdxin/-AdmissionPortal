@@ -134,7 +134,7 @@ func (logger *Logger) WithTrace() *Logger {
 }
 
 func (logger *Logger) WithLevel(level Level) *Logger {
-	// Create a new instance of the logger with the desired log level
+	// CreateUser a new instance of the logger with the desired log level
 	newLogger := logger.clone()
 	newLogger.fields = make(Fields) // If you want to reset fields when changing the level
 	newLogger.fields["level"] = level.String()

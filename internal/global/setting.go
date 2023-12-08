@@ -1,8 +1,8 @@
 package global
 
 import (
-	"github.com/Renewdxin/selfMade/pkg/logger"
-	"github.com/Renewdxin/selfMade/pkg/setting"
+	"github.com/Renewdxin/selfMade/internal/adapters/pkg/logger"
+	"github.com/Renewdxin/selfMade/internal/adapters/pkg/setting"
 )
 
 var (

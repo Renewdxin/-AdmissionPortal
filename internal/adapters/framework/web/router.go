@@ -1,7 +1,7 @@
-package router
+package web
 
 import (
-	"github.com/Renewdxin/selfMade/internal/middleware"
+	"github.com/Renewdxin/selfMade/internal/adapters/app/middleware"
 	"github.com/gin-gonic/gin"
 )
 

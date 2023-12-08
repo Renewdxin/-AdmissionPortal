@@ -1,10 +1,10 @@
 package main
 
 import (
+	"github.com/Renewdxin/selfMade/internal/adapters/framework/web"
+	"github.com/Renewdxin/selfMade/internal/adapters/pkg/jwt"
+	setting2 "github.com/Renewdxin/selfMade/internal/adapters/pkg/setting"
 	"github.com/Renewdxin/selfMade/internal/global"
-	"github.com/Renewdxin/selfMade/internal/router"
-	"github.com/Renewdxin/selfMade/pkg/jwt"
-	setting2 "github.com/Renewdxin/selfMade/pkg/setting"
 	"github.com/gin-gonic/gin"
 	"net/http"
 	"time"
@@ -21,7 +21,7 @@ func init() {
 }
 
 func main() {
-	r := router.NewRouter()
+	r := web.NewRouter()
 	r.POST("/auth", jwt.AuthHandler)
 	r.POST("/home", jwt.AuthHandler, func(context *gin.Context) {
 		username := context.MustGet("username").(string)
