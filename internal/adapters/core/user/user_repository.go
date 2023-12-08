@@ -28,8 +28,8 @@ func (userRepo *UserRepoAdapter) FindByEmail(email string) (*user.User, error) {
 	return newUser, nil
 }
 
-func (userRepo *UserRepoAdapter) Update(id string) (*user.User, error) {
-	newUser, _ := userRepo.userDao.UpdateUser(id)
+func (userRepo *UserRepoAdapter) Update(user *user.User) (*user.User, error) {
+	newUser, _ := userRepo.userDao.UpdateUser(user)
 	return newUser, nil
 }
 

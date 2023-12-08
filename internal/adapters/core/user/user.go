@@ -39,10 +39,11 @@ func (user *UserService) FindByEmail(email string) (*user.User, error) {
 	return newUser, nil
 }
 
-func (user *UserService) Update(id string) (*user.User, error) {
-	newUser, err := user.repo.Update(id)
+func (user *UserService) Update(data *user.User) (*user.User, error) {
+	newUser, err := user.repo.Update(data)
 	if err != nil {
-		log.Fatalf("Failed to update the User with the id: %v, plz try again", id)
+		log.Fatalf("Failed to update the User: %v, plz try again", data.Name)
+		return nil, err
 	}
 	return newUser, nil
 }
