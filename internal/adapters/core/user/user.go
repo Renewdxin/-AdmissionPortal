@@ -6,16 +6,20 @@ import (
 )
 
 type UserService struct {
-	repo *UserRepoAdapter
+	repo user.RepositoryPorts
 }
 
-func NewUserService(adapter *UserRepoAdapter) *UserService {
+func NewUserService(repositoryPorts user.RepositoryPorts) *UserService {
 	return &UserService{
-		repo: adapter,
+		repo: repositoryPorts,
 	}
 }
 
 func (user *UserService) CreateUser(name string, gender string, email string, phone string) (*user.User, error) {
+	if len(name) > 50 || len(name) < 2 {
+		log.Fatalln("INVALID NAME")
+	}
+
 	newUser, err := user.repo.CreateUser(name, gender, email, phone)
 	if err != nil {
 		log.Fatalf("Failed to create the User: %v, plz try again", name)

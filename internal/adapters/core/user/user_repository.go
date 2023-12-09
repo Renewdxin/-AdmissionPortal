@@ -6,11 +6,13 @@ import (
 )
 
 type UserRepoAdapter struct {
-	userDao database.UserDao
+	userDao database.UserDaoPorts
 }
 
-func NewUserRepoAdapter() *UserRepoAdapter {
-	return &UserRepoAdapter{}
+func NewUserRepoAdapter(dao database.UserDaoPorts) *UserRepoAdapter {
+	return &UserRepoAdapter{
+		userDao: dao,
+	}
 }
 
 func (userRepo *UserRepoAdapter) CreateUser(name string, gender string, email string, phone string) (*user.User, error) {

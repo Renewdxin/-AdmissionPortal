@@ -7,13 +7,21 @@ import (
 )
 
 type UserDao struct {
-	db *gorm.DB
+	db gorm.DB
 }
 
-func NewUserDao(db *gorm.DB) *UserDao {
+func NewUserDao(db gorm.DB) *UserDao {
 	return &UserDao{
 		db: db,
 	}
+}
+
+func (userDao *UserDao) IfExist(email string) bool {
+	var user user.User
+	if err := userDao.db.Where("email = ?", email).First(&user).Error; err != nil {
+		return false
+	}
+	return true
 }
 
 func (userDao *UserDao) SaveUser(name string, gender string, email string, phone string) (*user.User, error) {

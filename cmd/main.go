@@ -2,9 +2,9 @@ package main
 
 import (
 	"github.com/Renewdxin/selfMade/internal/adapters/framework/web"
+	"github.com/Renewdxin/selfMade/internal/adapters/global"
 	"github.com/Renewdxin/selfMade/internal/adapters/pkg/jwt"
 	setting2 "github.com/Renewdxin/selfMade/internal/adapters/pkg/setting"
-	"github.com/Renewdxin/selfMade/internal/global"
 	"github.com/gin-gonic/gin"
 	"net/http"
 	"time"
