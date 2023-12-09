@@ -6,7 +6,6 @@ import (
 	"github.com/Renewdxin/selfMade/internal/ports/core/verifycation"
 	"github.com/Renewdxin/selfMade/internal/ports/framework/database"
 	"github.com/Renewdxin/selfMade/internal/ports/framework/mail"
-	"github.com/Renewdxin/selfMade/internal/ports/framework/validate"
 	"log"
 )
 
@@ -14,18 +13,20 @@ type API struct {
 	userService user.RepositoryPorts
 	userDao     database.UserDaoPorts
 	mailSender  mail.MailPorts
-	validator   validate.Validator
-	code        verifycation.CodePorts
+	//validator    validate.Validator
+	verify      verifycation.CodePorts
+	redisClient database.RedisPorts
 }
 
 func NewUserAPI(usrService user.RepositoryPorts, userDao database.UserDaoPorts, mailSender mail.MailPorts,
-	validator validate.Validator, code verifycation.CodePorts) *API {
+	verify verifycation.CodePorts, redisClient database.RedisPorts) *API {
 	return &API{
 		userService: usrService,
 		userDao:     userDao,
 		mailSender:  mailSender,
-		validator:   validator,
-		code:        code,
+
+		verify:      verify,
+		redisClient: redisClient,
 	}
 }
 
@@ -38,16 +39,26 @@ func (api API) RegisterUser(name, gender, email, phone string) (*user.User, erro
 	if api.IfExist(email) {
 		return nil, errors.New("user already exists")
 	}
-	code := api.code.GenerateCode()
-	// code send
-	err := api.mailSender.CodeSend(email, "Verify your email", code)
+
+	// code generate and save
+	var err error
+	code := api.verify.GenerateCode()
+	err = api.redisClient.SaveVerificationCode(email, code)
 	if err != nil {
-		log.Fatalf("Failed to send emails, plz try again")
+		log.Fatalf("Failed to generate the code, plz try again")
 		return nil, err
 	}
-	// code validate
-	if !api.validator.CodeValidate(email, code) {
-		return nil, errors.New("wrong code")
+	//code send
+	err = api.mailSender.CodeSend(email, "Verify your email", code)
+	if err != nil {
+		log.Fatalf("Failed to send code, plz try again")
+		return nil, err
+	}
+	// verify code
+	verify, _ := api.redisClient.GetVerificationCode(email)
+	if verify != code {
+		log.Fatalln("INVALID CODE")
+		return nil, err
 	}
 	// persistence
 	newUser, err := api.userDao.SaveUser(name, gender, email, phone)

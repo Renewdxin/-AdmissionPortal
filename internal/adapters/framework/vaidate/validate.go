@@ -59,13 +59,3 @@ func (v *Validator) NameValidate(name string) bool {
 
 	return true
 }
-
-func (v *Validator) CodeValidate(email, code string) bool {
-	// email && code verify
-	verify, _ := v.redis_client.GetVerificationCode(email)
-	if verify != code {
-		log.Fatalln("INVALID CODE")
-		return false
-	}
-	return true
-}
