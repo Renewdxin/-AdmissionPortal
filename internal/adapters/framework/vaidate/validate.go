@@ -54,3 +54,7 @@ func (v *Validator) NameValidate(name string) bool {
 
 	return true
 }
+
+func (v *Validator) CodeValidate(email, code string) bool {
+	return true
+}

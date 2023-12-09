@@ -16,9 +16,11 @@ func NewUserDao(db gorm.DB) *UserDao {
 	}
 }
 
+// IfExist
+// true exist
 func (userDao *UserDao) IfExist(email string) bool {
-	var user user.User
-	if err := userDao.db.Where("email = ?", email).First(&user).Error; err != nil {
+	var u user.User
+	if err := userDao.db.Where("email = ?", email).First(&u).Error; err != nil {
 		return false
 	}
 	return true
