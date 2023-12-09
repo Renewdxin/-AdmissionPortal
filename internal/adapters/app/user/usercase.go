@@ -36,31 +36,30 @@ func (api API) IfExist(email string) bool {
 func (api API) RegisterUser(name, gender, email, phone string) (*user.User, error) {
 	// if already exists
 	if api.IfExist(email) {
-		code := api.code.GenerateCode()
-		// code send
-		err := api.mailSender.CodeSend(email, "Verify your email", code)
-		if err != nil {
-			log.Fatalf("Failed to send emails, plz try again")
-			return nil, err
-		}
-		// code validate
-		if !api.validator.CodeValidate(email, code) {
-			return nil, errors.New("wrong code")
-		}
-		// persistence
-		newUser, err := api.userDao.SaveUser(name, gender, email, phone)
-		if err != nil {
-			log.Fatalf("Failed to save user, plz try again")
-			return nil, err
-		}
-		// send notification
-		if err := api.mailSender.WelcomeMail(name); err != nil {
-			log.Println("Failed to send welcome email")
-		}
-		return newUser, nil
+		return nil, errors.New("user already exists")
 	}
-
-	return nil, errors.New("user already exists")
+	code := api.code.GenerateCode()
+	// code send
+	err := api.mailSender.CodeSend(email, "Verify your email", code)
+	if err != nil {
+		log.Fatalf("Failed to send emails, plz try again")
+		return nil, err
+	}
+	// code validate
+	if !api.validator.CodeValidate(email, code) {
+		return nil, errors.New("wrong code")
+	}
+	// persistence
+	newUser, err := api.userDao.SaveUser(name, gender, email, phone)
+	if err != nil {
+		log.Fatalf("Failed to save user, plz try again")
+		return nil, err
+	}
+	// send notification
+	if err := api.mailSender.WelcomeMail(name); err != nil {
+		log.Println("Failed to send welcome email")
+	}
+	return newUser, nil
 }
 
 func (api API) GetUserProfile(id string) (*user.User, error) {
