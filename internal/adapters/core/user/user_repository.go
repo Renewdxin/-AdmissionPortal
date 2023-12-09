@@ -16,6 +16,7 @@ func NewUserRepoAdapter(dao database.UserDaoPorts) *UserRepoAdapter {
 }
 
 func (userRepo *UserRepoAdapter) CreateUser(name string, gender string, email string, phone string) (*user.User, error) {
+
 	newUser, _ := userRepo.userDao.SaveUser(name, gender, email, phone)
 	return newUser, nil
 }

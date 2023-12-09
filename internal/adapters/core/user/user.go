@@ -1,6 +1,7 @@
 package user
 
 import (
+	"errors"
 	"github.com/Renewdxin/selfMade/internal/ports/core/user"
 	"github.com/Renewdxin/selfMade/internal/ports/framework/validate"
 	"log"
@@ -18,16 +19,23 @@ func NewUserService(repositoryPorts user.RepositoryPorts, validator validate.Val
 	}
 }
 
+func (user *UserService) UserValidate(name string, gender string, email string, phone string) bool {
+	if !user.validator.NameValidate(name) || !user.validator.EmailValidate(email) || !user.validator.PhoneValidate(phone) {
+		log.Fatalf("INVALID INFORMATION")
+		return false
+	}
+
+	if gender != "male" && gender != "female" {
+		log.Fatalf("INVALID INFORMATION")
+		return false
+	}
+	return true
+}
+
 func (user *UserService) CreateUser(name string, gender string, email string, phone string) (*user.User, error) {
 	// validate the user
-	if !user.validator.NameValidate(name) {
-		log.Fatalf("Failed to create the User: %v, plz try again", name)
-	}
-	if !user.validator.EmailValidate(email) {
-		log.Fatalf("Failed to create the User: %v, plz try again", name)
-	}
-	if !user.validator.PhoneValidate(phone) {
-		log.Fatalf("Failed to create the User: %v, plz try again", name)
+	if !user.UserValidate(name, gender, email, phone) {
+		return nil, errors.New("INVALID INFORMATION")
 	}
 
 	newUser, err := user.repo.CreateUser(name, gender, email, phone)

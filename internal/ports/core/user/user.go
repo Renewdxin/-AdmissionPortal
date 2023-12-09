@@ -20,3 +20,7 @@ type User struct {
 func (user *User) TableName() string {
 	return "user"
 }
+
+type Ports interface {
+	UserValidate(name string, gender string, email string, phone string) bool
+}
