@@ -2,22 +2,32 @@ package user
 
 import (
 	"github.com/Renewdxin/selfMade/internal/ports/core/user"
+	"github.com/Renewdxin/selfMade/internal/ports/framework/validate"
 	"log"
 )
 
 type UserService struct {
-	repo user.RepositoryPorts
+	repo      user.RepositoryPorts
+	validator validate.Validator
 }
 
-func NewUserService(repositoryPorts user.RepositoryPorts) *UserService {
+func NewUserService(repositoryPorts user.RepositoryPorts, validator validate.Validator) *UserService {
 	return &UserService{
-		repo: repositoryPorts,
+		repo:      repositoryPorts,
+		validator: validator,
 	}
 }
 
 func (user *UserService) CreateUser(name string, gender string, email string, phone string) (*user.User, error) {
-	if len(name) > 50 || len(name) < 2 {
-		log.Fatalln("INVALID NAME")
+	// validate the user
+	if !user.validator.NameValidate(name) {
+		log.Fatalf("Failed to create the User: %v, plz try again", name)
+	}
+	if !user.validator.EmailValidate(email) {
+		log.Fatalf("Failed to create the User: %v, plz try again", name)
+	}
+	if !user.validator.PhoneValidate(phone) {
+		log.Fatalf("Failed to create the User: %v, plz try again", name)
 	}
 
 	newUser, err := user.repo.CreateUser(name, gender, email, phone)
