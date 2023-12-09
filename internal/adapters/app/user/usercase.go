@@ -59,8 +59,8 @@ func (api API) RegisterUser(name, gender, email, phone string) (*user.User, erro
 		}
 		return newUser, nil
 	}
-	return nil, errors.New("user already exists")
 
+	return nil, errors.New("user already exists")
 }
 
 func (api API) GetUserProfile(id string) (*user.User, error) {

@@ -2,14 +2,19 @@ package vaidate
 
 import (
 	"fmt"
+	"github.com/Renewdxin/selfMade/internal/ports/framework/database"
 	"github.com/asaskevich/govalidator"
 	"log"
 )
 
-type Validator struct{}
+type Validator struct {
+	redis_client database.RedisPorts
+}
 
-func NewValidator() *Validator {
-	return &Validator{}
+func NewValidator(redis_client database.RedisPorts) *Validator {
+	return &Validator{
+		redis_client: redis_client,
+	}
 }
 
 func (v *Validator) EmailValidate(email string) bool {
@@ -56,5 +61,11 @@ func (v *Validator) NameValidate(name string) bool {
 }
 
 func (v *Validator) CodeValidate(email, code string) bool {
+	// email && code verify
+	verify, _ := v.redis_client.GetVerificationCode(email)
+	if verify != code {
+		log.Fatalln("INVALID CODE")
+		return false
+	}
 	return true
 }
