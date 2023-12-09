@@ -42,12 +42,12 @@ func (userDao *UserDao) DeleteUser(id string) error {
 	return nil
 }
 
-func (userDao *UserDao) UpdateUser(user *user.User) (*user.User, error) {
+func (userDao *UserDao) UpdateUser(user user.User) error {
 	if err := userDao.db.Model(user).Updates(user).Error; err != nil {
 		log.Fatalln("Failed to update")
-		return nil, err
+		return err
 	}
-	return user, nil
+	return nil
 }
 
 func (userDao *UserDao) FindUserByID(id string) (*user.User, error) {

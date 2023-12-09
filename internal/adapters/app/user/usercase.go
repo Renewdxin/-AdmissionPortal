@@ -7,6 +7,7 @@ import (
 	"github.com/Renewdxin/selfMade/internal/ports/framework/database"
 	"github.com/Renewdxin/selfMade/internal/ports/framework/mail"
 	"log"
+	"strconv"
 )
 
 type API struct {
@@ -71,7 +72,15 @@ func (api API) RegisterUser(name, gender, email, phone string) error {
 	return nil
 }
 
-func (api API) GetUserProfile(id string) (*user.User, error) {
+func (api API) GetUserProfile(id int) (*user.User, error) {
 	// if already exists
-	return api.userDao.FindUserByID(id)
+	return api.userDao.FindUserByID(strconv.Itoa(id))
+}
+
+func (api API) DeleteUser(id string) error {
+	return api.userDao.DeleteUser(id)
+}
+
+func (api API) UpdateUser(user user.User) error {
+	return api.userDao.UpdateUser(user)
 }
