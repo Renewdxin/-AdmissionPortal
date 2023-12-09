@@ -21,6 +21,7 @@ func (user *User) TableName() string {
 	return "user"
 }
 
-type Ports interface {
+type UserPorts interface {
 	UserValidate(name string, gender string, email string, phone string) bool
+	CreateUser(name string, gender string, email string, phone string) (User, error)
 }

@@ -26,18 +26,12 @@ func (userDao *UserDao) IfExist(email string) bool {
 	return true
 }
 
-func (userDao *UserDao) SaveUser(name string, gender string, email string, phone string) (*user.User, error) {
-	newUser := &user.User{
-		Name:        name,
-		Gender:      gender,
-		Email:       email,
-		PhoneNumber: phone,
+func (userDao *UserDao) SaveUser(user user.User) error {
+	if err := userDao.db.Select("name", "gender", "email", "phone").Create(&user).Error; err != nil {
+		log.Fatalf("Failed to save : %v", user.Name)
+		return err
 	}
-	if err := userDao.db.Select("name", "gender", "email", "phone").Create(newUser).Error; err != nil {
-		log.Fatalf("Failed to save : %v", newUser)
-		return nil, err
-	}
-	return newUser, nil
+	return nil
 }
 
 func (userDao *UserDao) DeleteUser(id string) error {

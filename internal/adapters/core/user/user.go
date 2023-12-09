@@ -8,19 +8,17 @@ import (
 )
 
 type UserService struct {
-	repo      user.RepositoryPorts
 	validator validate.Validator
 }
 
-func NewUserService(repositoryPorts user.RepositoryPorts, validator validate.Validator) *UserService {
+func NewUserService(validator validate.Validator) *UserService {
 	return &UserService{
-		repo:      repositoryPorts,
 		validator: validator,
 	}
 }
 
-func (user *UserService) UserValidate(name string, gender string, email string, phone string) bool {
-	if !user.validator.NameValidate(name) || !user.validator.EmailValidate(email) || !user.validator.PhoneValidate(phone) {
+func (u *UserService) UserValidate(name string, gender string, email string, phone string) bool {
+	if !u.validator.NameValidate(name) || !u.validator.EmailValidate(email) || !u.validator.PhoneValidate(phone) {
 		log.Fatalf("INVALID INFORMATION")
 		return false
 	}
@@ -32,48 +30,16 @@ func (user *UserService) UserValidate(name string, gender string, email string, 
 	return true
 }
 
-func (user *UserService) CreateUser(name string, gender string, email string, phone string) (*user.User, error) {
-	// validate the user
-	if !user.UserValidate(name, gender, email, phone) {
-		return nil, errors.New("INVALID INFORMATION")
+func (u *UserService) CreateUser(name string, gender string, email string, phone string) (user.User, error) {
+	// validate the u
+	if !u.UserValidate(name, gender, email, phone) {
+		return user.User{}, errors.New("INVALID INFORMATION")
 	}
-
-	newUser, err := user.repo.CreateUser(name, gender, email, phone)
-	if err != nil {
-		log.Fatalf("Failed to create the User: %v, plz try again", name)
-	}
-	return newUser, nil
-}
-
-func (user *UserService) FindByID(id string) (*user.User, error) {
-	newUser, err := user.repo.FindByID(id)
-	if err != nil {
-		log.Fatalf("Failed to find the User with the id: %v, plz try again", id)
+	newUser := user.User{
+		Name:        name,
+		Email:       email,
+		PhoneNumber: phone,
+		Gender:      gender,
 	}
 	return newUser, nil
-}
-
-func (user *UserService) FindByEmail(email string) (*user.User, error) {
-	newUser, err := user.repo.FindByEmail(email)
-	if err != nil {
-		log.Fatalf("Failed to find the User with the email: %v, plz try again", email)
-	}
-	return newUser, nil
-}
-
-func (user *UserService) Update(newUser *user.User) (*user.User, error) {
-	data, err := user.repo.Update(newUser)
-	if err != nil {
-		log.Fatalf("Failed to update the User: %v, plz try again", newUser.Name)
-	}
-	return data, nil
-}
-
-func (user *UserService) Delete(id string) error {
-	err := user.repo.Delete(id)
-	if err != nil {
-		log.Fatalf("Failed to update the User with the id: %v, plz try again", id)
-		return err
-	}
-	return nil
 }
