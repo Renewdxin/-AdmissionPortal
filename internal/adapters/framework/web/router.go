@@ -5,7 +5,7 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
-func NewRouter() *gin.Engine {
+func NewRouter(uhandler *UserHandler) *gin.Engine {
 	r := gin.New()
 	// home page
 	r.POST("/home")
@@ -25,8 +25,10 @@ func NewRouter() *gin.Engine {
 	apiPofile := r.Group("/profile")
 	apiPofile.Use(middleware.JWTHandler())
 	{
-		apiPofile.GET("/Info/:id")
-		apiPofile.GET("/account/:id")
+		apiPofile.GET("/Info/:id", uhandler.GetUserInfo)
+		apiPofile.DELETE("/delete/:id", uhandler.DeleteUser)
+		apiPofile.PUT("/update/:id", uhandler.UpdateUserInfo)
+		apiPofile.GET("/status/:id", uhandler.GetUserStatus)
 	}
 
 	// recruitment
