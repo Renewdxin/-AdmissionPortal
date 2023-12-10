@@ -82,5 +82,6 @@ func (api API) DeleteUser(id string) error {
 }
 
 func (api API) UpdateUser(user user.User) error {
+	api.user.UserValidate(user.Name, user.Gender, user.Email, user.PhoneNumber)
 	return api.userDao.UpdateUser(user)
 }
