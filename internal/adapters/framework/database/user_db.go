@@ -7,10 +7,10 @@ import (
 )
 
 type UserDao struct {
-	db gorm.DB
+	db *gorm.DB
 }
 
-func NewUserDao(db gorm.DB) *UserDao {
+func NewUserDao(db *gorm.DB) *UserDao {
 	return &UserDao{
 		db: db,
 	}
