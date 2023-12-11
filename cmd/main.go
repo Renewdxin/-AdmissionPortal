@@ -8,21 +8,49 @@ import (
 	"github.com/Renewdxin/selfMade/internal/adapters/framework/mail"
 	"github.com/Renewdxin/selfMade/internal/adapters/framework/vaidate"
 	"github.com/Renewdxin/selfMade/internal/adapters/framework/web"
-	"gorm.io/gorm"
+	"github.com/gin-gonic/gin"
+	"log"
 )
-
-var db *gorm.DB
 
 func main() {
 	redisClient := database.NewRedisClient()
-	userDao := database.NewUserDao(db)
+
 	mailSender := mail.NewMail()
 	verification := verify.NewVerificationCodeService()
 	validator := vaidate.NewValidator(redisClient)
-	userCore := user2.NewUserService(validator)
-	userAPI := user.NewUserAPI(userCore, userDao, mailSender, verification, redisClient)
-	uHandler := web.NewUserHandler(userAPI)
-	route := web.NewRouter(uHandler)
+	userCore := user2.NewUserService()
+	userDao, err := database.NewUserDao("pgx",
+		"host=localhost user=postgres password=26221030 dbname=self sslmode=disable", userCore)
+	if err != nil {
+		log.Fatalf("falied to connect to the user database")
+	}
+	userAPI := user.NewUserAPI(userCore, userDao, mailSender, verification, redisClient, validator)
+	handler := web.NewUserHandler(userAPI)
+	//route := web.NewRouter(uHandler)
 
-	route.Run("8080")
+	r := gin.New()
+	// home page
+	//r.POST("/home")
+
+	// account setting
+	//apiAccount := r.Group("/accounts")
+	//apiAccount.Use()
+	//{
+	//	apiAccount.POST("/login")
+	//	apiAccount.POST("/logout")
+	//	apiAccount.POST("/signup")
+	//	apiAccount.POST("/password/forget/:id")
+	//	apiAccount.POST("/password/change/:id")
+	//}
+
+	// personal info
+	apiPofile := r.Group("/profile")
+	apiPofile.Use()
+	{
+		apiPofile.GET("/Info/:id", handler.GetUserInfo)
+		apiPofile.DELETE("/delete/:id", handler.DeleteUser)
+		apiPofile.PUT("/update/:id", handler.UpdateUserInfo)
+		apiPofile.GET("/status/:id", handler.GetUserStatus)
+	}
+	r.Run(":8080")
 }

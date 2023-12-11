@@ -1,27 +1,26 @@
 package user
 
 import (
-	"github.com/Renewdxin/selfMade/internal/ports/core/account"
 	"time"
 )
 
 type User struct {
-	ID          uint   `gorm:"primarykey" json:"id"`
-	Name        string `json:"name"`
+	ID          string `json:"id" gorm:"primarykey;column:id" `
+	Name        string `json:"name" gorm:"column:name"`
 	CreatedAt   time.Time
-	State       int    `json:"state" gorm:"type:tinyint" validate:"oneof=0 1"`
-	Gender      string `json:"gender"`
+	State       int    `json:"state" validate:"oneof=0 1"`
+	Gender      string `json:"gender" gorm:"column:gender"`
 	Birth       string `json:"birth"`
-	Email       string `json:"email"`
-	PhoneNumber string `json:"phoneNumber"`
-	Account     account.Account
+	Email       string `json:"email" gorm:"column:email"`
+	PhoneNumber string `json:"phoneNumber" gorm:"column:phone"`
+	//Account     account.Account
 }
 
-func (user *User) TableName() string {
-	return "user"
+func (user User) TableName() string {
+	return "userinfo"
 }
 
 type UserPorts interface {
-	UserValidate(name string, gender string, email string, phone string) bool
 	CreateUser(name string, gender string, email string, phone string) (User, error)
+	TableName() string
 }

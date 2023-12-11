@@ -20,14 +20,20 @@ func NewUserHandler(userCase userAPI.UserCasePorts) *UserHandler {
 
 // GetUserInfo get user info
 func (uHandler *UserHandler) GetUserInfo(c *gin.Context) {
-	userID := c.GetInt("id")
+	userID := c.Param("id")
+	if userID == "" {
+		c.JSON(http.StatusBadRequest, gin.H{
+			"code": 400,
+			"msg":  "please try again",
+		})
+	}
 	newUser, err := uHandler.userCase.GetUserProfile(userID)
 	if err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{
 			"code": 400,
 			"msg":  "please try again",
 		})
-		log.Fatalf("No such user: %d", userID)
+		log.Fatalf("No such user: %v", userID)
 		return
 	}
 	c.JSON(http.StatusOK, gin.H{
@@ -43,7 +49,7 @@ func (uHandler *UserHandler) GetUserInfo(c *gin.Context) {
 
 // GetUserStatus be hired or not
 func (uHandler *UserHandler) GetUserStatus(c *gin.Context) {
-	userID := c.GetInt("id")
+	userID := c.Param("id")
 	newUser, err := uHandler.userCase.GetUserProfile(userID)
 	if err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{
@@ -83,7 +89,7 @@ func (uHandler *UserHandler) UpdateUserInfo(c *gin.Context) {
 
 // DeleteUser delete user
 func (uHandler *UserHandler) DeleteUser(c *gin.Context) {
-	userID := c.GetString("id")
+	userID := c.Param("id")
 
 	if err := uHandler.userCase.DeleteUser(userID); err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{

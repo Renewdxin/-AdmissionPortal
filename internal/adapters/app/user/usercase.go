@@ -6,8 +6,8 @@ import (
 	"github.com/Renewdxin/selfMade/internal/ports/core/verifycation"
 	"github.com/Renewdxin/selfMade/internal/ports/framework/database"
 	"github.com/Renewdxin/selfMade/internal/ports/framework/mail"
+	"github.com/Renewdxin/selfMade/internal/ports/framework/validate"
 	"log"
-	"strconv"
 )
 
 type API struct {
@@ -16,16 +16,18 @@ type API struct {
 	mailSender  mail.MailPorts
 	verify      verifycation.CodePorts
 	redisClient database.RedisPorts
+	validator   validate.Validator
 }
 
 func NewUserAPI(user user.UserPorts, userDao database.UserDaoPorts, mailSender mail.MailPorts,
-	verify verifycation.CodePorts, redisClient database.RedisPorts) *API {
+	verify verifycation.CodePorts, redisClient database.RedisPorts, validator validate.Validator) *API {
 	return &API{
 		user:        user,
 		userDao:     userDao,
 		mailSender:  mailSender,
 		verify:      verify,
 		redisClient: redisClient,
+		validator:   validator,
 	}
 }
 
@@ -33,7 +35,24 @@ func (api API) IfExist(email string) bool {
 	return api.userDao.IfExist(email)
 }
 
+func (api API) UserValidate(name string, gender string, email string, phone string) bool {
+	if !api.validator.NameValidate(name) || !api.validator.EmailValidate(email) || !api.validator.PhoneValidate(phone) {
+		log.Fatalf("INVALID INFORMATION")
+		return false
+	}
+
+	if gender != "male" && gender != "female" {
+		log.Fatalf("INVALID INFORMATION")
+		return false
+	}
+	return true
+}
+
 func (api API) RegisterUser(name, gender, email, phone string) error {
+	// validate
+	if !api.UserValidate(name, gender, email, phone) {
+		return errors.New("INVALID INFORMATION")
+	}
 	// if already exists
 	if api.IfExist(email) {
 		return errors.New("user already exists")
@@ -72,9 +91,9 @@ func (api API) RegisterUser(name, gender, email, phone string) error {
 	return nil
 }
 
-func (api API) GetUserProfile(id int) (*user.User, error) {
+func (api API) GetUserProfile(id string) (*user.User, error) {
 	// if already exists
-	return api.userDao.FindUserByID(strconv.Itoa(id))
+	return api.userDao.FindUserByID(id)
 }
 
 func (api API) DeleteUser(id string) error {
@@ -82,6 +101,6 @@ func (api API) DeleteUser(id string) error {
 }
 
 func (api API) UpdateUser(user user.User) error {
-	api.user.UserValidate(user.Name, user.Gender, user.Email, user.PhoneNumber)
+	api.UserValidate(user.Name, user.Gender, user.Email, user.PhoneNumber)
 	return api.userDao.UpdateUser(user)
 }
