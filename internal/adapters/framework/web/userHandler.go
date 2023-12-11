@@ -69,7 +69,7 @@ func (uHandler *UserHandler) GetUserStatus(c *gin.Context) {
 // UpdateUserInfo update user info
 func (uHandler *UserHandler) UpdateUserInfo(c *gin.Context) {
 	var newUser user.User
-	if err := c.ShouldBind(&newUser); err != nil {
+	if err := c.ShouldBindJSON(&newUser); err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{
 			"code": 400,
 			"msg":  "INVALID PARAMS",
