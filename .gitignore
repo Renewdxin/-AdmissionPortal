@@ -1,2 +1,3 @@
-/config/config.yaml
-/internal/adapters/global/.env
+/unsettle/config/config.yaml
+/unsettle/global/.env
+/Dockerfile

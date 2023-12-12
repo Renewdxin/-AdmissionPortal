@@ -13,7 +13,7 @@ type User struct {
 	Birth       string `json:"birth"`
 	Email       string `json:"email" gorm:"column:email"`
 	PhoneNumber string `json:"phoneNumber" gorm:"column:phone"`
-	//Account     account.Account
+	//Account     auth.Account
 }
 
 func (user User) TableName() string {

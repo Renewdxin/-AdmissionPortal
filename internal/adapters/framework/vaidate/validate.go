@@ -17,7 +17,7 @@ func NewValidator(redisClient database.RedisPorts) *Validator {
 	}
 }
 
-func (v *Validator) EmailValidate(email string) bool {
+func (v Validator) EmailValidate(email string) bool {
 	if !govalidator.IsExistingEmail(email) {
 		log.Fatalln("INVALID EMAIL")
 		return false
@@ -26,7 +26,7 @@ func (v *Validator) EmailValidate(email string) bool {
 	}
 }
 
-func (v *Validator) PhoneValidate(phone string) bool {
+func (v Validator) PhoneValidate(phone string) bool {
 	if !govalidator.IsNumeric(phone) || !govalidator.StringLength(phone, fmt.Sprintf("%d, %d", 8, 13)) {
 		log.Fatalln("INVALID PHONE NUMBER")
 		return false
@@ -35,7 +35,7 @@ func (v *Validator) PhoneValidate(phone string) bool {
 	}
 }
 
-func (v *Validator) PasswordValidate(password string) bool {
+func (v Validator) PasswordValidate(password string) bool {
 	if !govalidator.StringLength(password, fmt.Sprintf("%d, %d", 6, 20)) {
 		log.Fatalln("INVALID PASSWORD")
 		return false
@@ -45,7 +45,7 @@ func (v *Validator) PasswordValidate(password string) bool {
 
 }
 
-func (v *Validator) NameValidate(name string) bool {
+func (v Validator) NameValidate(name string) bool {
 	if !govalidator.StringLength(name, fmt.Sprintf("%d,%d", 2, 40)) {
 		log.Fatalln("INVALID NAME")
 		return false
@@ -57,5 +57,9 @@ func (v *Validator) NameValidate(name string) bool {
 		return false
 	}
 
+	return true
+}
+
+func (v Validator) CodeValidate(code, phone string) bool {
 	return true
 }

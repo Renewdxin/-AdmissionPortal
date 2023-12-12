@@ -32,7 +32,7 @@ func main() {
 	// home page
 	//r.POST("/home")
 
-	// account setting
+	// auth setting
 	//apiAccount := r.Group("/accounts")
 	//apiAccount.Use()
 	//{

@@ -1,7 +1,7 @@
 package middleware
 
 import (
-	jwt2 "github.com/Renewdxin/selfMade/internal/adapters/pkg/jwt"
+	jwt2 "github.com/Renewdxin/selfMade/unsettle/pkg/jwt"
 	"github.com/dgrijalva/jwt-go"
 	"github.com/gin-gonic/gin"
 	"net/http"

@@ -2,8 +2,8 @@ package jwt
 
 import (
 	"errors"
-	"github.com/Renewdxin/selfMade/internal/adapters/global"
-	"github.com/Renewdxin/selfMade/internal/adapters/pkg/util"
+	"github.com/Renewdxin/selfMade/unsettle/global"
+	"github.com/Renewdxin/selfMade/unsettle/pkg/util"
 	"github.com/dgrijalva/jwt-go"
 	"github.com/gin-gonic/gin"
 	"net/http"
