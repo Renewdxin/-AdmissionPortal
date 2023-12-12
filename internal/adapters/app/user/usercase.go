@@ -35,7 +35,7 @@ func (api API) IfExist(email string) bool {
 	return api.userDao.IfExist(email)
 }
 
-func (api API) UserValidate(name string, gender string, email string, phone string) bool {
+func (api API) UserValidateBeforeRegister(name string, gender string, email string, phone string) bool {
 	if !api.validator.NameValidate(name) || !api.validator.EmailValidate(email) || !api.validator.PhoneValidate(phone) {
 		log.Fatalf("INVALID INFORMATION")
 		return false
@@ -50,7 +50,7 @@ func (api API) UserValidate(name string, gender string, email string, phone stri
 
 func (api API) RegisterUser(name, gender, email, phone string) error {
 	// validate
-	if !api.UserValidate(name, gender, email, phone) {
+	if !api.UserValidateBeforeRegister(name, gender, email, phone) {
 		return errors.New("INVALID INFORMATION")
 	}
 	// if already exists
@@ -97,10 +97,35 @@ func (api API) GetUserProfile(id string) (*user.User, error) {
 }
 
 func (api API) DeleteUser(id string) error {
+	//if exist
+	u, err := api.userDao.FindUserByID(id)
+	if err != nil {
+		return err
+	}
+	// code generate and save to redis
+	code := api.verify.GenerateCode()
+	err = api.redisClient.SaveVerificationCode(u.Email, code)
+	if err != nil {
+		log.Fatalf("Failed to generate the code, plz try again")
+		return err
+	}
+	//code send
+	err = api.mailSender.CodeSend(u.Email, "Verify your email", code)
+	if err != nil {
+		log.Fatalf("Failed to send code, plz try again")
+		return err
+	}
+	// verify code
+	verify, _ := api.redisClient.GetVerificationCode(u.Email)
+	if verify != code {
+		log.Fatalln("INVALID CODE")
+		return err
+	}
+
 	return api.userDao.DeleteUser(id)
 }
 
 func (api API) UpdateUser(user user.User) error {
-	api.UserValidate(user.Name, user.Gender, user.Email, user.PhoneNumber)
+	api.UserValidateBeforeRegister(user.Name, user.Gender, user.Email, user.PhoneNumber)
 	return api.userDao.UpdateUser(user)
 }

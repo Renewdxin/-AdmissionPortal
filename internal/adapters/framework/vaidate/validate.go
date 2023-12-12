@@ -8,12 +8,12 @@ import (
 )
 
 type Validator struct {
-	redis_client database.RedisPorts
+	redisClient database.RedisPorts
 }
 
-func NewValidator(redis_client database.RedisPorts) *Validator {
+func NewValidator(redisClient database.RedisPorts) *Validator {
 	return &Validator{
-		redis_client: redis_client,
+		redisClient: redisClient,
 	}
 }
 

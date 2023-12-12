@@ -8,5 +8,5 @@ type UserCasePorts interface {
 	DeleteUser(id string) error
 	UpdateUser(user user.User) error
 	IfExist(email string) bool
-	UserValidate(name string, gender string, email string, phone string) bool
+	UserValidateBeforeRegister(name string, gender string, email string, phone string) bool
 }

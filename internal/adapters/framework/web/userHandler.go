@@ -56,7 +56,7 @@ func (uHandler *UserHandler) GetUserStatus(c *gin.Context) {
 			"code": 400,
 			"msg":  "please try again",
 		})
-		log.Fatalf("No such user: %d", userID)
+		log.Fatalf("No such user: %v", userID)
 		return
 	}
 	c.JSON(http.StatusOK, gin.H{

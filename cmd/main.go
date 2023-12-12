@@ -44,13 +44,20 @@ func main() {
 	//}
 
 	// personal info
-	apiPofile := r.Group("/profile")
-	apiPofile.Use()
+	apiProfile := r.Group("/profile")
+	apiProfile.Use()
 	{
-		apiPofile.GET("/Info/:id", handler.GetUserInfo)
-		apiPofile.DELETE("/delete/:id", handler.DeleteUser)
-		apiPofile.PUT("/update/:id", handler.UpdateUserInfo)
-		apiPofile.GET("/status/:id", handler.GetUserStatus)
+		// GetUserInfo 通过id得到用户信息，返回项为姓名、性别、出生日期、邮箱、手机号
+		apiProfile.GET("/Info/:id", handler.GetUserInfo)
+		// DeleteUser 用户在删除前需要进行手机验证码验证才能删除
+		apiProfile.DELETE("/delete/:id", handler.DeleteUser)
+		// 更新用户信息，仅限手机号、邮箱
+		apiProfile.PUT("/update/:id", handler.UpdateUserInfo)
+		// 查询是否被录取
+		apiProfile.GET("/status/:id", handler.GetUserStatus)
 	}
-	r.Run(":8080")
+	err = r.Run(":8080")
+	if err != nil {
+		log.Fatalf("falied to start : %v", err)
+	}
 }
