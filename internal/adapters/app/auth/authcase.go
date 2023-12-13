@@ -143,6 +143,5 @@ func (api AuthcaseAdapter) LogIn(id, password string) error {
 	if password != api.dao.FindPasswordByID(id) {
 		return errors.New("WRONG PASSWORD")
 	}
-
 	return nil
 }

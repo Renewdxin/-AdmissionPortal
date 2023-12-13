@@ -4,8 +4,8 @@ import "github.com/Renewdxin/selfMade/internal/ports/core/auth"
 
 type AccountAdapter struct{}
 
-func NewAdapter() *auth.Account {
-	return &auth.Account{}
+func NewAdapter() AccountAdapter {
+	return AccountAdapter{}
 }
 
 func (accountAdapter AccountAdapter) CreateAccount(id, password string) (auth.Account, error) {
