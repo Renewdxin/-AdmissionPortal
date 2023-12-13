@@ -8,8 +8,8 @@ func NewAdapter() *auth.Account {
 	return &auth.Account{}
 }
 
-func (accountAdapter AccountAdapter) CreateAccount(id, password string) (*auth.Account, error) {
-	return &auth.Account{ID: id, Password: password}, nil
+func (accountAdapter AccountAdapter) CreateAccount(id, password string) (auth.Account, error) {
+	return auth.Account{ID: id, Password: password}, nil
 }
 
 func (accountAdapter AccountAdapter) TableName() string {
