@@ -33,7 +33,9 @@ func (handler AuthHandler) Login(c *gin.Context) {
 		})
 		return
 	}
-	c.JSON(http.StatusOK, gin.H{})
+	c.JSON(http.StatusOK, gin.H{
+		"msg": "welcome",
+	})
 }
 
 func (handler AuthHandler) Register(c *gin.Context) {

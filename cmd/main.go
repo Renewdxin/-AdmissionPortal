@@ -11,25 +11,30 @@ import (
 	"github.com/Renewdxin/selfMade/internal/adapters/framework/vaidate"
 	"github.com/Renewdxin/selfMade/internal/adapters/framework/web"
 	"github.com/gin-gonic/gin"
+	"github.com/joho/godotenv"
 	"log"
+	"os"
 )
 
 func main() {
+	err := godotenv.Load("internal/adapters/framework/global/.env")
+	if err != nil {
+		log.Fatalf("无法加载 .env 文件: %v", err)
+	}
+
 	redisClient := database.NewRedisClient()
 
 	mailSender := mail.NewMail()
 	verification := verify.NewVerificationCodeService()
 	validator := vaidate.NewValidator(redisClient)
 	userCore := user2.NewUserService()
-	userDao, err := database.NewUserDao("pgx",
-		"host=localhost user=postgres password=26221030 dbname=self sslmode=disable", userCore)
+	userDao, err := database.NewUserDao(os.Getenv("DRIVER_NAME"), os.Getenv("DRIVER_SOURCE_NAME"), userCore)
 	if err != nil {
 		log.Fatalf("falied to connect to the user database")
 	}
 
 	authCore := auth2.NewAdapter()
-	authDao, err := database.NewauthDaoAdapter("pgx",
-		"host=localhost user=postgres password=26221030 dbname=self sslmode=disable", authCore)
+	authDao, err := database.NewauthDao(os.Getenv("DRIVER_NAME"), os.Getenv("DRIVER_SOURCE_NAME"), authCore)
 	if err != nil {
 		log.Fatalf("falied to connect to the user database")
 	}
@@ -44,11 +49,11 @@ func main() {
 	//r.POST("/home")
 
 	// auth setting
-	apiAccount := r.Group("/accounts")
+	apiAccount := r.Group("/auth")
 	apiAccount.Use()
 	{
 		apiAccount.POST("/login", authHandler.Login)
-		apiAccount.POST("/logout")
+		//apiAccount.POST("/logout")
 		apiAccount.POST("/signup", authHandler.Register)
 		apiAccount.POST("/password/forget/:id", authHandler.ForgetPassword)
 		apiAccount.POST("/password/change/:id", authHandler.ChangePassword)

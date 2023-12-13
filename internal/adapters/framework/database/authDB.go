@@ -12,7 +12,7 @@ type AuthDaoAdapter struct {
 	account auth.AccountCorePorts
 }
 
-func NewauthDaoAdapter(driveName, dataSourceName string, account auth.AccountCorePorts) (*AuthDaoAdapter, error) {
+func NewauthDao(driveName, dataSourceName string, account auth.AccountCorePorts) (*AuthDaoAdapter, error) {
 	sqlDB, err := sql.Open(driveName, dataSourceName)
 	if err != nil {
 		return nil, err

@@ -16,7 +16,7 @@ func NewMail() *Mail {
 }
 
 func (m *Mail) Send(to string, subject string, body string) error {
-	err := godotenv.Load()
+	err := godotenv.Load("internal/adapters/framework/global/.env")
 	if err != nil {
 		log.Fatal("无法加载 .env 文件")
 	}

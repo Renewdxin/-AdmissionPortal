@@ -27,8 +27,8 @@ func (v Validator) EmailValidate(email string) bool {
 }
 
 func (v Validator) PhoneValidate(phone string) bool {
-	if !govalidator.IsNumeric(phone) || !govalidator.StringLength(phone, fmt.Sprintf("%d, %d", 8, 13)) {
-		log.Fatalln("INVALID PHONE NUMBER")
+	if !govalidator.IsNumeric(phone) || !govalidator.StringLength(phone, "8", "13") {
+		log.Printf("INVALID PHONE NUMBER: %v", phone)
 		return false
 	} else {
 		return true
@@ -36,8 +36,8 @@ func (v Validator) PhoneValidate(phone string) bool {
 }
 
 func (v Validator) PasswordValidate(password string) bool {
-	if !govalidator.StringLength(password, fmt.Sprintf("%d, %d", 6, 20)) {
-		log.Fatalln("INVALID PASSWORD")
+	if !govalidator.StringLength(password, "8", "20") {
+		log.Println("INVALID PASSWORD")
 		return false
 	} else {
 		return true
