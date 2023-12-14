@@ -1,7 +1,6 @@
 package vaidate
 
 import (
-	"fmt"
 	"github.com/Renewdxin/selfMade/internal/ports/framework/database"
 	"github.com/asaskevich/govalidator"
 	"log"
@@ -46,8 +45,8 @@ func (v Validator) PasswordValidate(password string) bool {
 }
 
 func (v Validator) NameValidate(name string) bool {
-	if !govalidator.StringLength(name, fmt.Sprintf("%d,%d", 2, 40)) {
-		log.Fatalln("INVALID NAME")
+	if !govalidator.StringLength(name, "2", "40") {
+		log.Fatalln("INVALID LENGTH")
 		return false
 	}
 
