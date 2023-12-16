@@ -1,39 +1,47 @@
 package middleware
 
 import (
-	jwt2 "github.com/Renewdxin/selfMade/unsettle/pkg/jwt"
+	"errors"
+	"github.com/Renewdxin/selfMade/internal/adapters/framework/global"
+	"github.com/Renewdxin/selfMade/unsettle/pkg/util"
 	"github.com/dgrijalva/jwt-go"
-	"github.com/gin-gonic/gin"
-	"net/http"
+	"time"
 )
 
-func JWTHandler() gin.HandlerFunc {
-	// get token
-	// token exist ? validate : abort
-	// next or abort
-	return func(c *gin.Context) {
-		token, exist := c.GetQuery("token")
-		if !exist {
-			token = c.GetHeader("token")
-		}
+type Claims struct {
+	AppID  string `json:"app_id"`
+	AppKey string `json:"app_key"`
+	jwt.StandardClaims
+}
 
-		if token == "" {
-			c.JSON(http.StatusOK, gin.H{"msg": jwt.ErrSignatureInvalid})
-			c.Abort()
-			return
-		} else {
-			_, err := jwt2.ParseToken(token)
-			if err != nil {
-				switch err.(*jwt.ValidationError).Errors {
-				case jwt.ValidationErrorExpired:
-					c.JSON(http.StatusOK, gin.H{"msg": jwt.ValidationErrorExpired})
-				default:
-					c.JSON(http.StatusOK, gin.H{"msg": jwt.ValidationErrorNotValidYet})
-				}
-				c.Abort()
-				return
-			}
-		}
-		c.Next()
+func GetJWTSecret() []byte {
+	return []byte(global.JWTSetting.Secret)
+}
+
+func GenerateToken(AppID string, AppKey string) (string, error) {
+	now := time.Now()
+	expireTime := now.Add(7200)
+	claims := Claims{
+		AppID:  util.EncodingMD5(AppID),
+		AppKey: util.EncodingMD5(AppKey),
+		StandardClaims: jwt.StandardClaims{
+			ExpiresAt: expireTime.Unix(),
+			Issuer:    global.JWTSetting.Issuer,
+		},
 	}
+	tokenClaims := jwt.NewWithClaims(jwt.SigningMethodHS256, claims)
+	return tokenClaims.SignedString(GetJWTSecret())
+}
+
+func ParseToken(tokenString string) (*Claims, error) {
+	tokenClaims, err := jwt.ParseWithClaims(tokenString, &Claims{}, func(token *jwt.Token) (interface{}, error) {
+		return GetJWTSecret(), nil
+	})
+	if err != nil {
+		return nil, err
+	}
+	if claims, ok := tokenClaims.Claims.(*Claims); tokenClaims.Valid && ok {
+		return claims, nil
+	}
+	return nil, errors.New("invalid token")
 }
