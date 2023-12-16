@@ -1,7 +1,7 @@
 package web
 
 import (
-	jwt2 "github.com/Renewdxin/selfMade/unsettle/pkg/jwt"
+	jwt2 "github.com/Renewdxin/selfMade/internal/adapters/app/middleware/jwt"
 	"github.com/dgrijalva/jwt-go"
 	"github.com/gin-gonic/gin"
 	"net/http"
