@@ -7,19 +7,21 @@ import (
 	user2 "github.com/Renewdxin/selfMade/internal/adapters/core/user"
 	"github.com/Renewdxin/selfMade/internal/adapters/core/verify"
 	"github.com/Renewdxin/selfMade/internal/adapters/framework/database"
+	"github.com/Renewdxin/selfMade/internal/adapters/framework/utils/logger"
 	"github.com/Renewdxin/selfMade/internal/adapters/framework/utils/mail"
 	"github.com/Renewdxin/selfMade/internal/adapters/framework/utils/vaidate"
 	"github.com/Renewdxin/selfMade/internal/adapters/framework/web"
 	"github.com/gin-gonic/gin"
 	"github.com/joho/godotenv"
-	"log"
 	"os"
 )
 
 func main() {
+	log := logger.NewLogger()
+	log.Init(os.Getenv("LOGFILE"))
 	err := godotenv.Load("internal/adapters/framework/global/.env")
 	if err != nil {
-		log.Fatalf("无法加载 .env 文件: %v", err)
+		log.Log(logger.FatalLevel, "无法加载 .env 文件: %v")
 	}
 
 	redisClient := database.NewRedisClient()
@@ -30,13 +32,13 @@ func main() {
 	userCore := user2.NewUserService()
 	userDao, err := database.NewUserDao(os.Getenv("DRIVER_NAME"), os.Getenv("DRIVER_SOURCE_NAME"), userCore)
 	if err != nil {
-		log.Fatalf("falied to connect to the user database")
+		log.Log(logger.FatalLevel, "falied to connect to the user database")
 	}
 
 	authCore := auth2.NewAdapter()
 	authDao, err := database.NewauthDao(os.Getenv("DRIVER_NAME"), os.Getenv("DRIVER_SOURCE_NAME"), authCore)
 	if err != nil {
-		log.Fatalf("falied to connect to the user database")
+		log.Log(logger.FatalLevel, "falied to connect to the user database")
 	}
 	userAPI := user.NewUserAPI(userCore, userDao, mailSender, verification, redisClient, validator)
 	userHandler := web.NewUserHandler(userAPI)
@@ -74,6 +76,6 @@ func main() {
 	}
 	err = r.Run(":8080")
 	if err != nil {
-		log.Fatalf("falied to start : %v", err)
+		log.Logf(logger.FatalLevel, "falied to start : %v", err)
 	}
 }

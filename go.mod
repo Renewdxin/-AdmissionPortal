@@ -1,6 +1,6 @@
 module github.com/Renewdxin/selfMade
 
-go 1.21.1
+go 1.21.5
 
 require (
 	github.com/asaskevich/govalidator v0.0.0-20230301143203-a9d515a09cc2
@@ -11,6 +11,7 @@ require (
 	github.com/opentracing/opentracing-go v1.2.0
 	github.com/redis/go-redis/v9 v9.3.0
 	github.com/spf13/viper v1.18.1
+	go.uber.org/zap v1.26.0
 	gopkg.in/gomail.v2 v2.0.0-20160411212932-81ebce5c23df
 	gorm.io/driver/postgres v1.5.4
 	gorm.io/gorm v1.25.5
@@ -54,10 +55,9 @@ require (
 	github.com/twitchyliquid64/golang-asm v0.15.1 // indirect
 	github.com/ugorji/go/codec v1.2.12 // indirect
 	go.uber.org/multierr v1.11.0 // indirect
-	go.uber.org/zap v1.26.0 // indirect
 	golang.org/x/arch v0.6.0 // indirect
 	golang.org/x/crypto v0.16.0 // indirect
-	golang.org/x/exp v0.0.0-20231206192017-f3f8817b8deb // indirect
+	golang.org/x/exp v0.0.0-20231214170342-aacd6d4b4611 // indirect
 	golang.org/x/net v0.19.0 // indirect
 	golang.org/x/sync v0.5.0 // indirect
 	golang.org/x/sys v0.15.0 // indirect
