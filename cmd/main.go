@@ -52,7 +52,7 @@ func main() {
 
 	// auth setting
 	apiAccount := r.Group("/auth")
-	apiAccount.Use()
+	apiAccount.Use(web.JWTHandler())
 	{
 		apiAccount.POST("/login", authHandler.Login)
 		//apiAccount.POST("/logout")
