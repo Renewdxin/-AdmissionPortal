@@ -9,11 +9,10 @@ import (
 )
 
 // LogLevel is a custom type for log levels
-type LogLevel int
 
 const (
 	// InfoLevel represents the info log level
-	InfoLevel LogLevel = iota
+	InfoLevel int = iota
 	// DebugLevel represents the debug log level
 	DebugLevel
 	// WarnLevel represents the warning log level
@@ -36,7 +35,7 @@ func NewLogger() *LogAdapter {
 }
 
 // Init initializes the logger with file and console output
-func (zl *LogAdapter) Init(logFilePath string) {
+func (zl LogAdapter) Init(logFilePath string) {
 	zl.once.Do(func() {
 		encoderCfg := zapcore.EncoderConfig{
 			MessageKey:   "message",
@@ -70,7 +69,7 @@ func (zl *LogAdapter) Init(logFilePath string) {
 }
 
 // Log logs a message with the specified level
-func (zl *LogAdapter) Log(level LogLevel, msg string, fields ...zap.Field) {
+func (zl LogAdapter) Log(level int, msg string, fields ...zap.Field) {
 	switch level {
 	case InfoLevel:
 		zl.logger.Info(msg, fields...)
@@ -85,12 +84,12 @@ func (zl *LogAdapter) Log(level LogLevel, msg string, fields ...zap.Field) {
 	}
 }
 
-func (zl *LogAdapter) Logf(level LogLevel, format string, args ...interface{}) {
+func (zl LogAdapter) Logf(level int, format string, args ...interface{}) {
 	msg := fmt.Sprintf(format, args...)
 	zl.Log(level, msg) // You can adjust the log level as needed
 }
 
 // SugarLogger returns a SugaredLogger from the global logger
-func (zl *LogAdapter) SugarLogger() *zap.SugaredLogger {
+func (zl LogAdapter) SugarLogger() *zap.SugaredLogger {
 	return zl.logger.Sugar()
 }

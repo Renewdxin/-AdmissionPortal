@@ -19,7 +19,7 @@ func NewUserHandler(userCase userAPI.UserCasePorts) *UserHandler {
 }
 
 // GetUserInfo get user info
-func (uHandler *UserHandler) GetUserInfo(c *gin.Context) {
+func (uHandler UserHandler) GetUserInfo(c *gin.Context) {
 	userID := c.Param("id")
 	if userID == "" {
 		c.JSON(http.StatusBadRequest, gin.H{
@@ -48,7 +48,7 @@ func (uHandler *UserHandler) GetUserInfo(c *gin.Context) {
 }
 
 // GetUserStatus be hired or not
-func (uHandler *UserHandler) GetUserStatus(c *gin.Context) {
+func (uHandler UserHandler) GetUserStatus(c *gin.Context) {
 	userID := c.Param("id")
 	newUser, err := uHandler.userCase.GetUserProfile(userID)
 	if err != nil {
@@ -67,7 +67,7 @@ func (uHandler *UserHandler) GetUserStatus(c *gin.Context) {
 }
 
 // UpdateUserInfo update user info
-func (uHandler *UserHandler) UpdateUserInfo(c *gin.Context) {
+func (uHandler UserHandler) UpdateUserInfo(c *gin.Context) {
 	var newUser user.User
 	if err := c.ShouldBindJSON(&newUser); err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{
@@ -88,7 +88,7 @@ func (uHandler *UserHandler) UpdateUserInfo(c *gin.Context) {
 }
 
 // DeleteUser delete user
-func (uHandler *UserHandler) DeleteUser(c *gin.Context) {
+func (uHandler UserHandler) DeleteUser(c *gin.Context) {
 	userID := c.Param("id")
 
 	if err := uHandler.userCase.DeleteUser(userID); err != nil {

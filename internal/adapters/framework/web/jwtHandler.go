@@ -7,7 +7,15 @@ import (
 	"net/http"
 )
 
-func JWTHandler() gin.HandlerFunc {
+type JWTHandlerAdapter struct {
+	jwtAdapter jwt2.JWTAdapters
+}
+
+func NewJWTHandlerAdapter(jwtAdapter jwt2.JWTAdapters) *JWTHandlerAdapter {
+	return &JWTHandlerAdapter{jwtAdapter: jwtAdapter}
+}
+
+func (j JWTHandlerAdapter) JWTHandler() gin.HandlerFunc {
 	// get token
 	// token exist ? validate : abort
 	// next or abort
@@ -18,17 +26,17 @@ func JWTHandler() gin.HandlerFunc {
 		}
 
 		if token == "" {
-			c.JSON(http.StatusOK, gin.H{"msg": jwt.ErrSignatureInvalid})
+			c.JSON(http.StatusUnauthorized, gin.H{"msg": jwt.ErrSignatureInvalid})
 			c.Abort()
 			return
 		} else {
-			_, err := jwt2.ParseToken(token)
+			_, err := j.jwtAdapter.ParseToken(token)
 			if err != nil {
 				switch err.(*jwt.ValidationError).Errors {
 				case jwt.ValidationErrorExpired:
 					c.JSON(http.StatusOK, gin.H{"msg": jwt.ValidationErrorExpired})
 				default:
-					c.JSON(http.StatusOK, gin.H{"msg": jwt.ValidationErrorNotValidYet})
+					c.JSON(http.StatusUnauthorized, gin.H{"msg": jwt.ValidationErrorNotValidYet})
 				}
 				c.Abort()
 				return

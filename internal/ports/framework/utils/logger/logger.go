@@ -8,5 +8,6 @@ import (
 type LoggerPorts interface {
 	Init(logFilePath string)
 	Log(level int, msg string, fields ...zap.Field)
+	Logf(level int, format string, args ...interface{})
 	SugarLogger() *zap.SugaredLogger
 }
