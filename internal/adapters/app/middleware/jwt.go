@@ -1,9 +1,9 @@
-package jwt
+package middleware
 
 import (
 	"github.com/Renewdxin/selfMade/internal/adapters/framework/global"
 	"github.com/Renewdxin/selfMade/internal/ports/app/middleware"
-	"github.com/Renewdxin/selfMade/internal/ports/framework/utils/logger"
+	"github.com/Renewdxin/selfMade/internal/ports/framework/logger"
 	"github.com/Renewdxin/selfMade/unsettle/pkg/util"
 	"github.com/dgrijalva/jwt-go"
 	"time"

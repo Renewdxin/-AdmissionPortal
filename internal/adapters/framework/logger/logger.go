@@ -26,7 +26,7 @@ const (
 // LogAdapter is an implementation of the Logger interface
 type LogAdapter struct {
 	logger *zap.Logger
-	once   *sync.Once
+	once   sync.Once
 }
 
 // NewLogger creates a new Logger instance
@@ -35,7 +35,11 @@ func NewLogger() *LogAdapter {
 }
 
 // Init initializes the logger with file and console output
-func (zl LogAdapter) Init(logFilePath string) {
+func (zl *LogAdapter) Init(logFilePath string) {
+	if zl == nil {
+		zl = &LogAdapter{}
+	}
+
 	zl.once.Do(func() {
 		encoderCfg := zapcore.EncoderConfig{
 			MessageKey:   "message",
@@ -64,12 +68,13 @@ func (zl LogAdapter) Init(logFilePath string) {
 			zapcore.NewCore(fileEncoder, zapcore.AddSync(fileOutput), zap.DebugLevel),
 		)
 
+		// 使用指针接收者赋值给 zl.logger
 		zl.logger = zap.New(core, zap.AddCaller())
 	})
 }
 
 // Log logs a message with the specified level
-func (zl LogAdapter) Log(level int, msg string, fields ...zap.Field) {
+func (zl *LogAdapter) Log(level int, msg string, fields ...zap.Field) {
 	switch level {
 	case InfoLevel:
 		zl.logger.Info(msg, fields...)
@@ -84,12 +89,12 @@ func (zl LogAdapter) Log(level int, msg string, fields ...zap.Field) {
 	}
 }
 
-func (zl LogAdapter) Logf(level int, format string, args ...interface{}) {
+func (zl *LogAdapter) Logf(level int, format string, args ...interface{}) {
 	msg := fmt.Sprintf(format, args...)
 	zl.Log(level, msg) // You can adjust the log level as needed
 }
 
 // SugarLogger returns a SugaredLogger from the global logger
-func (zl LogAdapter) SugarLogger() *zap.SugaredLogger {
+func (zl *LogAdapter) SugarLogger() *zap.SugaredLogger {
 	return zl.logger.Sugar()
 }

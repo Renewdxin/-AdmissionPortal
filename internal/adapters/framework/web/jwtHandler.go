@@ -15,7 +15,7 @@ func NewJWTHandlerAdapter(jwtPorts middleware.JwtPort) *JWTHandlerAdapter {
 	return &JWTHandlerAdapter{jwtPorts: jwtPorts}
 }
 
-func (j JWTHandlerAdapter) JWTHandler() gin.HandlerFunc {
+func (j *JWTHandlerAdapter) JWTHandler() gin.HandlerFunc {
 	// get token
 	// token exist ? validate : abort
 	// next or abort

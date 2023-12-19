@@ -5,8 +5,8 @@ import (
 	"github.com/Renewdxin/selfMade/internal/ports/core/user"
 	"github.com/Renewdxin/selfMade/internal/ports/core/verifycation"
 	"github.com/Renewdxin/selfMade/internal/ports/framework/database"
-	"github.com/Renewdxin/selfMade/internal/ports/framework/utils/mail"
-	"github.com/Renewdxin/selfMade/internal/ports/framework/utils/validate"
+	"github.com/Renewdxin/selfMade/internal/ports/framework/mail"
+	"github.com/Renewdxin/selfMade/internal/ports/framework/validate"
 	"log"
 )
 

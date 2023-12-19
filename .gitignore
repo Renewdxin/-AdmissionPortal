@@ -1,3 +1,4 @@
 /unsettle/config/config.yaml
 /internal/adapters/framework/global/.env
 /Dockerfile
+/cmd/.env

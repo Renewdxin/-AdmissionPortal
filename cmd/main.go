@@ -2,15 +2,15 @@ package main
 
 import (
 	"github.com/Renewdxin/selfMade/internal/adapters/app/auth"
-	"github.com/Renewdxin/selfMade/internal/adapters/app/middleware/jwt"
+	"github.com/Renewdxin/selfMade/internal/adapters/app/middleware"
 	"github.com/Renewdxin/selfMade/internal/adapters/app/user"
 	auth2 "github.com/Renewdxin/selfMade/internal/adapters/core/auth"
 	user2 "github.com/Renewdxin/selfMade/internal/adapters/core/user"
 	"github.com/Renewdxin/selfMade/internal/adapters/core/verify"
 	"github.com/Renewdxin/selfMade/internal/adapters/framework/database"
-	"github.com/Renewdxin/selfMade/internal/adapters/framework/utils/logger"
-	"github.com/Renewdxin/selfMade/internal/adapters/framework/utils/mail"
-	"github.com/Renewdxin/selfMade/internal/adapters/framework/utils/vaidate"
+	"github.com/Renewdxin/selfMade/internal/adapters/framework/logger"
+	"github.com/Renewdxin/selfMade/internal/adapters/framework/mail"
+	"github.com/Renewdxin/selfMade/internal/adapters/framework/vaidate"
 	"github.com/Renewdxin/selfMade/internal/adapters/framework/web"
 	"github.com/gin-gonic/gin"
 	"github.com/joho/godotenv"
@@ -20,7 +20,7 @@ import (
 func main() {
 	log := logger.NewLogger()
 	log.Init(os.Getenv("LOGFILE"))
-	err := godotenv.Load("internal/adapters/framework/global/.env")
+	err := godotenv.Load("cmd/.env")
 	if err != nil {
 		log.Log(logger.FatalLevel, "无法加载 .env 文件: %v")
 	}
@@ -31,7 +31,7 @@ func main() {
 	verification := verify.NewVerificationCodeService()
 	validator := vaidate.NewValidator(redisClient)
 
-	jwtAPI := jwt.NewJWTAdapters(log)
+	jwtAPI := middleware.NewJWTAdapters(log)
 	jwtHandler := web.NewJWTHandlerAdapter(jwtAPI)
 
 	userCore := user2.NewUserService()
