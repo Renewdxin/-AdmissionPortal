@@ -1,18 +1,18 @@
 package web
 
 import (
-	jwt2 "github.com/Renewdxin/selfMade/internal/adapters/app/middleware/jwt"
+	"github.com/Renewdxin/selfMade/internal/ports/app/middleware"
 	"github.com/dgrijalva/jwt-go"
 	"github.com/gin-gonic/gin"
 	"net/http"
 )
 
 type JWTHandlerAdapter struct {
-	jwtAdapter jwt2.JWTAdapters
+	jwtPorts middleware.JwtPort
 }
 
-func NewJWTHandlerAdapter(jwtAdapter jwt2.JWTAdapters) *JWTHandlerAdapter {
-	return &JWTHandlerAdapter{jwtAdapter: jwtAdapter}
+func NewJWTHandlerAdapter(jwtPorts middleware.JwtPort) *JWTHandlerAdapter {
+	return &JWTHandlerAdapter{jwtPorts: jwtPorts}
 }
 
 func (j JWTHandlerAdapter) JWTHandler() gin.HandlerFunc {
@@ -30,7 +30,7 @@ func (j JWTHandlerAdapter) JWTHandler() gin.HandlerFunc {
 			c.Abort()
 			return
 		} else {
-			_, err := j.jwtAdapter.ParseToken(token)
+			_, err := j.jwtPorts.ParseToken(token)
 			if err != nil {
 				switch err.(*jwt.ValidationError).Errors {
 				case jwt.ValidationErrorExpired:

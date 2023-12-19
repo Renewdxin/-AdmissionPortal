@@ -2,6 +2,7 @@ package main
 
 import (
 	"github.com/Renewdxin/selfMade/internal/adapters/app/auth"
+	"github.com/Renewdxin/selfMade/internal/adapters/app/middleware/jwt"
 	"github.com/Renewdxin/selfMade/internal/adapters/app/user"
 	auth2 "github.com/Renewdxin/selfMade/internal/adapters/core/auth"
 	user2 "github.com/Renewdxin/selfMade/internal/adapters/core/user"
@@ -29,6 +30,10 @@ func main() {
 	mailSender := mail.NewMail()
 	verification := verify.NewVerificationCodeService()
 	validator := vaidate.NewValidator(redisClient)
+
+	jwtAPI := jwt.NewJWTAdapters(log)
+	jwtHandler := web.NewJWTHandlerAdapter(jwtAPI)
+
 	userCore := user2.NewUserService()
 	userDao, err := database.NewUserDao(os.Getenv("DRIVER_NAME"), os.Getenv("DRIVER_SOURCE_NAME"), userCore)
 	if err != nil {
@@ -52,13 +57,13 @@ func main() {
 
 	// auth setting
 	apiAccount := r.Group("/auth")
-	apiAccount.Use(web.JWTHandler())
+	apiAccount.Use(jwtHandler.JWTHandler())
 	{
 		apiAccount.POST("/login", authHandler.Login)
 		//apiAccount.POST("/logout")
 		apiAccount.POST("/signup", authHandler.Register)
-		apiAccount.POST("/password/forget/:id", authHandler.ForgetPassword)
-		apiAccount.POST("/password/change/:id", authHandler.ChangePassword)
+		apiAccount.POST("/password/forget", authHandler.ForgetPassword)
+		apiAccount.POST("/password/change", authHandler.ChangePassword)
 	}
 
 	// personal info

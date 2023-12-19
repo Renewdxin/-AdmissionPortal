@@ -57,59 +57,31 @@ func (handler AuthHandler) Register(c *gin.Context) {
 	c.JSON(http.StatusOK, gin.H{})
 }
 
-func (handler AuthHandler) Delete(c *gin.Context) {
-	var account auth.Account
-
-	if err := c.ShouldBindJSON(&account); err != nil {
-		c.JSON(http.StatusBadRequest, gin.H{
-			"msg": err,
-		})
-		return
-	}
-
-	if err := handler.authCase.RegisterByEmail(account.ID, account.Password); err != nil {
-		c.JSON(http.StatusBadRequest, gin.H{
-			"msg": err,
-		})
-		return
-	}
-	c.JSON(http.StatusOK, gin.H{})
-}
-
 func (handler AuthHandler) ChangePassword(c *gin.Context) {
-	var account auth.Account
+	id := c.GetString("id")
+	newPassword := c.GetString("newPassword")
+	oldPassword := c.GetString("oldPassword")
 
-	if err := c.ShouldBindJSON(&account); err != nil {
+	if err := handler.authCase.ChangePassword(id, oldPassword, newPassword); err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{
 			"msg": err,
 		})
-		return
 	}
-
-	if err := handler.authCase.RegisterByEmail(account.ID, account.Password); err != nil {
-		c.JSON(http.StatusBadRequest, gin.H{
-			"msg": err,
-		})
-		return
-	}
-	c.JSON(http.StatusOK, gin.H{})
+	c.JSON(http.StatusOK, gin.H{
+		"msg": "ok",
+	})
 }
 
 func (handler AuthHandler) ForgetPassword(c *gin.Context) {
-	var account auth.Account
+	id := c.GetString("id")
+	newPassword := c.GetString("newPassword")
 
-	if err := c.ShouldBindJSON(&account); err != nil {
+	if err := handler.authCase.ForgetPasswordByEmail(id, newPassword); err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{
 			"msg": err,
 		})
-		return
 	}
-
-	if err := handler.authCase.RegisterByEmail(account.ID, account.Password); err != nil {
-		c.JSON(http.StatusBadRequest, gin.H{
-			"msg": err,
-		})
-		return
-	}
-	c.JSON(http.StatusOK, gin.H{})
+	c.JSON(http.StatusOK, gin.H{
+		"msg": "ok",
+	})
 }
