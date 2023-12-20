@@ -3,7 +3,6 @@ create table employee (
 	name VARCHAR(50),
 	gender VARCHAR(50),
 	birth DATE,
-	email VARCHAR(50),
 	phone VARCHAR(50)
 );
 insert into employee (email, name, gender, birth, email, phone) values ('560225178798190290', 'Leland Learoyde', 'Transgender', '1995/11/22', 'llearoyde0@mit.edu', '+965 773 667 4900');

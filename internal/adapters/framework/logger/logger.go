@@ -62,7 +62,7 @@ func NewLogger() *LogAdapter {
 }
 
 // Log logs a message with the specified level
-func (zl *LogAdapter) Log(level int, msg string, fields ...zap.Field) {
+func (zl LogAdapter) Log(level int, msg string, fields ...zap.Field) {
 	switch level {
 	case InfoLevel:
 		zl.logger.Info(msg, fields...)
@@ -77,12 +77,12 @@ func (zl *LogAdapter) Log(level int, msg string, fields ...zap.Field) {
 	}
 }
 
-func (zl *LogAdapter) Logf(level int, format string, args ...interface{}) {
+func (zl LogAdapter) Logf(level int, format string, args ...interface{}) {
 	msg := fmt.Sprintf(format, args...)
 	zl.Log(level, msg) // You can adjust the log level as needed
 }
 
 // SugarLogger returns a SugaredLogger from the global logger
-func (zl *LogAdapter) SugarLogger() *zap.SugaredLogger {
+func (zl LogAdapter) SugarLogger() *zap.SugaredLogger {
 	return zl.logger.Sugar()
 }

@@ -48,7 +48,7 @@ func main() {
 	userHandler := web.NewUserHandler(userAPI)
 
 	authAPI := auth.NewAuthCaseAdapter(authCore, authDao, verification, redisClient, validator, mailSender)
-	authHandler := web.NewAuthHandler(authAPI)
+	authHandler := web.NewAuthHandler(authAPI, jwtAPI)
 
 	r := gin.New()
 	// home page
@@ -56,7 +56,7 @@ func main() {
 
 	// auth setting
 	apiAccount := r.Group("/auth")
-	apiAccount.Use(jwtHandler.JWTHandler())
+	apiAccount.Use()
 	{
 		apiAccount.POST("/login", authHandler.Login)
 		//apiAccount.POST("/logout")
@@ -67,7 +67,7 @@ func main() {
 
 	// personal info
 	apiProfile := r.Group("/profile")
-	apiProfile.Use()
+	apiProfile.Use(jwtHandler.JWTHandler())
 	{
 		// GetUserInfo 通过id得到用户信息，返回项为姓名、性别、出生日期、邮箱、手机号
 		apiProfile.GET("/Info/:id", userHandler.GetUserInfo)

@@ -1,7 +1,9 @@
 package web
 
 import (
+	"fmt"
 	authcase "github.com/Renewdxin/selfMade/internal/ports/app/auth"
+	"github.com/Renewdxin/selfMade/internal/ports/app/middleware"
 	"github.com/Renewdxin/selfMade/internal/ports/core/auth"
 	"github.com/gin-gonic/gin"
 	"net/http"
@@ -9,11 +11,13 @@ import (
 
 type AuthHandler struct {
 	authCase authcase.AuthcasePorts
+	jwtPorts middleware.JwtPort
 }
 
-func NewAuthHandler(authCase authcase.AuthcasePorts) *AuthHandler {
+func NewAuthHandler(authCase authcase.AuthcasePorts, jwtPorts middleware.JwtPort) *AuthHandler {
 	return &AuthHandler{
 		authCase: authCase,
+		jwtPorts: jwtPorts,
 	}
 }
 
@@ -22,10 +26,11 @@ func (handler AuthHandler) Login(c *gin.Context) {
 
 	if err := c.ShouldBindJSON(&account); err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{
-			"msg": err,
+			"msg": "account error",
 		})
 		return
 	}
+	fmt.Println(account)
 
 	if err := handler.authCase.LogIn(account.ID, account.Password); err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{
@@ -33,8 +38,17 @@ func (handler AuthHandler) Login(c *gin.Context) {
 		})
 		return
 	}
+
+	token, err := handler.jwtPorts.GenerateToken(account.ID, "hahaha")
+	if err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{
+			"msg": "hahah",
+		})
+		return
+	}
 	c.JSON(http.StatusOK, gin.H{
-		"msg": "welcome",
+		"msg":   "welcome",
+		"token": token,
 	})
 }
 

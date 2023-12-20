@@ -1,10 +1,8 @@
 package middleware
 
 import (
-	"github.com/Renewdxin/selfMade/internal/adapters/framework/global"
 	"github.com/Renewdxin/selfMade/internal/ports/app/middleware"
 	"github.com/Renewdxin/selfMade/internal/ports/framework/logger"
-	"github.com/Renewdxin/selfMade/unsettle/pkg/util"
 	"github.com/dgrijalva/jwt-go"
 	"time"
 )
@@ -23,7 +21,7 @@ func NewJWTAdapters(logger logger.LoggerPorts) *JWTAdapters {
 
 // GetJWTSecret returns the JWT secret key from the global configuration.
 func (j JWTAdapters) GetJWTSecret() []byte {
-	return []byte(global.JWTSetting.Secret)
+	return []byte("renxin")
 }
 
 // GenerateToken generates a JWT token with the specified user ID and application key.
@@ -32,11 +30,11 @@ func (j JWTAdapters) GenerateToken(userid string, AppKey string) (string, error)
 	now := time.Now()
 	expireTime := now.Add(7200)
 	claims := middleware.Claims{
-		UserID: util.EncodingMD5(userid),
-		AppKey: util.EncodingMD5(AppKey),
+		UserID: userid,
+		AppKey: AppKey,
 		StandardClaims: jwt.StandardClaims{
 			ExpiresAt: expireTime.Unix(),
-			Issuer:    global.JWTSetting.Issuer,
+			Issuer:    "renxin",
 		},
 	}
 	tokenClaims := jwt.NewWithClaims(jwt.SigningMethodHS256, claims)
