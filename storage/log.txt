@@ -1,0 +1,2 @@
+{"level":"fatal","time":"2023-12-20T20:22:45.291+0800","caller":"logger/logger.go:76","message":"falied to connect to the user database"}
+{"level":"fatal","time":"2023-12-20T20:23:41.919+0800","caller":"logger/logger.go:76","message":"falied to connect to the user database"}

@@ -5,7 +5,6 @@ import (
 	"go.uber.org/zap"
 	"go.uber.org/zap/zapcore"
 	"os"
-	"sync"
 )
 
 // LogLevel is a custom type for log levels
@@ -26,51 +25,40 @@ const (
 // LogAdapter is an implementation of the Logger interface
 type LogAdapter struct {
 	logger *zap.Logger
-	once   sync.Once
 }
 
 // NewLogger creates a new Logger instance
 func NewLogger() *LogAdapter {
-	return &LogAdapter{}
-}
-
-// Init initializes the logger with file and console output
-func (zl *LogAdapter) Init(logFilePath string) {
-	if zl == nil {
-		zl = &LogAdapter{}
+	encoderCfg := zapcore.EncoderConfig{
+		MessageKey:   "message",
+		LevelKey:     "level",
+		TimeKey:      "time",
+		CallerKey:    "caller",
+		EncodeLevel:  zapcore.LowercaseLevelEncoder,
+		EncodeTime:   zapcore.ISO8601TimeEncoder,
+		EncodeCaller: zapcore.ShortCallerEncoder,
 	}
 
-	zl.once.Do(func() {
-		encoderCfg := zapcore.EncoderConfig{
-			MessageKey:   "message",
-			LevelKey:     "level",
-			TimeKey:      "time",
-			CallerKey:    "caller",
-			EncodeLevel:  zapcore.LowercaseLevelEncoder,
-			EncodeTime:   zapcore.ISO8601TimeEncoder,
-			EncodeCaller: zapcore.ShortCallerEncoder,
-		}
+	// Configure console output
+	consoleEncoder := zapcore.NewConsoleEncoder(encoderCfg)
+	consoleDebugging := zapcore.Lock(zapcore.AddSync(os.Stdout))
 
-		// Configure console output
-		consoleEncoder := zapcore.NewConsoleEncoder(encoderCfg)
-		consoleDebugging := zapcore.Lock(zapcore.AddSync(os.Stdout))
+	// Configure file output
+	fileEncoder := zapcore.NewJSONEncoder(encoderCfg)
+	fileOutput, _, err := zap.Open("storage/log.txt")
+	if err != nil {
+		panic(err)
+	}
 
-		// Configure file output
-		fileEncoder := zapcore.NewJSONEncoder(encoderCfg)
-		fileOutput, _, err := zap.Open(logFilePath)
-		if err != nil {
-			panic(err)
-		}
+	// Combine console and file outputs
+	core := zapcore.NewTee(
+		zapcore.NewCore(consoleEncoder, consoleDebugging, zap.InfoLevel),
+		zapcore.NewCore(fileEncoder, zapcore.AddSync(fileOutput), zap.DebugLevel),
+	)
 
-		// Combine console and file outputs
-		core := zapcore.NewTee(
-			zapcore.NewCore(consoleEncoder, consoleDebugging, zap.InfoLevel),
-			zapcore.NewCore(fileEncoder, zapcore.AddSync(fileOutput), zap.DebugLevel),
-		)
-
-		// 使用指针接收者赋值给 zl.logger
-		zl.logger = zap.New(core, zap.AddCaller())
-	})
+	// 使用指针接收者赋值给 zl.logger
+	logger := zap.New(core, zap.AddCaller())
+	return &LogAdapter{logger: logger}
 }
 
 // Log logs a message with the specified level

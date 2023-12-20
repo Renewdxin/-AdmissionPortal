@@ -2,3 +2,4 @@
 /internal/adapters/framework/global/.env
 /Dockerfile
 /cmd/.env
+/cmd/config.yaml

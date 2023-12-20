@@ -9,20 +9,25 @@ import (
 	"time"
 )
 
+// JWTAdapters is a struct that encapsulates functionality related to JWT (JSON Web Token) operations.
 type JWTAdapters struct {
 	logger logger.LoggerPorts
 }
 
+// NewJWTAdapters is a constructor function for JWTAdapters, initializing it with the provided logger.
 func NewJWTAdapters(logger logger.LoggerPorts) *JWTAdapters {
 	return &JWTAdapters{
 		logger: logger,
 	}
 }
 
+// GetJWTSecret returns the JWT secret key from the global configuration.
 func (j JWTAdapters) GetJWTSecret() []byte {
 	return []byte(global.JWTSetting.Secret)
 }
 
+// GenerateToken generates a JWT token with the specified user ID and application key.
+// It returns the generated token as a string and any error encountered during the process.
 func (j JWTAdapters) GenerateToken(userid string, AppKey string) (string, error) {
 	now := time.Now()
 	expireTime := now.Add(7200)
@@ -38,6 +43,8 @@ func (j JWTAdapters) GenerateToken(userid string, AppKey string) (string, error)
 	return tokenClaims.SignedString(j.GetJWTSecret())
 }
 
+// ParseToken parses the provided JWT token string and returns the claims if the token is valid.
+// It returns an error if the token is invalid or any other error occurs during parsing.
 func (j JWTAdapters) ParseToken(tokenString string) (*middleware.Claims, error) {
 	tokenClaims, err := jwt.ParseWithClaims(tokenString, &middleware.Claims{}, func(token *jwt.Token) (interface{}, error) {
 		return j.GetJWTSecret(), nil
@@ -49,6 +56,7 @@ func (j JWTAdapters) ParseToken(tokenString string) (*middleware.Claims, error) 
 		return claims, nil
 	}
 
+	// Log a message for an invalid token.
 	j.logger.Log(4, "INVALID TOKEN")
 	return nil, err
 }
