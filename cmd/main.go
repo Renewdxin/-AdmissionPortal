@@ -19,7 +19,7 @@ import (
 
 func main() {
 	logger.Logger = logger.NewLogger()
-	err := godotenv.Load("cmd/.env")
+	err := godotenv.Load(".env")
 	if err != nil {
 		logger.Logger.Log(logger.FatalLevel, "无法加载 .env 文件: %v")
 	}

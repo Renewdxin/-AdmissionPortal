@@ -5,6 +5,7 @@ import (
 	"go.uber.org/zap"
 	"go.uber.org/zap/zapcore"
 	"os"
+	"path/filepath"
 )
 
 // LogLevel is a custom type for log levels
@@ -47,7 +48,15 @@ func NewLogger() *LogAdapter {
 
 	// Configure file output
 	fileEncoder := zapcore.NewJSONEncoder(encoderCfg)
-	fileOutput, _, err := zap.Open("storage/log.txt")
+
+	currentDir, err := os.Getwd()
+	if err != nil {
+		panic(err)
+	}
+
+	logFilePath := filepath.Join(currentDir, "storage", "log.txt")
+
+	fileOutput, _, err := zap.Open(logFilePath)
 	if err != nil {
 		panic(err)
 	}
