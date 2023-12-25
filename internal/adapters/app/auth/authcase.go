@@ -2,12 +2,12 @@ package auth
 
 import (
 	"errors"
+	"github.com/Renewdxin/selfMade/internal/adapters/framework/logger"
 	"github.com/Renewdxin/selfMade/internal/ports/core/auth"
 	"github.com/Renewdxin/selfMade/internal/ports/core/verifycation"
 	"github.com/Renewdxin/selfMade/internal/ports/framework/database"
 	"github.com/Renewdxin/selfMade/internal/ports/framework/mail"
 	"github.com/Renewdxin/selfMade/internal/ports/framework/validate"
-	"log"
 )
 
 type AuthcaseAdapter struct {
@@ -61,19 +61,19 @@ func (api AuthcaseAdapter) RegisterByEmail(email, password string) error {
 	code := api.codeGen.GenerateCode()
 	err = api.redisClient.SaveVerificationCode(email, code)
 	if err != nil {
-		log.Fatalf("Failed to generate the code, plz try again")
+		logger.Logger.Logf(logger.ErrorLevel, "Failed to generate the code, plz try again: %v", err)
 		return err
 	}
 	//code send
 	err = api.mailSender.CodeSend(email, "Verify your email", code)
 	if err != nil {
-		log.Fatalf("Failed to send code, plz try again")
+		logger.Logger.Logf(logger.ErrorLevel, "Failed to send code, plz try again: %v", err)
 		return err
 	}
 	// verify code
 	verify, _ := api.redisClient.GetVerificationCode(email)
 	if verify != code {
-		log.Fatalln("INVALID CODE")
+		logger.Logger.Logf(logger.InfoLevel, "INVALID CODE: %v", err)
 		return err
 	}
 
@@ -88,19 +88,19 @@ func (api AuthcaseAdapter) ForgetPasswordByEmail(email, password string) error {
 	var err error
 	err = api.redisClient.SaveVerificationCode(email, code)
 	if err != nil {
-		log.Fatalf("Failed to generate the code, plz try again")
+		logger.Logger.Log(logger.ErrorLevel, "Failed to generate the code, plz try again")
 		return err
 	}
 	//code send
 	err = api.mailSender.CodeSend(email, "Verify your email", code)
 	if err != nil {
-		log.Fatalf("Failed to send code, plz try again")
+		logger.Logger.Log(logger.ErrorLevel, "Failed to send code, plz try again")
 		return err
 	}
 	// verify code
 	verify, _ := api.redisClient.GetVerificationCode(email)
 	if verify != code {
-		log.Fatalln("INVALID CODE")
+		logger.Logger.Logf(logger.InfoLevel, "INVALID CODE: %v", err)
 		return err
 	}
 	account, errs := api.core.CreateAccount(email, password)
