@@ -18,10 +18,10 @@ import (
 )
 
 func main() {
-	log := logger.NewLogger()
+	logger.Logger = logger.NewLogger()
 	err := godotenv.Load("cmd/.env")
 	if err != nil {
-		log.Log(logger.FatalLevel, "无法加载 .env 文件: %v")
+		logger.Logger.Log(logger.FatalLevel, "无法加载 .env 文件: %v")
 	}
 
 	redisClient := database.NewRedisClient()
@@ -30,19 +30,19 @@ func main() {
 	verification := verify.NewVerificationCodeService()
 	validator := vaidate.NewValidator(redisClient)
 
-	jwtAPI := middleware.NewJWTAdapters(log)
+	jwtAPI := middleware.NewJWTAdapters()
 	jwtHandler := web.NewJWTHandlerAdapter(jwtAPI)
 
 	userCore := user2.NewUserService()
 	userDao, err := database.NewUserDao(os.Getenv("DRIVER_NAME"), os.Getenv("DRIVER_SOURCE_NAME"), userCore)
 	if err != nil {
-		log.Log(logger.FatalLevel, "falied to connect to the user database")
+		logger.Logger.Log(logger.FatalLevel, "falied to connect to the user database")
 	}
 
 	authCore := auth2.NewAdapter()
 	authDao, err := database.NewauthDao(os.Getenv("DRIVER_NAME"), os.Getenv("DRIVER_SOURCE_NAME"), authCore)
 	if err != nil {
-		log.Log(logger.FatalLevel, "falied to connect to the user database")
+		logger.Logger.Log(logger.FatalLevel, "falied to connect to the user database")
 	}
 	userAPI := user.NewUserAPI(userCore, userDao, mailSender, verification, redisClient, validator)
 	userHandler := web.NewUserHandler(userAPI)
@@ -80,6 +80,6 @@ func main() {
 	}
 	err = r.Run(":8080")
 	if err != nil {
-		log.Logf(logger.FatalLevel, "falied to start : %v", err)
+		logger.Logger.Logf(logger.FatalLevel, "falied to start : %v", err)
 	}
 }

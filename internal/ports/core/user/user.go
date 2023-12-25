@@ -21,6 +21,6 @@ func (user User) TableName() string {
 }
 
 type UserPorts interface {
-	CreateUser(name string, gender string, email string, phone string) (User, error)
+	CreateUser(name string, gender string, email string, phone string, birth string) (User, error)
 	TableName() string
 }

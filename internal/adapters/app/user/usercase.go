@@ -35,7 +35,7 @@ func (api API) IfExist(email string) bool {
 	return api.userDao.IfExist(email)
 }
 
-func (api API) UserValidateBeforeRegister(name string, gender string, email string, phone string) bool {
+func (api API) UserValidateBeforeRegister(name string, gender string, email string, phone string, birth string) bool {
 	if !api.validator.NameValidate(name) || !api.validator.EmailValidate(email) || !api.validator.PhoneValidate(phone) {
 		log.Fatalf("INVALID INFORMATION")
 		return false
@@ -45,12 +45,16 @@ func (api API) UserValidateBeforeRegister(name string, gender string, email stri
 		log.Fatalf("INVALID INFORMATION")
 		return false
 	}
+	if !api.validator.BirthValidate(birth) {
+		log.Fatalf("INVALID INFORMATION")
+		return false
+	}
 	return true
 }
 
-func (api API) RegisterUser(name, gender, email, phone string) error {
+func (api API) RegisterUser(name, gender, email, phone, birth string) error {
 	// validate
-	if !api.UserValidateBeforeRegister(name, gender, email, phone) {
+	if !api.UserValidateBeforeRegister(name, gender, email, phone, birth) {
 		return errors.New("INVALID INFORMATION")
 	}
 	// if already exists
@@ -78,7 +82,7 @@ func (api API) RegisterUser(name, gender, email, phone string) error {
 		return err
 	}
 	// persistence
-	newUser, err := api.user.CreateUser(name, gender, email, phone)
+	newUser, err := api.user.CreateUser(name, gender, email, phone, birth)
 
 	if err := api.userDao.SaveUser(newUser); err != nil {
 		log.Fatalf("Failed to save user, plz try again")
@@ -126,6 +130,6 @@ func (api API) DeleteUser(id string) error {
 }
 
 func (api API) UpdateUser(user user.User) error {
-	api.UserValidateBeforeRegister(user.Name, user.Gender, user.Email, user.PhoneNumber)
+	api.UserValidateBeforeRegister(user.Name, user.Gender, user.Email, user.PhoneNumber, user.Birth)
 	return api.userDao.UpdateUser(user)
 }

@@ -1,22 +1,19 @@
 package middleware
 
 import (
+	"github.com/Renewdxin/selfMade/internal/adapters/framework/logger"
 	"github.com/Renewdxin/selfMade/internal/ports/app/middleware"
-	"github.com/Renewdxin/selfMade/internal/ports/framework/logger"
 	"github.com/dgrijalva/jwt-go"
 	"time"
 )
 
 // JWTAdapters is a struct that encapsulates functionality related to JWT (JSON Web Token) operations.
 type JWTAdapters struct {
-	logger logger.LoggerPorts
 }
 
 // NewJWTAdapters is a constructor function for JWTAdapters, initializing it with the provided logger.
-func NewJWTAdapters(logger logger.LoggerPorts) *JWTAdapters {
-	return &JWTAdapters{
-		logger: logger,
-	}
+func NewJWTAdapters() *JWTAdapters {
+	return &JWTAdapters{}
 }
 
 // GetJWTSecret returns the JWT secret key from the global configuration.
@@ -55,6 +52,6 @@ func (j JWTAdapters) ParseToken(tokenString string) (*middleware.Claims, error) 
 	}
 
 	// Log a message for an invalid token.
-	j.logger.Log(4, "INVALID TOKEN")
+	logger.Logger.Log(4, "INVALID TOKEN")
 	return nil, err
 }

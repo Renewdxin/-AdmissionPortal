@@ -4,6 +4,7 @@ import (
 	"github.com/Renewdxin/selfMade/internal/ports/framework/database"
 	"github.com/asaskevich/govalidator"
 	"log"
+	"time"
 )
 
 type Validator struct {
@@ -61,4 +62,10 @@ func (v Validator) NameValidate(name string) bool {
 
 func (v Validator) CodeValidate(code, phone string) bool {
 	return true
+}
+
+func (v Validator) BirthValidate(birth string) bool {
+	// Parse the date string using the time package
+	_, err := time.Parse("2006-01-02", birth)
+	return err == nil
 }

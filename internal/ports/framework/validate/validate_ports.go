@@ -6,4 +6,5 @@ type Validator interface {
 	PasswordValidate(password string) bool
 	NameValidate(name string) bool
 	CodeValidate(code, phone string) bool
+	BirthValidate(birth string) bool
 }

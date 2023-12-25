@@ -27,6 +27,8 @@ type LogAdapter struct {
 	logger *zap.Logger
 }
 
+var Logger *LogAdapter
+
 // NewLogger creates a new Logger instance
 func NewLogger() *LogAdapter {
 	encoderCfg := zapcore.EncoderConfig{
