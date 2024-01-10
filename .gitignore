@@ -4,3 +4,4 @@
 /.env
 /cmd/config.yaml
 /storage/log.txt
+.idea/*
