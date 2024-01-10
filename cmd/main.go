@@ -111,6 +111,7 @@ func main() {
 	}
 
 	err = r.Run(":8080")
+
 	if err != nil {
 		logger.Logger.Logf(logger.FatalLevel, "falied to start : %v", err)
 	}
