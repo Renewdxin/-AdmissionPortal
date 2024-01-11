@@ -47,5 +47,12 @@ func (adapter JobcaseAdapter) UpdateJob(job job.Job) bool {
 }
 
 func (adapter JobcaseAdapter) ApplyJob() {
+	// 收集用户提交信息
+
+	// 验证信息
+
+	// 保存信息至数据库，搭建关联表
+
+	// 提醒管理者有新的应聘者
 
 }
