@@ -3,6 +3,7 @@ package web
 import (
 	"github.com/Renewdxin/selfMade/internal/ports/app/job"
 	job2 "github.com/Renewdxin/selfMade/internal/ports/core/job"
+	user2 "github.com/Renewdxin/selfMade/internal/ports/core/user"
 	"github.com/gin-gonic/gin"
 	"net/http"
 )
@@ -56,5 +57,15 @@ func (adapter JobHandlerAdapter) UpdateJob(c *gin.Context) {
 }
 
 func (adapter JobHandlerAdapter) AddJob(c *gin.Context) {
+	// 表单信息输入验证
+	var user user2.User
+	if err := c.ShouldBind(&user); err != nil {
+		c.JSON(http.StatusOK, gin.H{
+			"msg": "Request error",
+		})
+	}
+	// 上传到数据库中
+
+	// 通知admin
 
 }
