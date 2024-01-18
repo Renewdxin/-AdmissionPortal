@@ -7,4 +7,5 @@ type JobDaoPorts interface {
 	DeleteJob(id string) bool
 	UpdateJob(job job.Job) bool
 	FindJobByID(id string) job.Job
+	ShowAllJobs() []job.Job
 }

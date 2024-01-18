@@ -1,6 +1,7 @@
 package database
 
 import (
+	"github.com/Renewdxin/selfMade/internal/adapters/framework/logger"
 	"github.com/Renewdxin/selfMade/internal/ports/core/job"
 	"gorm.io/gorm"
 )
@@ -41,4 +42,13 @@ func (dao JobsDaoAdapter) FindJobByID(id string) job.Job {
 		return jobInfo
 	}
 	return job.Job{}
+}
+
+func (dao JobsDaoAdapter) ShowAllJobs() []job.Job {
+	var jobSet []job.Job
+	if err := dao.db.Find(&jobSet).Error; err != nil {
+		logger.Logger.Log(logger.WarnLevel, "Failed to show all jobs")
+		return []job.Job{}
+	}
+	return jobSet
 }

@@ -4,10 +4,12 @@ import (
 	jobApp "github.com/Renewdxin/selfMade/internal/ports/app/job"
 	"github.com/Renewdxin/selfMade/internal/ports/core/job"
 	"github.com/Renewdxin/selfMade/internal/ports/core/user"
+	"github.com/Renewdxin/selfMade/internal/ports/framework/database"
 )
 
 type AdminAppAdapter struct {
-	job jobApp.JobsCasePorts
+	job    jobApp.JobsCasePorts
+	jobDao database.JobDaoPorts
 }
 
 func NewAdapter() AdminAppAdapter {
@@ -19,7 +21,7 @@ func (adapter AdminAppAdapter) ShowJobsDetails(id string) job.Job {
 }
 
 func (adapter AdminAppAdapter) ShowAllJobs() []job.Job {
-	return []job.Job{}
+	return adapter.jobDao.ShowAllJobs()
 }
 
 func (adapter AdminAppAdapter) ShowJobsApply() []user.User {
