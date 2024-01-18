@@ -77,7 +77,7 @@ func (api AuthcaseAdapter) RegisterByEmail(email, password string) error {
 		return err
 	}
 
-	if api.dao.SaveAccount(account) {
+	if api.dao.SaveUserAccount(account) {
 		return errors.New("failed to register, please try again")
 	}
 	return nil
