@@ -7,7 +7,6 @@ import (
 
 type adminDBPorts interface {
 	ShowJobsDetails(id string) job.Job
-	ShowAllJobs() []job.Job
 	ShowJobsApply() []user.User
 	ApproveJobs(id string) string
 }

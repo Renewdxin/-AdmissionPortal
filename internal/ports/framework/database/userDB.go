@@ -9,4 +9,5 @@ type UserDaoPorts interface {
 	FindUserByID(id string) (*user.User, error)
 	FindUserByEmail(email string) (*user.User, error)
 	IfExist(email string) bool
+	ChangeUserStatus(id string, state int) bool
 }

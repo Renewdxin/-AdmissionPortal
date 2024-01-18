@@ -90,3 +90,12 @@ func (userDao UserDao) FindUserByEmail(email string) (*user.User, error) {
 	}
 	return &newUser, nil
 }
+
+func (userDao UserDao) ChangeUserStatus(id string, state int) bool {
+	update := user.User{State: state}
+	if err := userDao.db.Table(userDao.user.TableName()).Where("id = ?", id).Updates(update).Error; err != nil {
+		log.Printf("Failed to find user by ID %v: %v", id, err)
+		return false
+	}
+	return true
+}
