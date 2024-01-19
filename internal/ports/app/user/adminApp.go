@@ -5,7 +5,7 @@ import (
 	"github.com/Renewdxin/selfMade/internal/ports/core/user"
 )
 
-type adminApplicationPorts interface {
+type AdminApplicationPorts interface {
 	ShowJobsDetails(id string) job.Job
 	ShowAllJobs() []job.Job
 	ShowJobsApply() []user.User
