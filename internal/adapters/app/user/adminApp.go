@@ -34,9 +34,11 @@ func (adapter AdminAppAdapter) ShowJobsApply() []user.User {
 	return []user.User{}
 }
 
-func (adapter AdminAppAdapter) ApproveJobs(u user.User) {
+func (adapter AdminAppAdapter) ApproveJobs(u user.User) bool {
 	if !adapter.user.ChangeUserStatus(u.ID, 1-u.State) {
 		logger.Logger.Logf(logger.ErrorLevel, "failed to change user's status, userID: %v", u.ID)
+		return false
 	}
 	logger.Logger.Logf(logger.InfoLevel, "change user's status, userID: %v", u.ID)
+	return true
 }

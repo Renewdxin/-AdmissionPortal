@@ -2,13 +2,16 @@ package web
 
 import (
 	"encoding/json"
+	"github.com/Renewdxin/selfMade/internal/ports/app/job"
 	"github.com/Renewdxin/selfMade/internal/ports/app/user"
 	"github.com/gin-gonic/gin"
 	"net/http"
 )
 
 type AdminHandlerAdapter struct {
-	UserApp user.AdminApplicationPorts
+	AdminApp user.AdminApplicationPorts
+	JobApp   job.JobsCasePorts
+	UserApp  user.UserCasePorts
 }
 
 func NewAdminHandlerAdapter() AdminHandlerAdapter {
@@ -26,7 +29,7 @@ func (adapter AdminHandlerAdapter) HomePage(c *gin.Context, title string) {
 }
 
 func (adapter AdminHandlerAdapter) ShowJobApply(c *gin.Context) {
-	result := adapter.UserApp.ShowJobsApply()
+	result := adapter.AdminApp.ShowJobsApply()
 
 	// 使用循环遍历结构体数组
 	for _, job := range result {
@@ -44,13 +47,55 @@ func (adapter AdminHandlerAdapter) ShowJobApply(c *gin.Context) {
 }
 
 func (adapter AdminHandlerAdapter) ShowAllJobs(c *gin.Context) {
+	result := adapter.AdminApp.ShowAllJobs()
 
+	// 使用循环遍历结构体数组
+	for _, job := range result {
+		// 将每个结构体转换为 JSON
+		jsonData, err := json.Marshal(job)
+		if err != nil {
+			c.JSON(http.StatusInternalServerError, gin.H{"error": "Internal Server Error"})
+			return
+		}
+
+		// 输出 JSON 数据
+		c.String(http.StatusOK, string(jsonData))
+
+	}
 }
 
 func (adapter AdminHandlerAdapter) ShowJobDetails(c *gin.Context) {
-
+	id := c.GetHeader("id")
+	details := adapter.JobApp.FindJobByID(id)
+	if details.Name == "" {
+		c.JSON(http.StatusBadRequest, gin.H{
+			"msg": "Something went wrong",
+		})
+		return
+	}
+	c.JSON(http.StatusOK, gin.H{
+		"name": details.Name,
+	})
 }
 
 func (adapter AdminHandlerAdapter) ApproveJobs(c *gin.Context) {
+	id := c.GetHeader("id")
+	details, err := adapter.UserApp.GetUserProfile(id)
+	if err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{
+			"msg": "Something went wrong",
+		})
+		return
+	}
 
+	if !adapter.AdminApp.ApproveJobs(*details) {
+		c.JSON(http.StatusBadRequest, gin.H{
+			"msg": "Something went wrong",
+		})
+		return
+	}
+
+	c.JSON(http.StatusOK, gin.H{
+		"msg": "Successfully Change",
+	})
 }
