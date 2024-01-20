@@ -73,22 +73,22 @@ func (userDao UserDao) UpdateUser(user user.User) error {
 	return nil
 }
 
-func (userDao UserDao) FindUserByID(id string) (*user.User, error) {
+func (userDao UserDao) FindUserByID(id string) (user.User, error) {
 	var newUser user.User
 	if err := userDao.db.Table(userDao.user.TableName()).Where("id = ?", id).First(&newUser).Error; err != nil {
 		log.Printf("Failed to find user by ID %v: %v", id, err)
-		return nil, err
+		return user.User{}, err
 	}
-	return &newUser, nil
+	return newUser, nil
 }
 
-func (userDao UserDao) FindUserByEmail(email string) (*user.User, error) {
+func (userDao UserDao) FindUserByEmail(email string) (user.User, error) {
 	var newUser user.User
 	if err := userDao.db.Table(userDao.user.TableName()).Where("email = ?", email).First(&newUser).Error; err != nil {
 		log.Printf("Failed to find user by email %v: %v", email, err)
-		return nil, err
+		return user.User{}, err
 	}
-	return &newUser, nil
+	return newUser, nil
 }
 
 func (userDao UserDao) ChangeUserStatus(id string, state int) bool {

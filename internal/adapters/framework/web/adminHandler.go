@@ -50,9 +50,9 @@ func (adapter AdminHandlerAdapter) ShowAllJobs(c *gin.Context) {
 	result := adapter.AdminApp.ShowAllJobs()
 
 	// 使用循环遍历结构体数组
-	for _, job := range result {
+	for _, data := range result {
 		// 将每个结构体转换为 JSON
-		jsonData, err := json.Marshal(job)
+		jsonData, err := json.Marshal(data)
 		if err != nil {
 			c.JSON(http.StatusInternalServerError, gin.H{"error": "Internal Server Error"})
 			return
@@ -88,7 +88,7 @@ func (adapter AdminHandlerAdapter) ApproveJobs(c *gin.Context) {
 		return
 	}
 
-	if !adapter.AdminApp.ApproveJobs(*details) {
+	if !adapter.AdminApp.ApproveJobs(details) {
 		c.JSON(http.StatusBadRequest, gin.H{
 			"msg": "Something went wrong",
 		})

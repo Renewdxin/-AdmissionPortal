@@ -95,7 +95,7 @@ func (api API) RegisterUser(name, gender, email, phone, birth string) error {
 	return nil
 }
 
-func (api API) GetUserProfile(id string) (*user.User, error) {
+func (api API) GetUserProfile(id string) (user.User, error) {
 	// if already exists
 	return api.userDao.FindUserByID(id)
 }
