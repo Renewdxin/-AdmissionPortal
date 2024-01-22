@@ -1,6 +1,7 @@
 package web
 
 import (
+	"encoding/json"
 	"github.com/Renewdxin/selfMade/internal/ports/app/job"
 	job2 "github.com/Renewdxin/selfMade/internal/ports/core/job"
 	user2 "github.com/Renewdxin/selfMade/internal/ports/core/user"
@@ -19,7 +20,20 @@ func NewAdapter(app job.JobsCasePorts) JobHandlerAdapter {
 }
 
 func (adapter JobHandlerAdapter) GetJobs(c *gin.Context) {
+	result := adapter.app.ShowAllJobs()
 
+	// 使用循环遍历结构体数组
+	for _, data := range result {
+		// 将每个结构体转换为 JSON
+		jsonData, err := json.Marshal(data)
+		if err != nil {
+			c.JSON(http.StatusInternalServerError, gin.H{"error": "Internal Server Error"})
+			return
+		}
+
+		// 输出 JSON 数据
+		c.String(http.StatusOK, string(jsonData))
+	}
 }
 
 func (adapter JobHandlerAdapter) GetJobInfo(c *gin.Context) {

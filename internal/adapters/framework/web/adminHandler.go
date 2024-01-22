@@ -60,7 +60,6 @@ func (adapter AdminHandlerAdapter) ShowAllJobs(c *gin.Context) {
 
 		// 输出 JSON 数据
 		c.String(http.StatusOK, string(jsonData))
-
 	}
 }
 
