@@ -2,10 +2,12 @@ package main
 
 import (
 	"github.com/Renewdxin/selfMade/internal/adapters/app/auth"
+	job2 "github.com/Renewdxin/selfMade/internal/adapters/app/job"
 	"github.com/Renewdxin/selfMade/internal/adapters/app/middleware"
 	"github.com/Renewdxin/selfMade/internal/adapters/app/user"
-	auth2 "github.com/Renewdxin/selfMade/internal/adapters/core/auth"
-	user2 "github.com/Renewdxin/selfMade/internal/adapters/core/user"
+	authApp "github.com/Renewdxin/selfMade/internal/adapters/core/auth"
+	"github.com/Renewdxin/selfMade/internal/adapters/core/job"
+	userApp "github.com/Renewdxin/selfMade/internal/adapters/core/user"
 	"github.com/Renewdxin/selfMade/internal/adapters/core/verify"
 	"github.com/Renewdxin/selfMade/internal/adapters/framework/database"
 	"github.com/Renewdxin/selfMade/internal/adapters/framework/logger"
@@ -33,13 +35,13 @@ func main() {
 	jwtAPI := middleware.NewJWTAdapters()
 	jwtHandler := web.NewJWTHandlerAdapter(jwtAPI)
 
-	userCore := user2.NewUserService()
+	userCore := userApp.NewUserService()
 	userDao, err := database.NewUserDao(os.Getenv("DRIVER_NAME"), os.Getenv("DRIVER_SOURCE_NAME"), userCore)
 	if err != nil {
 		logger.Logger.Log(logger.FatalLevel, "falied to connect to the user database")
 	}
 
-	authCore := auth2.NewAdapter()
+	authCore := authApp.NewAdapter()
 	authDao, err := database.NewauthDao(os.Getenv("DRIVER_NAME"), os.Getenv("DRIVER_SOURCE_NAME"), authCore)
 	if err != nil {
 		logger.Logger.Log(logger.FatalLevel, "falied to connect to the user database")
@@ -51,9 +53,21 @@ func main() {
 	authAPI := auth.NewAuthCaseAdapter(authCore, authDao, verification, redisClient, validator, mailSender)
 	authHandler := web.NewAuthHandler(authAPI, jwtAPI)
 
+	homeHandler := web.NewHomeHandlerAdapter()
+
+	jobCore := job.NewJobsAdapter()
+	jobDao := database.NewJobsDaoAdapter(os.Getenv("DRIVER_NAME"), os.Getenv("DRIVER_SOURCE_NAME"), jobCore)
+	jobApp := job2.NewJobCaseAdapter(jobCore, jobDao)
+	jobHandler := web.NewJobHandlerAdapter(jobApp)
+
+	adminCore := userApp.NewAdminCoreAdapter()
+	_ = database.NewAdminDaoAdapter(os.Getenv("DRIVER_NAME"), os.Getenv("DRIVER_SOURCE_NAME"), adminCore)
+	adminApp := user.NewAdminAppAdapter(jobApp, jobDao, userDao)
+	adminHandler := web.NewAdminHandlerAdapter(adminApp, jobApp, userAPI)
+
 	r := gin.New()
-	// home page
-	//r.POST("/home")
+	//home page
+	r.POST("/home", homeHandler.HomePage)
 
 	// auth setting
 	apiAccount := r.Group("/auth")
@@ -84,9 +98,9 @@ func main() {
 	apiJob.Use()
 	{
 		//查看岗位总览
-		apiJob.GET("/jobs")
+		apiJob.GET("/jobs", jobHandler.GetJobs)
 		//查看岗位详细信息
-		apiJob.GET("/job/:id")
+		apiJob.GET("/job/:id", jobHandler.GetJobInfo)
 		//申请投递
 		apiJob.POST("/job/:id/apply")
 	}
@@ -95,19 +109,19 @@ func main() {
 	apiAdmin.Use() // 使用JWT中间件进行管理员身份验证
 	{
 		// 管理员仪表板或主页
-		apiAdmin.GET("/dashboard")
+		apiAdmin.GET("/dashboard", adminHandler.HomePage)
 
 		// 查看所有职位发布（管理员）
-		apiAdmin.GET("/jobs")
+		apiAdmin.GET("/jobs", adminHandler.ShowAllJobs)
 
 		// 查看职位详情（管理员）
-		apiAdmin.GET("/job/:jobID")
+		apiAdmin.GET("/job/:jobID", adminHandler.ShowJobDetails)
 
 		// 查看职位申请（管理员）
-		apiAdmin.GET("/applications/:jobID")
+		apiAdmin.GET("/applications/:jobID", adminHandler.ShowJobApply)
 
 		// 审批或拒绝职位申请（管理员）
-		apiAdmin.PUT("/application/:appID")
+		apiAdmin.PUT("/application/:appID", adminHandler.ShowJobApply)
 	}
 
 	err = r.Run(":8080")

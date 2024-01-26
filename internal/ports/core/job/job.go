@@ -8,5 +8,5 @@ type Job struct {
 type JobsCorePorts interface {
 	CreateJob(id, name string) Job
 	TableName() string
-	ShowJob(job Job)
+	ShowJob(job Job) (id, name string)
 }

@@ -4,7 +4,7 @@ import "github.com/Renewdxin/selfMade/internal/ports/core/job"
 
 type JobsAdapter struct{}
 
-func NewAdapter() JobsAdapter {
+func NewJobsAdapter() JobsAdapter {
 	return JobsAdapter{}
 }
 

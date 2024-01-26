@@ -14,7 +14,7 @@ type AdminAppAdapter struct {
 	user   database.UserDaoPorts
 }
 
-func NewAdapter(job jobApp.JobsCasePorts, jobDao database.JobDaoPorts, user database.UserDaoPorts) AdminAppAdapter {
+func NewAdminAppAdapter(job jobApp.JobsCasePorts, jobDao database.JobDaoPorts, user database.UserDaoPorts) AdminAppAdapter {
 	return AdminAppAdapter{
 		job:    job,
 		jobDao: jobDao,

@@ -11,7 +11,7 @@ type JobcaseAdapter struct {
 	dao  database.JobDaoPorts
 }
 
-func NewAdapter(core job.JobsCorePorts, dao database.JobDaoPorts) JobcaseAdapter {
+func NewJobCaseAdapter(core job.JobsCorePorts, dao database.JobDaoPorts) JobcaseAdapter {
 	return JobcaseAdapter{
 		core: core,
 		dao:  dao,

@@ -13,7 +13,7 @@ type JobHandlerAdapter struct {
 	app job.JobsCasePorts
 }
 
-func NewAdapter(app job.JobsCasePorts) JobHandlerAdapter {
+func NewJobHandlerAdapter(app job.JobsCasePorts) JobHandlerAdapter {
 	return JobHandlerAdapter{
 		app: app,
 	}
