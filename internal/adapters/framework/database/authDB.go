@@ -35,7 +35,7 @@ func (dao AuthDaoAdapter) EmailIfExist(email string) bool {
 	return true
 }
 
-func (dao AuthDaoAdapter) SaveAccount(account auth.Account) bool {
+func (dao AuthDaoAdapter) SaveUserAccount(account auth.Account) bool {
 	if err := dao.db.Table(dao.account.TableName()).Create(&account).Error; err != nil {
 		return false
 	}

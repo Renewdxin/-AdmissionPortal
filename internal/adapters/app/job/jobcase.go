@@ -54,3 +54,7 @@ func (adapter JobcaseAdapter) ApplyJob() {
 	// 保存信息至数据库，搭建关联表
 
 }
+
+func (adapter JobcaseAdapter) ShowAllJobs() []job.Job {
+	return adapter.dao.ShowAllJobs()
+}

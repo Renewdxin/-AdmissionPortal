@@ -1,7 +1,10 @@
 package database
 
 import (
+	"database/sql"
+	"github.com/Renewdxin/selfMade/internal/adapters/framework/logger"
 	"github.com/Renewdxin/selfMade/internal/ports/core/job"
+	"gorm.io/driver/postgres"
 	"gorm.io/gorm"
 )
 
@@ -10,8 +13,20 @@ type JobsDaoAdapter struct {
 	core job.JobsCorePorts
 }
 
-func NewAdapter() JobsDaoAdapter {
-	return JobsDaoAdapter{}
+func NewJobsDaoAdapter(driveName, dataSourceName string, core job.JobsCorePorts) JobsDaoAdapter {
+	sqlDB, err := sql.Open(driveName, dataSourceName)
+	if err != nil {
+		logger.Logger.Logf(logger.ErrorLevel, "init error: %v", err)
+		return JobsDaoAdapter{}
+	}
+	gormDB, err := gorm.Open(postgres.New(postgres.Config{
+		Conn: sqlDB,
+	}), &gorm.Config{})
+	if err != nil {
+		logger.Logger.Logf(logger.ErrorLevel, "init error: %v", err)
+		return JobsDaoAdapter{}
+	}
+	return JobsDaoAdapter{gormDB, core}
 }
 
 func (dao JobsDaoAdapter) SaveJob(job job.Job) bool {
@@ -41,4 +56,13 @@ func (dao JobsDaoAdapter) FindJobByID(id string) job.Job {
 		return jobInfo
 	}
 	return job.Job{}
+}
+
+func (dao JobsDaoAdapter) ShowAllJobs() []job.Job {
+	var jobSet []job.Job
+	if err := dao.db.Find(&jobSet).Error; err != nil {
+		logger.Logger.Log(logger.WarnLevel, "Failed to show all jobs")
+		return []job.Job{}
+	}
+	return jobSet
 }

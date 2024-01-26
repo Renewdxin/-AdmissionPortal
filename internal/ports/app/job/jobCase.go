@@ -8,4 +8,5 @@ type JobsCasePorts interface {
 	FindJobByID(id string) job.Job
 	UpdateJob(job job.Job) bool
 	ApplyJob()
+	ShowAllJobs() []job.Job
 }
