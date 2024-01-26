@@ -7,5 +7,5 @@ type JobsHandlerPorts interface {
 	GetJobInfo(c *gin.Context)
 	DeleteJob(c *gin.Context)
 	UpdateJob(c *gin.Context)
-	AddJob(c *gin.Context)
+	ApplyJob(c *gin.Context)
 }

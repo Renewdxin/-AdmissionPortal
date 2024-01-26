@@ -2,7 +2,7 @@ package main
 
 import (
 	"github.com/Renewdxin/selfMade/internal/adapters/app/auth"
-	job2 "github.com/Renewdxin/selfMade/internal/adapters/app/job"
+	jobApp "github.com/Renewdxin/selfMade/internal/adapters/app/job"
 	"github.com/Renewdxin/selfMade/internal/adapters/app/middleware"
 	"github.com/Renewdxin/selfMade/internal/adapters/app/user"
 	authApp "github.com/Renewdxin/selfMade/internal/adapters/core/auth"
@@ -38,13 +38,13 @@ func main() {
 	userCore := userApp.NewUserService()
 	userDao, err := database.NewUserDao(os.Getenv("DRIVER_NAME"), os.Getenv("DRIVER_SOURCE_NAME"), userCore)
 	if err != nil {
-		logger.Logger.Log(logger.FatalLevel, "falied to connect to the user database")
+		logger.Logger.Log(logger.FatalLevel, "failed to connect to the user database")
 	}
 
 	authCore := authApp.NewAdapter()
 	authDao, err := database.NewauthDao(os.Getenv("DRIVER_NAME"), os.Getenv("DRIVER_SOURCE_NAME"), authCore)
 	if err != nil {
-		logger.Logger.Log(logger.FatalLevel, "falied to connect to the user database")
+		logger.Logger.Log(logger.FatalLevel, "failed to connect to the user database")
 	}
 
 	userAPI := user.NewUserAPI(userCore, userDao, mailSender, verification, redisClient, validator)
@@ -57,13 +57,13 @@ func main() {
 
 	jobCore := job.NewJobsAdapter()
 	jobDao := database.NewJobsDaoAdapter(os.Getenv("DRIVER_NAME"), os.Getenv("DRIVER_SOURCE_NAME"), jobCore)
-	jobApp := job2.NewJobCaseAdapter(jobCore, jobDao)
-	jobHandler := web.NewJobHandlerAdapter(jobApp)
+	jobAPI := jobApp.NewJobCaseAdapter(jobCore, jobDao)
+	jobHandler := web.NewJobHandlerAdapter(jobAPI)
 
 	adminCore := userApp.NewAdminCoreAdapter()
 	_ = database.NewAdminDaoAdapter(os.Getenv("DRIVER_NAME"), os.Getenv("DRIVER_SOURCE_NAME"), adminCore)
-	adminApp := user.NewAdminAppAdapter(jobApp, jobDao, userDao)
-	adminHandler := web.NewAdminHandlerAdapter(adminApp, jobApp, userAPI)
+	adminAPI := user.NewAdminAppAdapter(jobAPI, jobDao, userDao)
+	adminHandler := web.NewAdminHandlerAdapter(adminAPI, jobAPI, userAPI)
 
 	r := gin.New()
 	//home page
@@ -102,7 +102,7 @@ func main() {
 		//查看岗位详细信息
 		apiJob.GET("/job/:id", jobHandler.GetJobInfo)
 		//申请投递
-		apiJob.POST("/job/:id/apply")
+		apiJob.POST("/job/:id/apply", jobHandler.ApplyJob)
 	}
 
 	apiAdmin := r.Group("/admin")
