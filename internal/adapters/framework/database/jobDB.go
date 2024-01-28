@@ -10,10 +10,10 @@ import (
 
 type JobsDaoAdapter struct {
 	db   *gorm.DB
-	core job.JobsCorePorts
+	core job.JobsCorePort
 }
 
-func NewJobsDaoAdapter(driveName, dataSourceName string, core job.JobsCorePorts) JobsDaoAdapter {
+func NewJobsDaoAdapter(driveName, dataSourceName string, core job.JobsCorePort) JobsDaoAdapter {
 	sqlDB, err := sql.Open(driveName, dataSourceName)
 	if err != nil {
 		logger.Logger.Logf(logger.ErrorLevel, "init error: %v", err)

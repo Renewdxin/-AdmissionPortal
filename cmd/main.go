@@ -20,42 +20,42 @@ import (
 )
 
 func main() {
-	logger.Logger = logger.NewLogger()
+	logger.Logger = logger.NewLogAdapter()
 	err := godotenv.Load(".env")
 	if err != nil {
 		logger.Logger.Log(logger.FatalLevel, "无法加载 .env 文件: %v")
 	}
 
-	redisClient := database.NewRedisClient()
+	redisClient := database.NewRedisClientAdapter()
 
-	mailSender := mail.NewMail()
-	verification := verify.NewVerificationCodeService()
-	validator := vaidate.NewValidator(redisClient)
+	mailSender := mail.NewMailAdapter()
+	verification := verify.NewVerificationCodeAdapter()
+	validator := vaidate.NewValidatorAdapter(redisClient)
 
 	jwtAPI := middleware.NewJWTAdapters()
 	jwtHandler := web.NewJWTHandlerAdapter(jwtAPI)
 
-	userCore := userApp.NewUserService()
-	userDao, err := database.NewUserDao(os.Getenv("DRIVER_NAME"), os.Getenv("DRIVER_SOURCE_NAME"), userCore)
+	userCore := userApp.NewUsrCoreAdapter()
+	userDao, err := database.NewUsrDaoAdapter(os.Getenv("DRIVER_NAME"), os.Getenv("DRIVER_SOURCE_NAME"), userCore)
 	if err != nil {
 		logger.Logger.Log(logger.FatalLevel, "failed to connect to the user database")
 	}
 
-	authCore := authApp.NewAdapter()
-	authDao, err := database.NewauthDao(os.Getenv("DRIVER_NAME"), os.Getenv("DRIVER_SOURCE_NAME"), authCore)
+	authCore := authApp.NewAuthorizeCoreAdapter()
+	authDao, err := database.NewAuthDaoAdapter(os.Getenv("DRIVER_NAME"), os.Getenv("DRIVER_SOURCE_NAME"), authCore)
 	if err != nil {
 		logger.Logger.Log(logger.FatalLevel, "failed to connect to the user database")
 	}
 
-	userAPI := user.NewUserAPI(userCore, userDao, mailSender, verification, redisClient, validator)
-	userHandler := web.NewUserHandler(userAPI)
+	userAPI := user.NewUsrApplicationAdapter(userCore, userDao, mailSender, verification, redisClient, validator)
+	userHandler := web.NewUserHandlerAdapter(userAPI)
 
 	authAPI := auth.NewAuthCaseAdapter(authCore, authDao, verification, redisClient, validator, mailSender)
-	authHandler := web.NewAuthHandler(authAPI, jwtAPI)
+	authHandler := web.NewAuthHandlerAdapter(authAPI, jwtAPI)
 
 	homeHandler := web.NewHomeHandlerAdapter()
 
-	jobCore := job.NewJobsAdapter()
+	jobCore := job.NewJobsCoreAdapter()
 	jobDao := database.NewJobsDaoAdapter(os.Getenv("DRIVER_NAME"), os.Getenv("DRIVER_SOURCE_NAME"), jobCore)
 	jobAPI := jobApp.NewJobCaseAdapter(jobCore, jobDao)
 	jobHandler := web.NewJobHandlerAdapter(jobAPI)
@@ -121,7 +121,7 @@ func main() {
 		apiAdmin.GET("/applications/:jobID", adminHandler.ShowJobApply)
 
 		// 审批或拒绝职位申请（管理员）
-		apiAdmin.PUT("/application/:appID", adminHandler.ShowJobApply)
+		apiAdmin.PUT("/application/:appID", adminHandler.ApproveJobs)
 	}
 
 	err = r.Run(":8080")

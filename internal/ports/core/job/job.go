@@ -5,7 +5,7 @@ type Job struct {
 	Name string `json:"name" gorm:"name"`
 }
 
-type JobsCorePorts interface {
+type JobsCorePort interface {
 	CreateJob(id, name string) Job
 	TableName() string
 	ShowJob(job Job) (id, name string)

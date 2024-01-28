@@ -1,6 +1,6 @@
 package validate
 
-type Validator interface {
+type ValidatorPort interface {
 	EmailValidate(email string) bool
 	PhoneValidate(phone string) bool
 	PasswordValidate(password string) bool

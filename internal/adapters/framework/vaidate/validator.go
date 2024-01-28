@@ -7,17 +7,17 @@ import (
 	"time"
 )
 
-type Validator struct {
-	redisClient database.RedisPorts
+type ValidatorAdapter struct {
+	redisClient database.RedisDBPort
 }
 
-func NewValidator(redisClient database.RedisPorts) *Validator {
-	return &Validator{
+func NewValidatorAdapter(redisClient database.RedisDBPort) *ValidatorAdapter {
+	return &ValidatorAdapter{
 		redisClient: redisClient,
 	}
 }
 
-func (v Validator) EmailValidate(email string) bool {
+func (v ValidatorAdapter) EmailValidate(email string) bool {
 	if !govalidator.IsExistingEmail(email) {
 		log.Fatalln("INVALID EMAIL")
 		return false
@@ -26,7 +26,7 @@ func (v Validator) EmailValidate(email string) bool {
 	}
 }
 
-func (v Validator) PhoneValidate(phone string) bool {
+func (v ValidatorAdapter) PhoneValidate(phone string) bool {
 	if !govalidator.IsNumeric(phone) || !govalidator.StringLength(phone, "8", "13") {
 		log.Printf("INVALID PHONE NUMBER: %v", phone)
 		return false
@@ -35,7 +35,7 @@ func (v Validator) PhoneValidate(phone string) bool {
 	}
 }
 
-func (v Validator) PasswordValidate(password string) bool {
+func (v ValidatorAdapter) PasswordValidate(password string) bool {
 	if !govalidator.StringLength(password, "8", "20") {
 		log.Println("INVALID PASSWORD")
 		return false
@@ -45,7 +45,7 @@ func (v Validator) PasswordValidate(password string) bool {
 
 }
 
-func (v Validator) NameValidate(name string) bool {
+func (v ValidatorAdapter) NameValidate(name string) bool {
 	if !govalidator.StringLength(name, "2", "40") {
 		log.Fatalln("INVALID LENGTH")
 		return false
@@ -60,11 +60,11 @@ func (v Validator) NameValidate(name string) bool {
 	return true
 }
 
-func (v Validator) CodeValidate(code, phone string) bool {
+func (v ValidatorAdapter) CodeValidate(code, phone string) bool {
 	return true
 }
 
-func (v Validator) BirthValidate(birth string) bool {
+func (v ValidatorAdapter) BirthValidate(birth string) bool {
 	// Parse the date string using the time package
 	_, err := time.Parse("2006-01-02", birth)
 	return err == nil

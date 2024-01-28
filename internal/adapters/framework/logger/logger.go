@@ -30,8 +30,8 @@ type LogAdapter struct {
 
 var Logger *LogAdapter
 
-// NewLogger creates a new Logger instance
-func NewLogger() *LogAdapter {
+// NewLogAdapter creates a new Logger instance
+func NewLogAdapter() *LogAdapter {
 	encoderCfg := zapcore.EncoderConfig{
 		MessageKey:   "message",
 		LevelKey:     "level",

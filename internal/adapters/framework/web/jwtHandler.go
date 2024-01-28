@@ -8,10 +8,10 @@ import (
 )
 
 type JWTHandlerAdapter struct {
-	jwtPorts middleware.JwtPort
+	jwtPorts middleware.JwtApplicationPort
 }
 
-func NewJWTHandlerAdapter(jwtPorts middleware.JwtPort) *JWTHandlerAdapter {
+func NewJWTHandlerAdapter(jwtPorts middleware.JwtApplicationPort) *JWTHandlerAdapter {
 	return &JWTHandlerAdapter{jwtPorts: jwtPorts}
 }
 

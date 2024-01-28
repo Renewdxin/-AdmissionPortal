@@ -5,13 +5,13 @@ import (
 	"time"
 )
 
-type UserCore struct{}
+type UsrCoreAdapter struct{}
 
-func NewUserService() *UserCore {
-	return &UserCore{}
+func NewUsrCoreAdapter() *UsrCoreAdapter {
+	return &UsrCoreAdapter{}
 }
 
-func (u UserCore) CreateUser(name string, gender string, email string, phone string, birth string) (user.User, error) {
+func (u UsrCoreAdapter) CreateUser(name string, gender string, email string, phone string, birth string) (user.User, error) {
 	// validate the u
 	newUser := user.User{
 		Name:        name,
@@ -25,6 +25,6 @@ func (u UserCore) CreateUser(name string, gender string, email string, phone str
 	return newUser, nil
 }
 
-func (u UserCore) TableName() string {
+func (u UsrCoreAdapter) TableName() string {
 	return "userinfo"
 }

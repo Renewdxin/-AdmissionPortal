@@ -10,10 +10,10 @@ import (
 )
 
 type JobHandlerAdapter struct {
-	app job.JobsCasePorts
+	app job.JobsApplicationPort
 }
 
-func NewJobHandlerAdapter(app job.JobsCasePorts) JobHandlerAdapter {
+func NewJobHandlerAdapter(app job.JobsApplicationPort) JobHandlerAdapter {
 	return JobHandlerAdapter{
 		app: app,
 	}

@@ -5,7 +5,7 @@ type Account struct {
 	Password string `json:"password" gorm:"password"`
 }
 
-type AccountCorePorts interface {
+type AuthorizeCorePort interface {
 	CreateAccount(id, password string) (Account, error)
 	TableName() string
 }

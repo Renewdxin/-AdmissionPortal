@@ -9,12 +9,12 @@ import (
 )
 
 type AdminHandlerAdapter struct {
-	AdminApp user.AdminApplicationPorts
-	JobApp   job.JobsCasePorts
-	UserApp  user.UserCasePorts
+	AdminApp user.AdminApplicationPort
+	JobApp   job.JobsApplicationPort
+	UserApp  user.UsrApplicationPort
 }
 
-func NewAdminHandlerAdapter(AdminApp user.AdminApplicationPorts, JobApp job.JobsCasePorts, UserApp user.UserCasePorts) AdminHandlerAdapter {
+func NewAdminHandlerAdapter(AdminApp user.AdminApplicationPort, JobApp job.JobsApplicationPort, UserApp user.UsrApplicationPort) AdminHandlerAdapter {
 	return AdminHandlerAdapter{
 		AdminApp: AdminApp,
 		JobApp:   JobApp,
@@ -43,10 +43,8 @@ func (adapter AdminHandlerAdapter) ShowJobApply(c *gin.Context) {
 			c.JSON(http.StatusInternalServerError, gin.H{"error": "Internal Server Error"})
 			return
 		}
-
 		// 输出 JSON 数据
 		c.String(http.StatusOK, string(jsonData))
-
 	}
 }
 

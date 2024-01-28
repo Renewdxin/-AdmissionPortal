@@ -7,12 +7,12 @@ import (
 	"time"
 )
 
-type RedisClient struct {
+type RedisClientAdapter struct {
 	client *redis.Client
 }
 
-func NewRedisClient() *RedisClient {
-	return &RedisClient{
+func NewRedisClientAdapter() *RedisClientAdapter {
+	return &RedisClientAdapter{
 		client: redis.NewClient(&redis.Options{
 			Addr:     "localhost:6379",
 			Password: "",
@@ -21,7 +21,7 @@ func NewRedisClient() *RedisClient {
 	}
 }
 
-func (client *RedisClient) CloseConnection() error {
+func (client *RedisClientAdapter) CloseConnection() error {
 	if err := client.client.Close(); err != nil {
 		log.Fatalln("failed to close the redis service")
 		return err
@@ -29,7 +29,7 @@ func (client *RedisClient) CloseConnection() error {
 	return nil
 }
 
-func (client *RedisClient) SaveVerificationCode(email, code string) error {
+func (client *RedisClientAdapter) SaveVerificationCode(email, code string) error {
 	customCtx, cancel := context.WithTimeout(context.Background(), 5*time.Minute)
 	defer cancel()
 	if err := client.client.Set(customCtx, email, code, 0).Err(); err != nil {
@@ -39,7 +39,7 @@ func (client *RedisClient) SaveVerificationCode(email, code string) error {
 	return nil
 }
 
-func (client *RedisClient) GetVerificationCode(email string) (string, error) {
+func (client *RedisClientAdapter) GetVerificationCode(email string) (string, error) {
 	customCtx, cancel := context.WithTimeout(context.Background(), 5*time.Minute)
 	defer cancel()
 	code, err := client.client.Get(customCtx, email).Result()

@@ -2,7 +2,7 @@ package database
 
 import "github.com/Renewdxin/selfMade/internal/ports/core/auth"
 
-type AuthDaoPorts interface {
+type AuthDBPort interface {
 	EmailIfExist(email string) bool
 	SaveUserAccount(account auth.Account) bool
 	UpdateAccount(account auth.Account) bool

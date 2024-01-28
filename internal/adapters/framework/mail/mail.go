@@ -9,13 +9,13 @@ import (
 	"strconv"
 )
 
-type Mail struct{}
+type MailAdapter struct{}
 
-func NewMail() *Mail {
-	return &Mail{}
+func NewMailAdapter() *MailAdapter {
+	return &MailAdapter{}
 }
 
-func (m *Mail) Send(to string, subject string, body string) error {
+func (m *MailAdapter) Send(to string, subject string, body string) error {
 	err := godotenv.Load("internal/adapters/framework/global/.env")
 	if err != nil {
 		log.Fatal("无法加载 .env 文件")
@@ -49,10 +49,10 @@ func (m *Mail) Send(to string, subject string, body string) error {
 	return nil
 }
 
-func (m *Mail) CodeSend(to string, subject string, code string) error {
+func (m *MailAdapter) CodeSend(to string, subject string, code string) error {
 	return m.Send(to, subject, "your code is: "+code)
 }
 
-func (m *Mail) WelcomeMail(to string) error {
+func (m *MailAdapter) WelcomeMail(to string) error {
 	return m.Send(to, "Welcome to Wonderland", "Welcome")
 }

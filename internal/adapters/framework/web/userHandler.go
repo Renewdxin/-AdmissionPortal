@@ -8,18 +8,18 @@ import (
 	"net/http"
 )
 
-type UserHandler struct {
-	userCase userAPI.UserCasePorts
+type UsrHandlerAdapter struct {
+	userCase userAPI.UsrApplicationPort
 }
 
-func NewUserHandler(userCase userAPI.UserCasePorts) *UserHandler {
-	return &UserHandler{
+func NewUserHandlerAdapter(userCase userAPI.UsrApplicationPort) *UsrHandlerAdapter {
+	return &UsrHandlerAdapter{
 		userCase: userCase,
 	}
 }
 
 // GetUserInfo get user info
-func (uHandler UserHandler) GetUserInfo(c *gin.Context) {
+func (uHandler UsrHandlerAdapter) GetUserInfo(c *gin.Context) {
 	userID := c.Param("id")
 	if userID == "" {
 		c.JSON(http.StatusBadRequest, gin.H{
@@ -48,7 +48,7 @@ func (uHandler UserHandler) GetUserInfo(c *gin.Context) {
 }
 
 // GetUserStatus be hired or not
-func (uHandler UserHandler) GetUserStatus(c *gin.Context) {
+func (uHandler UsrHandlerAdapter) GetUserStatus(c *gin.Context) {
 	userID := c.Param("id")
 	newUser, err := uHandler.userCase.GetUserProfile(userID)
 	if err != nil {
@@ -67,7 +67,7 @@ func (uHandler UserHandler) GetUserStatus(c *gin.Context) {
 }
 
 // UpdateUserInfo update user info
-func (uHandler UserHandler) UpdateUserInfo(c *gin.Context) {
+func (uHandler UsrHandlerAdapter) UpdateUserInfo(c *gin.Context) {
 	var newUser user.User
 	if err := c.ShouldBindJSON(&newUser); err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{
@@ -88,7 +88,7 @@ func (uHandler UserHandler) UpdateUserInfo(c *gin.Context) {
 }
 
 // DeleteUser delete user
-func (uHandler UserHandler) DeleteUser(c *gin.Context) {
+func (uHandler UsrHandlerAdapter) DeleteUser(c *gin.Context) {
 	userID := c.Param("id")
 
 	if err := uHandler.userCase.DeleteUser(userID); err != nil {

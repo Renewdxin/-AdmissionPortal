@@ -2,6 +2,6 @@ package web
 
 import "github.com/gin-gonic/gin"
 
-type JWTHandlerPorts interface {
+type JWTHandlerPort interface {
 	JWTHandler() gin.HandlerFunc
 }

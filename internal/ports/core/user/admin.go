@@ -5,6 +5,6 @@ type Admin struct {
 	password string
 }
 
-type AdminCorePorts interface {
+type AdminCorePort interface {
 	TableName() string
 }

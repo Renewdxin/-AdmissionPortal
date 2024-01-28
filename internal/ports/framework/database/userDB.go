@@ -2,7 +2,7 @@ package database
 
 import "github.com/Renewdxin/selfMade/internal/ports/core/user"
 
-type UserDaoPorts interface {
+type UserDBPort interface {
 	SaveUser(user user.User) error
 	DeleteUser(id string) error
 	UpdateUser(user.User) error

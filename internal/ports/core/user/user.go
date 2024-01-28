@@ -20,7 +20,7 @@ func (user User) TableName() string {
 	return "userinfo"
 }
 
-type UserPorts interface {
+type UsrCorePort interface {
 	CreateUser(name string, gender string, email string, phone string, birth string) (User, error)
 	TableName() string
 }

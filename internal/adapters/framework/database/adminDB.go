@@ -11,10 +11,10 @@ import (
 
 type AdminDaoAdapter struct {
 	db        *gorm.DB
-	adminCore user.AdminCorePorts
+	adminCore user.AdminCorePort
 }
 
-func NewAdminDaoAdapter(driveName, dataSourceName string, adminCore user.AdminCorePorts) AdminDaoAdapter {
+func NewAdminDaoAdapter(driveName, dataSourceName string, adminCore user.AdminCorePort) AdminDaoAdapter {
 	sqlDB, err := sql.Open(driveName, dataSourceName)
 	if err != nil {
 		logger.Logger.Logf(logger.ErrorLevel, "init error: %v", err)
