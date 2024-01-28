@@ -10,19 +10,19 @@ import (
 	"github.com/Renewdxin/selfMade/internal/ports/framework/validate"
 )
 
-type AuthcaseAdapter struct {
-	core        auth.AccountCorePorts
-	dao         database.AuthDaoPorts
-	codeGen     verifycation.CodePorts
-	redisClient database.RedisPorts
-	validator   validate.Validator
-	mailSender  mail.MailPorts
+type AuthorizeApplicationAdapter struct {
+	core        auth.AuthorizeCorePort
+	dao         database.AuthDBPort
+	codeGen     verifycation.CodeCorePort
+	redisClient database.RedisDBPort
+	validator   validate.ValidatorPort
+	mailSender  mail.MailPort
 }
 
-func NewAuthCaseAdapter(core auth.AccountCorePorts, dao database.AuthDaoPorts,
-	codeGen verifycation.CodePorts, redisClient database.RedisPorts,
-	validator validate.Validator, mailSender mail.MailPorts) *AuthcaseAdapter {
-	return &AuthcaseAdapter{
+func NewAuthCaseAdapter(core auth.AuthorizeCorePort, dao database.AuthDBPort,
+	codeGen verifycation.CodeCorePort, redisClient database.RedisDBPort,
+	validator validate.ValidatorPort, mailSender mail.MailPort) *AuthorizeApplicationAdapter {
+	return &AuthorizeApplicationAdapter{
 		core:        core,
 		dao:         dao,
 		codeGen:     codeGen,
@@ -32,7 +32,7 @@ func NewAuthCaseAdapter(core auth.AccountCorePorts, dao database.AuthDaoPorts,
 	}
 }
 
-func (api AuthcaseAdapter) BeforeRegister(id, password string) error {
+func (api AuthorizeApplicationAdapter) BeforeRegister(id, password string) error {
 	if !api.validator.PhoneValidate(id) {
 		return errors.New("INVALID NUMBER")
 	}
@@ -42,7 +42,7 @@ func (api AuthcaseAdapter) BeforeRegister(id, password string) error {
 	return nil
 }
 
-func (api AuthcaseAdapter) RegisterByEmail(email, password string) error {
+func (api AuthorizeApplicationAdapter) RegisterByEmail(email, password string) error {
 	// validate first
 	if err := api.BeforeRegister(email, password); err != nil {
 		return err
@@ -82,7 +82,7 @@ func (api AuthcaseAdapter) RegisterByEmail(email, password string) error {
 	}
 	return nil
 }
-func (api AuthcaseAdapter) ForgetPasswordByEmail(email, password string) error {
+func (api AuthorizeApplicationAdapter) ForgetPasswordByEmail(email, password string) error {
 	// code generate and save to redis
 	code := api.codeGen.GenerateCode()
 	var err error
@@ -114,7 +114,7 @@ func (api AuthcaseAdapter) ForgetPasswordByEmail(email, password string) error {
 
 }
 
-func (api AuthcaseAdapter) ChangePassword(id, oldPassword, newPassword string) error {
+func (api AuthorizeApplicationAdapter) ChangePassword(id, oldPassword, newPassword string) error {
 	// validate old password
 	if oldPassword != api.dao.FindPasswordByID(id) {
 		return errors.New("WRONG PASSWORD")
@@ -135,7 +135,7 @@ func (api AuthcaseAdapter) ChangePassword(id, oldPassword, newPassword string) e
 
 }
 
-func (api AuthcaseAdapter) LogIn(id, password string) error {
+func (api AuthorizeApplicationAdapter) LogIn(id, password string) error {
 	if !api.dao.FindAccountByID(id) {
 		return errors.New("this id doesn't exist")
 	}

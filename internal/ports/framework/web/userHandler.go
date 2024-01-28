@@ -2,7 +2,7 @@ package web
 
 import "github.com/gin-gonic/gin"
 
-type UserHandlerPorts interface {
+type UserHandlerPort interface {
 	// GetUserInfo get user info
 	GetUserInfo(c *gin.Context)
 	// GetUserStatus be hired or not

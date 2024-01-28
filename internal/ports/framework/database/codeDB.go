@@ -1,5 +1,5 @@
 package database
 
-type CodePorts interface {
+type CodeDBPort interface {
 	SaveCode(code string, email string) error
 }

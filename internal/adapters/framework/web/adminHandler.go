@@ -9,19 +9,23 @@ import (
 )
 
 type AdminHandlerAdapter struct {
-	AdminApp user.AdminApplicationPorts
-	JobApp   job.JobsCasePorts
-	UserApp  user.UserCasePorts
+	AdminApp user.AdminApplicationPort
+	JobApp   job.JobsApplicationPort
+	UserApp  user.UsrApplicationPort
 }
 
-func NewAdminHandlerAdapter() AdminHandlerAdapter {
-	return AdminHandlerAdapter{}
+func NewAdminHandlerAdapter(AdminApp user.AdminApplicationPort, JobApp job.JobsApplicationPort, UserApp user.UsrApplicationPort) AdminHandlerAdapter {
+	return AdminHandlerAdapter{
+		AdminApp: AdminApp,
+		JobApp:   JobApp,
+		UserApp:  UserApp,
+	}
 }
 
-func (adapter AdminHandlerAdapter) HomePage(c *gin.Context, title string) {
+func (adapter AdminHandlerAdapter) HomePage(c *gin.Context) {
 	// 传递给模板的动态数据
 	data := gin.H{
-		"title": title,
+		"title": "Admin Homepage",
 	}
 
 	// 渲染HTML页面，使用已有的HTML文件 "your_existing_template.html"
@@ -32,17 +36,15 @@ func (adapter AdminHandlerAdapter) ShowJobApply(c *gin.Context) {
 	result := adapter.AdminApp.ShowJobsApply()
 
 	// 使用循环遍历结构体数组
-	for _, job := range result {
+	for _, index := range result {
 		// 将每个结构体转换为 JSON
-		jsonData, err := json.Marshal(job)
+		jsonData, err := json.Marshal(index)
 		if err != nil {
 			c.JSON(http.StatusInternalServerError, gin.H{"error": "Internal Server Error"})
 			return
 		}
-
 		// 输出 JSON 数据
 		c.String(http.StatusOK, string(jsonData))
-
 	}
 }
 

@@ -9,10 +9,10 @@ import (
 
 type AuthDaoAdapter struct {
 	db      *gorm.DB
-	account auth.AccountCorePorts
+	account auth.AuthorizeCorePort
 }
 
-func NewauthDao(driveName, dataSourceName string, account auth.AccountCorePorts) (*AuthDaoAdapter, error) {
+func NewAuthDaoAdapter(driveName, dataSourceName string, account auth.AuthorizeCorePort) (*AuthDaoAdapter, error) {
 	sqlDB, err := sql.Open(driveName, dataSourceName)
 	if err != nil {
 		return nil, err

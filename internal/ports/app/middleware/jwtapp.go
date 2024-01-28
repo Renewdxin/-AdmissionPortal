@@ -16,7 +16,7 @@ type Claims struct {
 	jwt.StandardClaims
 }
 
-type JwtPort interface {
+type JwtApplicationPort interface {
 	GetJWTSecret() []byte
 	GenerateToken(userid string, AppKey string) (string, error)
 	ParseToken(tokenString string) (*Claims, error)

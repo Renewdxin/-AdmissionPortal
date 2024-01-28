@@ -2,10 +2,12 @@ package main
 
 import (
 	"github.com/Renewdxin/selfMade/internal/adapters/app/auth"
+	jobApp "github.com/Renewdxin/selfMade/internal/adapters/app/job"
 	"github.com/Renewdxin/selfMade/internal/adapters/app/middleware"
 	"github.com/Renewdxin/selfMade/internal/adapters/app/user"
-	auth2 "github.com/Renewdxin/selfMade/internal/adapters/core/auth"
-	user2 "github.com/Renewdxin/selfMade/internal/adapters/core/user"
+	authApp "github.com/Renewdxin/selfMade/internal/adapters/core/auth"
+	"github.com/Renewdxin/selfMade/internal/adapters/core/job"
+	userApp "github.com/Renewdxin/selfMade/internal/adapters/core/user"
 	"github.com/Renewdxin/selfMade/internal/adapters/core/verify"
 	"github.com/Renewdxin/selfMade/internal/adapters/framework/database"
 	"github.com/Renewdxin/selfMade/internal/adapters/framework/logger"
@@ -18,42 +20,54 @@ import (
 )
 
 func main() {
-	logger.Logger = logger.NewLogger()
+	logger.Logger = logger.NewLogAdapter()
 	err := godotenv.Load(".env")
 	if err != nil {
 		logger.Logger.Log(logger.FatalLevel, "无法加载 .env 文件: %v")
 	}
 
-	redisClient := database.NewRedisClient()
+	redisClient := database.NewRedisClientAdapter()
 
-	mailSender := mail.NewMail()
-	verification := verify.NewVerificationCodeService()
-	validator := vaidate.NewValidator(redisClient)
+	mailSender := mail.NewMailAdapter()
+	verification := verify.NewVerificationCodeAdapter()
+	validator := vaidate.NewValidatorAdapter(redisClient)
 
 	jwtAPI := middleware.NewJWTAdapters()
 	jwtHandler := web.NewJWTHandlerAdapter(jwtAPI)
 
-	userCore := user2.NewUserService()
-	userDao, err := database.NewUserDao(os.Getenv("DRIVER_NAME"), os.Getenv("DRIVER_SOURCE_NAME"), userCore)
+	userCore := userApp.NewUsrCoreAdapter()
+	userDao, err := database.NewUsrDaoAdapter(os.Getenv("DRIVER_NAME"), os.Getenv("DRIVER_SOURCE_NAME"), userCore)
 	if err != nil {
-		logger.Logger.Log(logger.FatalLevel, "falied to connect to the user database")
+		logger.Logger.Log(logger.FatalLevel, "failed to connect to the user database")
 	}
 
-	authCore := auth2.NewAdapter()
-	authDao, err := database.NewauthDao(os.Getenv("DRIVER_NAME"), os.Getenv("DRIVER_SOURCE_NAME"), authCore)
+	authCore := authApp.NewAuthorizeCoreAdapter()
+	authDao, err := database.NewAuthDaoAdapter(os.Getenv("DRIVER_NAME"), os.Getenv("DRIVER_SOURCE_NAME"), authCore)
 	if err != nil {
-		logger.Logger.Log(logger.FatalLevel, "falied to connect to the user database")
+		logger.Logger.Log(logger.FatalLevel, "failed to connect to the user database")
 	}
 
-	userAPI := user.NewUserAPI(userCore, userDao, mailSender, verification, redisClient, validator)
-	userHandler := web.NewUserHandler(userAPI)
+	userAPI := user.NewUsrApplicationAdapter(userCore, userDao, mailSender, verification, redisClient, validator)
+	userHandler := web.NewUserHandlerAdapter(userAPI)
 
 	authAPI := auth.NewAuthCaseAdapter(authCore, authDao, verification, redisClient, validator, mailSender)
-	authHandler := web.NewAuthHandler(authAPI, jwtAPI)
+	authHandler := web.NewAuthHandlerAdapter(authAPI, jwtAPI)
+
+	homeHandler := web.NewHomeHandlerAdapter()
+
+	jobCore := job.NewJobsCoreAdapter()
+	jobDao := database.NewJobsDaoAdapter(os.Getenv("DRIVER_NAME"), os.Getenv("DRIVER_SOURCE_NAME"), jobCore)
+	jobAPI := jobApp.NewJobCaseAdapter(jobCore, jobDao)
+	jobHandler := web.NewJobHandlerAdapter(jobAPI)
+
+	adminCore := userApp.NewAdminCoreAdapter()
+	_ = database.NewAdminDaoAdapter(os.Getenv("DRIVER_NAME"), os.Getenv("DRIVER_SOURCE_NAME"), adminCore)
+	adminAPI := user.NewAdminAppAdapter(jobAPI, jobDao, userDao)
+	adminHandler := web.NewAdminHandlerAdapter(adminAPI, jobAPI, userAPI)
 
 	r := gin.New()
-	// home page
-	//r.POST("/home")
+	//home page
+	r.POST("/home", homeHandler.HomePage)
 
 	// auth setting
 	apiAccount := r.Group("/auth")
@@ -84,30 +98,30 @@ func main() {
 	apiJob.Use()
 	{
 		//查看岗位总览
-		apiJob.GET("/jobs")
+		apiJob.GET("/jobs", jobHandler.GetJobs)
 		//查看岗位详细信息
-		apiJob.GET("/job/:id")
+		apiJob.GET("/job/:id", jobHandler.GetJobInfo)
 		//申请投递
-		apiJob.POST("/job/:id/apply")
+		apiJob.POST("/job/:id/apply", jobHandler.ApplyJob)
 	}
 
 	apiAdmin := r.Group("/admin")
 	apiAdmin.Use() // 使用JWT中间件进行管理员身份验证
 	{
 		// 管理员仪表板或主页
-		apiAdmin.GET("/dashboard")
+		apiAdmin.GET("/dashboard", adminHandler.HomePage)
 
 		// 查看所有职位发布（管理员）
-		apiAdmin.GET("/jobs")
+		apiAdmin.GET("/jobs", adminHandler.ShowAllJobs)
 
 		// 查看职位详情（管理员）
-		apiAdmin.GET("/job/:jobID")
+		apiAdmin.GET("/job/:jobID", adminHandler.ShowJobDetails)
 
 		// 查看职位申请（管理员）
-		apiAdmin.GET("/applications/:jobID")
+		apiAdmin.GET("/applications/:jobID", adminHandler.ShowJobApply)
 
 		// 审批或拒绝职位申请（管理员）
-		apiAdmin.PUT("/application/:appID")
+		apiAdmin.PUT("/application/:appID", adminHandler.ApproveJobs)
 	}
 
 	err = r.Run(":8080")

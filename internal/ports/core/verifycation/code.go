@@ -1,5 +1,5 @@
 package verifycation
 
-type CodePorts interface {
+type CodeCorePort interface {
 	GenerateCode() string
 }

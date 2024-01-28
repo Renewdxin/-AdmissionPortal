@@ -6,13 +6,13 @@ import (
 	"time"
 )
 
-type VerificationCodeService struct{}
+type VerificationCodeAdapter struct{}
 
-func NewVerificationCodeService() *VerificationCodeService {
-	return &VerificationCodeService{}
+func NewVerificationCodeAdapter() *VerificationCodeAdapter {
+	return &VerificationCodeAdapter{}
 }
 
-func (s VerificationCodeService) GenerateCode() string {
+func (s VerificationCodeAdapter) GenerateCode() string {
 	rand.New(rand.NewSource(time.Now().UnixNano()))
 	code := rand.Intn(1000000)
 	return fmt.Sprintf("%06d", code)

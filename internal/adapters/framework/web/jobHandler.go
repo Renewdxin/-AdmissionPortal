@@ -10,10 +10,10 @@ import (
 )
 
 type JobHandlerAdapter struct {
-	app job.JobsCasePorts
+	app job.JobsApplicationPort
 }
 
-func NewAdapter(app job.JobsCasePorts) JobHandlerAdapter {
+func NewJobHandlerAdapter(app job.JobsApplicationPort) JobHandlerAdapter {
 	return JobHandlerAdapter{
 		app: app,
 	}
@@ -70,7 +70,7 @@ func (adapter JobHandlerAdapter) UpdateJob(c *gin.Context) {
 	})
 }
 
-func (adapter JobHandlerAdapter) AddJob(c *gin.Context) {
+func (adapter JobHandlerAdapter) ApplyJob(c *gin.Context) {
 	// 表单信息输入验证
 	var user user2.User
 	if err := c.ShouldBind(&user); err != nil {

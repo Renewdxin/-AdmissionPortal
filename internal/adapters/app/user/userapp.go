@@ -10,18 +10,18 @@ import (
 	"log"
 )
 
-type API struct {
-	user        user.UserPorts
-	userDao     database.UserDaoPorts
-	mailSender  mail.MailPorts
-	verify      verifycation.CodePorts
-	redisClient database.RedisPorts
-	validator   validate.Validator
+type UsrApplicationAdapter struct {
+	user        user.UsrCorePort
+	userDao     database.UserDBPort
+	mailSender  mail.MailPort
+	verify      verifycation.CodeCorePort
+	redisClient database.RedisDBPort
+	validator   validate.ValidatorPort
 }
 
-func NewUserAPI(user user.UserPorts, userDao database.UserDaoPorts, mailSender mail.MailPorts,
-	verify verifycation.CodePorts, redisClient database.RedisPorts, validator validate.Validator) *API {
-	return &API{
+func NewUsrApplicationAdapter(user user.UsrCorePort, userDao database.UserDBPort, mailSender mail.MailPort,
+	verify verifycation.CodeCorePort, redisClient database.RedisDBPort, validator validate.ValidatorPort) *UsrApplicationAdapter {
+	return &UsrApplicationAdapter{
 		user:        user,
 		userDao:     userDao,
 		mailSender:  mailSender,
@@ -31,11 +31,11 @@ func NewUserAPI(user user.UserPorts, userDao database.UserDaoPorts, mailSender m
 	}
 }
 
-func (api API) IfExist(email string) bool {
+func (api UsrApplicationAdapter) IfExist(email string) bool {
 	return api.userDao.IfExist(email)
 }
 
-func (api API) UserValidateBeforeRegister(name string, gender string, email string, phone string, birth string) bool {
+func (api UsrApplicationAdapter) UserValidateBeforeRegister(name string, gender string, email string, phone string, birth string) bool {
 	if !api.validator.NameValidate(name) || !api.validator.EmailValidate(email) || !api.validator.PhoneValidate(phone) {
 		log.Fatalf("INVALID INFORMATION")
 		return false
@@ -52,7 +52,7 @@ func (api API) UserValidateBeforeRegister(name string, gender string, email stri
 	return true
 }
 
-func (api API) RegisterUser(name, gender, email, phone, birth string) error {
+func (api UsrApplicationAdapter) RegisterUser(name, gender, email, phone, birth string) error {
 	// validate
 	if !api.UserValidateBeforeRegister(name, gender, email, phone, birth) {
 		return errors.New("INVALID INFORMATION")
@@ -95,12 +95,12 @@ func (api API) RegisterUser(name, gender, email, phone, birth string) error {
 	return nil
 }
 
-func (api API) GetUserProfile(id string) (user.User, error) {
+func (api UsrApplicationAdapter) GetUserProfile(id string) (user.User, error) {
 	// if already exists
 	return api.userDao.FindUserByID(id)
 }
 
-func (api API) DeleteUser(id string) error {
+func (api UsrApplicationAdapter) DeleteUser(id string) error {
 	//if exist
 	u, err := api.userDao.FindUserByID(id)
 	if err != nil {
@@ -129,7 +129,7 @@ func (api API) DeleteUser(id string) error {
 	return api.userDao.DeleteUser(id)
 }
 
-func (api API) UpdateUser(user user.User) error {
+func (api UsrApplicationAdapter) UpdateUser(user user.User) error {
 	api.UserValidateBeforeRegister(user.Name, user.Gender, user.Email, user.PhoneNumber, user.Birth)
 	return api.userDao.UpdateUser(user)
 }

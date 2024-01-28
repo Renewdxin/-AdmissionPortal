@@ -8,12 +8,12 @@ import (
 	"log"
 )
 
-type UserDao struct {
+type UsrDaoAdapter struct {
 	db   *gorm.DB
-	user user.UserPorts
+	user user.UsrCorePort
 }
 
-func NewUserDao(driveName, dataSourceName string, user user.UserPorts) (*UserDao, error) {
+func NewUsrDaoAdapter(driveName, dataSourceName string, user user.UsrCorePort) (*UsrDaoAdapter, error) {
 	sqlDB, err := sql.Open(driveName, dataSourceName)
 	if err != nil {
 		return nil, err
@@ -25,12 +25,12 @@ func NewUserDao(driveName, dataSourceName string, user user.UserPorts) (*UserDao
 	if err != nil {
 		return nil, err
 	}
-	return &UserDao{db: gormDB, user: user}, nil
+	return &UsrDaoAdapter{db: gormDB, user: user}, nil
 }
 
 // IfExist
 // true exist
-func (userDao UserDao) IfExist(email string) bool {
+func (userDao UsrDaoAdapter) IfExist(email string) bool {
 	var u user.User
 	if err := userDao.db.Table(userDao.user.TableName()).Where("email = ?", email).First(&u).Error; err != nil {
 		return false
@@ -38,7 +38,7 @@ func (userDao UserDao) IfExist(email string) bool {
 	return true
 }
 
-func (userDao UserDao) SaveUser(user user.User) error {
+func (userDao UsrDaoAdapter) SaveUser(user user.User) error {
 	if err := userDao.db.Table(userDao.user.TableName()).Select("name", "gender", "email", "phone").Create(&user).Error; err != nil {
 		log.Printf("Failed to save user %v: %v", user.Name, err)
 		return err
@@ -46,7 +46,7 @@ func (userDao UserDao) SaveUser(user user.User) error {
 	return nil
 }
 
-func (userDao UserDao) DeleteUser(id string) error {
+func (userDao UsrDaoAdapter) DeleteUser(id string) error {
 	result := userDao.db.Table(userDao.user.TableName()).Delete(&user.User{}, id)
 	if result.Error != nil {
 		log.Printf("Failed to delete user with ID %v: %v", id, result.Error)
@@ -59,7 +59,7 @@ func (userDao UserDao) DeleteUser(id string) error {
 	return nil
 }
 
-func (userDao UserDao) UpdateUser(user user.User) error {
+func (userDao UsrDaoAdapter) UpdateUser(user user.User) error {
 	result := userDao.db.Table(userDao.user.TableName()).Model(&user).Updates(map[string]interface{}{
 		"name":   user.Name,
 		"gender": user.Gender,
@@ -73,7 +73,7 @@ func (userDao UserDao) UpdateUser(user user.User) error {
 	return nil
 }
 
-func (userDao UserDao) FindUserByID(id string) (user.User, error) {
+func (userDao UsrDaoAdapter) FindUserByID(id string) (user.User, error) {
 	var newUser user.User
 	if err := userDao.db.Table(userDao.user.TableName()).Where("id = ?", id).First(&newUser).Error; err != nil {
 		log.Printf("Failed to find user by ID %v: %v", id, err)
@@ -82,7 +82,7 @@ func (userDao UserDao) FindUserByID(id string) (user.User, error) {
 	return newUser, nil
 }
 
-func (userDao UserDao) FindUserByEmail(email string) (user.User, error) {
+func (userDao UsrDaoAdapter) FindUserByEmail(email string) (user.User, error) {
 	var newUser user.User
 	if err := userDao.db.Table(userDao.user.TableName()).Where("email = ?", email).First(&newUser).Error; err != nil {
 		log.Printf("Failed to find user by email %v: %v", email, err)
@@ -91,7 +91,7 @@ func (userDao UserDao) FindUserByEmail(email string) (user.User, error) {
 	return newUser, nil
 }
 
-func (userDao UserDao) ChangeUserStatus(id string, state int) bool {
+func (userDao UsrDaoAdapter) ChangeUserStatus(id string, state int) bool {
 	update := user.User{State: state}
 	if err := userDao.db.Table(userDao.user.TableName()).Where("id = ?", id).Updates(update).Error; err != nil {
 		log.Printf("Failed to find user by ID %v: %v", id, err)

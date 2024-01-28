@@ -9,19 +9,19 @@ import (
 	"net/http"
 )
 
-type AuthHandler struct {
-	authCase authcase.AuthcasePorts
-	jwtPorts middleware.JwtPort
+type AuthHandlerAdapter struct {
+	authCase authcase.AuthorizeApplicationPort
+	jwtPorts middleware.JwtApplicationPort
 }
 
-func NewAuthHandler(authCase authcase.AuthcasePorts, jwtPorts middleware.JwtPort) *AuthHandler {
-	return &AuthHandler{
+func NewAuthHandlerAdapter(authCase authcase.AuthorizeApplicationPort, jwtPorts middleware.JwtApplicationPort) *AuthHandlerAdapter {
+	return &AuthHandlerAdapter{
 		authCase: authCase,
 		jwtPorts: jwtPorts,
 	}
 }
 
-func (handler AuthHandler) Login(c *gin.Context) {
+func (handler AuthHandlerAdapter) Login(c *gin.Context) {
 	var account auth.Account
 
 	if err := c.ShouldBindJSON(&account); err != nil {
@@ -52,7 +52,7 @@ func (handler AuthHandler) Login(c *gin.Context) {
 	})
 }
 
-func (handler AuthHandler) Register(c *gin.Context) {
+func (handler AuthHandlerAdapter) Register(c *gin.Context) {
 	var account auth.Account
 
 	if err := c.ShouldBindJSON(&account); err != nil {
@@ -71,7 +71,7 @@ func (handler AuthHandler) Register(c *gin.Context) {
 	c.JSON(http.StatusOK, gin.H{})
 }
 
-func (handler AuthHandler) ChangePassword(c *gin.Context) {
+func (handler AuthHandlerAdapter) ChangePassword(c *gin.Context) {
 	id := c.GetString("id")
 	newPassword := c.GetString("newPassword")
 	oldPassword := c.GetString("oldPassword")
@@ -86,7 +86,7 @@ func (handler AuthHandler) ChangePassword(c *gin.Context) {
 	})
 }
 
-func (handler AuthHandler) ForgetPassword(c *gin.Context) {
+func (handler AuthHandlerAdapter) ForgetPassword(c *gin.Context) {
 	id := c.GetString("id")
 	newPassword := c.GetString("newPassword")
 
