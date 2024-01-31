@@ -18,14 +18,6 @@ const list = ['3g', 'web', 'android', 'server', 'ios']
           </div>
         </div>
       </div>
-      <div class="show">
-        <div class="button" v-for="item in list" :key="item">
-          <div class="inner">
-            web
-            <div class="border"></div>
-          </div>
-        </div>
-      </div>
     </div>
     <div class="right">
       <div class="form">
@@ -150,55 +142,6 @@ const list = ['3g', 'web', 'android', 'server', 'ios']
           border-radius: 50%;
           animation: rotation 20s linear infinite reverse;
           animation-play-state: paused; //控制动静
-        }
-      }
-    }
-    .show {
-      position: absolute;
-      top: 100px;
-      right: 0px;
-      width: 35%;
-      height: 70%;
-      border: 1px solid red;
-      .button {
-        position: relative;
-        z-index: 0;
-        font-size: 30px;
-        line-height: 70px;
-        text-align: center;
-        width: 140px;
-        height: 70px;
-        // background-color: aquamarine;
-        border-radius: 5px;
-        margin-top: 30px;
-        overflow: hidden;
-        &:nth-child(1) {
-          margin-top: 100px;
-        }
-        &:hover.button .border {
-          display: block;
-        }
-        .inner {
-          position: relative;
-          border-radius: 1px;
-          width: 134px;
-          height: 64px;
-          margin: 0 auto;
-          margin-top: 3px;
-          background-color: rgb(177, 233, 235);
-          .border {
-            display: none;
-            position: relative;
-            z-index: -1;
-            width: 140px;
-            height: 70px;
-            // transform: translate(70px, -35px);
-            animation: border 2s linear infinite;
-            margin-left: 50%;
-            margin-top: -25%;
-            transform-origin: top left;
-            background-color: rgb(255, 65, 97);
-          }
         }
       }
     }
