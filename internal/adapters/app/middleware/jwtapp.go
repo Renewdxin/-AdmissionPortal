@@ -17,20 +17,19 @@ func NewJWTAdapters() *JWTAdapter {
 
 // GetJWTSecret returns the JWT secret key from the global configuration.
 func (j JWTAdapter) GetJWTSecret() []byte {
-	return []byte("renxin")
+	return []byte("xiyou3g")
 }
 
 // GenerateToken generates a JWT token with the specified user ID and application key.
 // It returns the generated token as a string and any error encountered during the process.
 func (j JWTAdapter) GenerateToken(userid string, AppKey string) (string, error) {
-	now := time.Now()
-	expireTime := now.Add(7200)
+	expireTime := time.Now().Add(7200)
 	claims := middleware.Claims{
 		UserID: userid,
 		AppKey: AppKey,
 		StandardClaims: jwt.StandardClaims{
 			ExpiresAt: expireTime.Unix(),
-			Issuer:    "renxin",
+			Issuer:    "xiyou3g",
 		},
 	}
 	tokenClaims := jwt.NewWithClaims(jwt.SigningMethodHS256, claims)

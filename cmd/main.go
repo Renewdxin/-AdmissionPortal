@@ -44,7 +44,7 @@ func main() {
 	authCore := authApp.NewAuthorizeCoreAdapter()
 	authDao, err := database.NewAuthDaoAdapter(os.Getenv("DRIVER_NAME"), os.Getenv("DRIVER_SOURCE_NAME"), authCore)
 	if err != nil {
-		logger.Logger.Log(logger.FatalLevel, "failed to connect to the user database")
+		logger.Logger.Log(logger.FatalLevel, "failed to connect to the account database")
 	}
 
 	userAPI := user.NewUsrApplicationAdapter(userCore, userDao, mailSender, verification, redisClient, validator)
@@ -100,9 +100,9 @@ func main() {
 		//查看岗位总览
 		apiJob.GET("/jobs", jobHandler.GetJobs)
 		//查看岗位详细信息
-		apiJob.GET("/job/:id", jobHandler.GetJobInfo)
+		apiJob.GET("/job/:jobID", jobHandler.GetJobInfo)
 		//申请投递
-		apiJob.POST("/job/:id/apply", jobHandler.ApplyJob)
+		apiJob.POST("/job/:jobID/apply/:userID", jobHandler.ApplyJob)
 	}
 
 	apiAdmin := r.Group("/admin")

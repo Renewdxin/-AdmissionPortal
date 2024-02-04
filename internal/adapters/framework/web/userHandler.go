@@ -1,6 +1,7 @@
 package web
 
 import (
+	"github.com/Renewdxin/selfMade/internal/adapters/framework/logger"
 	userAPI "github.com/Renewdxin/selfMade/internal/ports/app/user"
 	"github.com/Renewdxin/selfMade/internal/ports/core/user"
 	"github.com/gin-gonic/gin"
@@ -19,19 +20,17 @@ func NewUserHandlerAdapter(userCase userAPI.UsrApplicationPort) *UsrHandlerAdapt
 }
 
 // GetUserInfo get user info
-func (uHandler UsrHandlerAdapter) GetUserInfo(c *gin.Context) {
+func (Handler UsrHandlerAdapter) GetUserInfo(c *gin.Context) {
 	userID := c.Param("id")
 	if userID == "" {
-		c.JSON(http.StatusBadRequest, gin.H{
-			"code": 400,
-			"msg":  "please try again",
+		c.JSON(http.StatusInternalServerError, gin.H{
+			"msg": "server error",
 		})
 	}
-	newUser, err := uHandler.userCase.GetUserProfile(userID)
+	newUser, err := Handler.userCase.GetUserProfile(userID)
 	if err != nil {
-		c.JSON(http.StatusBadRequest, gin.H{
-			"code": 400,
-			"msg":  "please try again",
+		c.JSON(http.StatusInternalServerError, gin.H{
+			"msg": "please try again",
 		})
 		log.Fatalf("No such user: %v", userID)
 		return
@@ -48,37 +47,35 @@ func (uHandler UsrHandlerAdapter) GetUserInfo(c *gin.Context) {
 }
 
 // GetUserStatus be hired or not
-func (uHandler UsrHandlerAdapter) GetUserStatus(c *gin.Context) {
+func (Handler UsrHandlerAdapter) GetUserStatus(c *gin.Context) {
 	userID := c.Param("id")
-	newUser, err := uHandler.userCase.GetUserProfile(userID)
+	newUser, err := Handler.userCase.GetUserProfile(userID)
 	if err != nil {
-		c.JSON(http.StatusBadRequest, gin.H{
-			"code": 400,
-			"msg":  "please try again",
+		c.JSON(http.StatusInternalServerError, gin.H{
+			"msg": "please try again",
 		})
 		log.Fatalf("No such user: %v", userID)
 		return
 	}
 	c.JSON(http.StatusOK, gin.H{
-		"msg":        "Your profile",
-		"created_at": newUser.CreatedAt,
-		"state":      newUser.State,
+		"msg":   "Your profile",
+		"state": newUser.State,
 	})
 }
 
 // UpdateUserInfo update user info
-func (uHandler UsrHandlerAdapter) UpdateUserInfo(c *gin.Context) {
+func (Handler UsrHandlerAdapter) UpdateUserInfo(c *gin.Context) {
 	var newUser user.User
 	if err := c.ShouldBindJSON(&newUser); err != nil {
-		c.JSON(http.StatusBadRequest, gin.H{
-			"code": 400,
-			"msg":  "INVALID PARAMS",
+		logger.Logger.Logf(logger.ErrorLevel, "User :%v Bind Error", newUser.ID)
+		c.JSON(http.StatusInternalServerError, gin.H{
+			"msg": "server error",
 		})
 	}
-	if err := uHandler.userCase.UpdateUser(newUser); err != nil {
+	if err := Handler.userCase.UpdateUser(newUser); err != nil {
+		logger.Logger.Logf(logger.ErrorLevel, "User :%v Update Error", newUser.ID)
 		c.JSON(http.StatusBadRequest, gin.H{
-			"code": 400,
-			"msg":  "Request Error",
+			"msg": "Request Error",
 		})
 	}
 
@@ -88,15 +85,14 @@ func (uHandler UsrHandlerAdapter) UpdateUserInfo(c *gin.Context) {
 }
 
 // DeleteUser delete user
-func (uHandler UsrHandlerAdapter) DeleteUser(c *gin.Context) {
+func (Handler UsrHandlerAdapter) DeleteUser(c *gin.Context) {
 	userID := c.Param("id")
 
-	if err := uHandler.userCase.DeleteUser(userID); err != nil {
-		c.JSON(http.StatusBadRequest, gin.H{
-			"code": 400,
-			"msg":  "please try again",
+	if err := Handler.userCase.DeleteUser(userID); err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{
+			"msg": "please try again",
 		})
-		log.Fatalf("User :%v Delete Error", userID)
+		logger.Logger.Logf(logger.ErrorLevel, "User :%v Delete Error", userID)
 		return
 	}
 	c.JSON(http.StatusOK, gin.H{

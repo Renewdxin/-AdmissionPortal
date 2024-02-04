@@ -25,7 +25,7 @@ func (handler AuthHandlerAdapter) Login(c *gin.Context) {
 	var account auth.Account
 
 	if err := c.ShouldBindJSON(&account); err != nil {
-		c.JSON(http.StatusBadRequest, gin.H{
+		c.JSON(http.StatusInternalServerError, gin.H{
 			"msg": "account error",
 		})
 		return
@@ -33,22 +33,23 @@ func (handler AuthHandlerAdapter) Login(c *gin.Context) {
 	fmt.Println(account)
 
 	if err := handler.authCase.LogIn(account.ID, account.Password); err != nil {
-		c.JSON(http.StatusBadRequest, gin.H{
-			"msg": err,
+		c.JSON(http.StatusOK, gin.H{
+			"msg": "Password or account error",
 		})
 		return
 	}
 
-	token, err := handler.jwtPorts.GenerateToken(account.ID, "hahaha")
+	token, err := handler.jwtPorts.GenerateToken(account.ID, "gvgkjbjkttsrt")
 	if err != nil {
-		c.JSON(http.StatusBadRequest, gin.H{
-			"msg": "hahah",
+		c.JSON(http.StatusInternalServerError, gin.H{
+			"msg": "please try again",
 		})
 		return
 	}
+
+	c.Header("tok", token)
 	c.JSON(http.StatusOK, gin.H{
-		"msg":   "welcome",
-		"token": token,
+		"msg": "welcome",
 	})
 }
 
