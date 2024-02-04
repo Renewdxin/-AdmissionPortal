@@ -63,13 +63,13 @@ func (api UsrApplicationAdapter) RegisterUser(name, gender, email, phone, birth 
 	code := api.verify.GenerateCode()
 	err = api.redisClient.SaveVerificationCode(email, code)
 	if err != nil {
-		log.Fatalf("Failed to generate the code, plz try again")
+		log.Fatalf("Failed to generate the code")
 		return err
 	}
 	//code send
 	err = api.mailSender.CodeSend(email, "Verify your email", code)
 	if err != nil {
-		log.Fatalf("Failed to send code, plz try again")
+		log.Fatalf("Failed to send code")
 		return err
 	}
 	// verify code
@@ -82,7 +82,7 @@ func (api UsrApplicationAdapter) RegisterUser(name, gender, email, phone, birth 
 	newUser, err := api.user.CreateUser(name, gender, email, phone, birth)
 
 	if err := api.userDao.SaveUser(newUser); err != nil {
-		log.Fatalf("Failed to save user, plz try again")
+		log.Fatalf("Failed to save user")
 		return err
 	}
 	// send notification
@@ -107,13 +107,13 @@ func (api UsrApplicationAdapter) DeleteUser(id string) error {
 	code := api.verify.GenerateCode()
 	err = api.redisClient.SaveVerificationCode(u.Email, code)
 	if err != nil {
-		log.Fatalf("Failed to generate the code, plz try again")
+		log.Fatalf("Failed to generate the code")
 		return err
 	}
 	//code send
 	err = api.mailSender.CodeSend(u.Email, "Verify your email", code)
 	if err != nil {
-		log.Fatalf("Failed to send code, plz try again")
+		log.Fatalf("Failed to send code")
 		return err
 	}
 	// verify code

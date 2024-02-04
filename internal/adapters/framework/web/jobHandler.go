@@ -56,6 +56,7 @@ func (adapter JobHandlerAdapter) DeleteJob(c *gin.Context) {
 		})
 		return
 	}
+	logger.Logger.Log(logger.ErrorLevel, "Delete Job Error")
 	c.JSON(http.StatusBadRequest, gin.H{
 		"msg": "Error! Please try again later",
 	})
@@ -64,6 +65,7 @@ func (adapter JobHandlerAdapter) DeleteJob(c *gin.Context) {
 func (adapter JobHandlerAdapter) UpdateJob(c *gin.Context) {
 	var newJob jobCore.Job
 	if err := c.ShouldBind(&newJob); err != nil {
+		logger.Logger.Log(logger.ErrorLevel, "Update Job Error")
 		c.JSON(http.StatusInternalServerError, gin.H{
 			"msg": "Error! Please try again later",
 		})
