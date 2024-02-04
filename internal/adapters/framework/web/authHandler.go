@@ -66,7 +66,7 @@ func (handler AuthHandlerAdapter) Register(c *gin.Context) {
 		return
 	}
 
-	if err := handler.authCase.RegisterByEmail(account.ID, account.Password); err != nil {
+	if err := handler.authCase.RegisterByID(account.ID, account.Password); err != nil {
 		logger.Logger.Log(logger.WarnLevel, "Token Generate Error")
 		c.JSON(http.StatusInternalServerError, gin.H{
 			"msg": err,

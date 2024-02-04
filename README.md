@@ -102,7 +102,7 @@ type User struct {
     State       int    `json:"state" gorm:"type:tinyint" validate:"oneof=0 1"`
     Gender      string `json:"gender"`
     Birth       string `json:"birth"`
-    Email       string `json:"email"`
+    Email       string `json:"id"`
     PhoneNumber string `json:"phoneNumber"`
     Account     account.Account
 }   

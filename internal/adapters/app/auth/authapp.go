@@ -42,36 +42,36 @@ func (api AuthorizeApplicationAdapter) BeforeRegister(id, password string) error
 	return nil
 }
 
-func (api AuthorizeApplicationAdapter) RegisterByEmail(email, password string) error {
+func (api AuthorizeApplicationAdapter) RegisterByID(id, password string) error {
 	// validate first
-	if err := api.BeforeRegister(email, password); err != nil {
+	if err := api.BeforeRegister(id, password); err != nil {
 		return err
 	}
 
-	account, err := api.core.CreateAccount(email, password)
+	account, err := api.core.CreateAccount(id, password)
 	if err != nil {
 		return err
 	}
 	// if register
-	if api.dao.EmailIfExist(email) {
+	if api.dao.EmailIfExist(id) {
 		return errors.New("this account already exists")
 	}
 	// code send
 
 	code := api.codeGen.GenerateCode()
-	err = api.redisClient.SaveVerificationCode(email, code)
+	err = api.redisClient.SaveVerificationCode(id, code)
 	if err != nil {
 		logger.Logger.Logf(logger.ErrorLevel, "Failed to generate the code, plz try again: %v", err)
 		return err
 	}
 	//code send
-	err = api.mailSender.CodeSend(email, "Verify your email", code)
+	err = api.mailSender.CodeSend(id, "Verify your id", code)
 	if err != nil {
 		logger.Logger.Logf(logger.ErrorLevel, "Failed to send code, plz try again: %v", err)
 		return err
 	}
 	// verify code
-	verify, _ := api.redisClient.GetVerificationCode(email)
+	verify, _ := api.redisClient.GetVerificationCode(id)
 	if verify != code {
 		logger.Logger.Logf(logger.InfoLevel, "INVALID CODE: %v", err)
 		return err
