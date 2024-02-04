@@ -5,13 +5,13 @@
         <h1>实验室简介</h1>
         <p>know more about 3g</p>
       </div>
-      <div class="register hover" @click="router.push('/login?isLogin=false')">
-        <h1>报名</h1>
-        <p>REGISTER</p>
-      </div>
-      <div class="login hover" @click="router.push('/login?isLogin=true')">
+      <div class="login hover" @click="router.push('/login')">
         <h1>登录</h1>
         <p>LOGIN</p>
+      </div>
+      <div class="website hover" @click="router.push('/user')">
+        <h1>进入官网</h1>
+        <p>WEBSITE</p>
       </div>
     </div>
   </div>
@@ -28,10 +28,10 @@ import router from '@/router'
   box-sizing: border-box;
 }
 .home {
-  width: 100vw;
-  height: 100vh;
+  width: 98vw;
+  height: 97vh;
   padding-top: 15vh;
-  background: url('@/assets/bkg1.webp') no-repeat;
+  background: url('@/assets/bkg27.jpg') no-repeat;
   background-size: 100% 100%;
   .main {
     width: 67vw;
@@ -41,16 +41,16 @@ import router from '@/router'
     display: flex;
     justify-content: space-around;
     .intro {
-      background-color: rgb(244, 63, 94);
+      background-color: rgba(244, 63, 94, 0.8);
     }
-    .register {
-      background-color: rgb(59, 130, 246);
+    .website {
+      background-color: rgba(59, 130, 246, 0.8);
     }
     .login {
-      background-color: rgb(34, 197, 94);
+      background-color: rgba(34, 197, 94, 0.8);
     }
     .intro,
-    .register,
+    .website,
     .login {
       width: 20vw;
       height: 50vh;
@@ -74,6 +74,37 @@ import router from '@/router'
   }
   .hover:hover {
     transform: scale(1.1, 1.1);
+  }
+}
+@media (max-width: 640px) {
+  .home {
+    .main {
+      background-color: pink;
+      width: 65vw;
+      height: 400px;
+      flex-direction: column;
+      justify-content: space-around;
+      .intro,
+      .website,
+      .login {
+        margin: 0 auto;
+        width: 88%;
+        height: 45%;
+        //   border: 1px solid black;
+        margin-top: 0vh;
+        border-radius: 3vh;
+        transition: all 0.5s;
+        p {
+          font-size: 20px;
+        }
+        p,
+        h1 {
+          text-align: center;
+          margin-top: 4%;
+          color: azure;
+        }
+      }
+    }
   }
 }
 </style>

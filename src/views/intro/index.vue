@@ -91,16 +91,23 @@ export default {}
 * {
   margin: 0px;
   padding: 0px;
-  box-sizing: border-box;
   text-decoration: none;
 }
 /* 电脑平板设备 */
 @media (min-width: 640px) {
+  .intro {
+    background: url('@/assets/bkg27.jpg') no-repeat;
+    background-size: 100% 100%;
+    margin-top: -53px;
+    margin-left: -8px;
+  }
   .lab,
   .groups {
     width: 84vw;
     margin: 7vh auto;
-    border: 1px solid red;
+    box-sizing: content-box;
+    border: 4px solid rgb(121, 115, 115);
+    background-color: rgba(255, 255, 255, 0.4);
   }
   .lab {
     position: relative;
@@ -119,6 +126,7 @@ export default {}
       height: 100%;
       position: absolute;
       right: 0px;
+      color: rgb(47, 57, 56); //介绍小字的颜色
       top: 0px;
       .brief h1 {
         margin-top: 20px;
@@ -174,6 +182,7 @@ export default {}
           width: 85%;
           position: absolute;
           top: 6vw;
+          color: rgb(47, 57, 56); //介绍小字的颜色
         }
         .nav {
           top: 1vw;
@@ -188,6 +197,7 @@ export default {}
         .text {
           width: 85%;
           position: absolute;
+          color: rgb(47, 57, 56); //介绍小字的颜色
           top: 21vw;
         }
         .nav {

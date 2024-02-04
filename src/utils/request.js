@@ -1,6 +1,6 @@
 import axios from 'axios'
 
-// const baseURL = 'http://big-event-vue-api-t.itheima.net' // 发送请求的基地址
+// const baseURL = '124.70.221.248:8080' // 发送请求的基地址
 
 const instance = axios.create({
   // TODO 1. 基础地址，超时时间
