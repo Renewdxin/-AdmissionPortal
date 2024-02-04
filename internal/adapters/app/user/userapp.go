@@ -37,16 +37,13 @@ func (api UsrApplicationAdapter) IfExist(email string) bool {
 
 func (api UsrApplicationAdapter) UserValidateBeforeRegister(name string, gender string, email string, phone string, birth string) bool {
 	if !api.validator.NameValidate(name) || !api.validator.EmailValidate(email) || !api.validator.PhoneValidate(phone) {
-		log.Fatalf("INVALID INFORMATION")
 		return false
 	}
 
 	if gender != "male" && gender != "female" {
-		log.Fatalf("INVALID INFORMATION")
 		return false
 	}
 	if !api.validator.BirthValidate(birth) {
-		log.Fatalf("INVALID INFORMATION")
 		return false
 	}
 	return true
