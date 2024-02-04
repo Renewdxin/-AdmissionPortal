@@ -23,7 +23,7 @@ func main() {
 	logger.Logger = logger.NewLogAdapter()
 	err := godotenv.Load(".env")
 	if err != nil {
-		logger.Logger.Log(logger.FatalLevel, "无法加载 .env 文件: %v")
+		logger.Logger.Logf(logger.FatalLevel, "无法加载 .env 文件: %v", err)
 	}
 
 	redisClient := database.NewRedisClientAdapter()

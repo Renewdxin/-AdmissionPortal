@@ -79,12 +79,17 @@ func (adapter JobHandlerAdapter) ApplyJob(c *gin.Context) {
 	jobID := c.GetHeader("jobID")
 	// 表单信息输入验证
 	var user userCore.User
+
 	if err := c.ShouldBind(&user); err != nil {
+		logger.Logger.Log(logger.ErrorLevel, "Apply Job Binding error")
 		c.JSON(http.StatusInternalServerError, gin.H{
 			"msg": "Request error",
 		})
 		return
 	}
+	user.ID = userID
+	user.Account.ID = jobID
+
 	// 上传到数据库中
 
 	// 通知admin

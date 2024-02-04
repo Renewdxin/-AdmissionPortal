@@ -3,3 +3,4 @@
 {"level":"fatal","time":"2023-12-25T16:46:30.078+0800","caller":"logger/logger.go:78","message":"无法加载 .env 文件: %v"}
 {"level":"fatal","time":"2023-12-25T16:46:45.365+0800","caller":"logger/logger.go:78","message":"无法加载 .env 文件: %v"}
 {"level":"fatal","time":"2023-12-25T18:06:25.543+0800","caller":"logger/logger.go:78","message":"falied to connect to the user database"}
+{"level":"fatal","time":"2024-02-04T18:29:27.687+0800","caller":"logger/logger.go:87","message":"failed to connect to the user database"}

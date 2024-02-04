@@ -1,6 +1,7 @@
 package user
 
 import (
+	"github.com/Renewdxin/selfMade/internal/ports/core/auth"
 	"time"
 )
 
@@ -13,7 +14,7 @@ type User struct {
 	Birth       string `json:"birth"`
 	Email       string `json:"email" gorm:"column:email"`
 	PhoneNumber string `json:"phoneNumber" gorm:"column:phone"`
-	//Account     auth.Account
+	Account     auth.Account
 }
 
 func (user User) TableName() string {
