@@ -2,9 +2,10 @@ package web
 
 import (
 	"encoding/json"
+	"github.com/Renewdxin/selfMade/internal/adapters/framework/logger"
 	"github.com/Renewdxin/selfMade/internal/ports/app/job"
-	job2 "github.com/Renewdxin/selfMade/internal/ports/core/job"
-	user2 "github.com/Renewdxin/selfMade/internal/ports/core/user"
+	jobCore "github.com/Renewdxin/selfMade/internal/ports/core/job"
+	userCore "github.com/Renewdxin/selfMade/internal/ports/core/user"
 	"github.com/gin-gonic/gin"
 	"net/http"
 )
@@ -27,6 +28,7 @@ func (adapter JobHandlerAdapter) GetJobs(c *gin.Context) {
 		// 将每个结构体转换为 JSON
 		jsonData, err := json.Marshal(data)
 		if err != nil {
+			logger.Logger.Log(logger.ErrorLevel, "GetJobs Marshal Error")
 			c.JSON(http.StatusInternalServerError, gin.H{"error": "Internal Server Error"})
 			return
 		}
@@ -52,6 +54,7 @@ func (adapter JobHandlerAdapter) DeleteJob(c *gin.Context) {
 		c.JSON(http.StatusOK, gin.H{
 			"msg": "Successful",
 		})
+		return
 	}
 	c.JSON(http.StatusBadRequest, gin.H{
 		"msg": "Error! Please try again later",
@@ -59,11 +62,12 @@ func (adapter JobHandlerAdapter) DeleteJob(c *gin.Context) {
 }
 
 func (adapter JobHandlerAdapter) UpdateJob(c *gin.Context) {
-	var newJob job2.Job
+	var newJob jobCore.Job
 	if err := c.ShouldBind(&newJob); err != nil {
-		c.JSON(http.StatusBadRequest, gin.H{
+		c.JSON(http.StatusInternalServerError, gin.H{
 			"msg": "Error! Please try again later",
 		})
+		return
 	}
 	c.JSON(http.StatusOK, gin.H{
 		"msg": "Successful",
@@ -71,12 +75,15 @@ func (adapter JobHandlerAdapter) UpdateJob(c *gin.Context) {
 }
 
 func (adapter JobHandlerAdapter) ApplyJob(c *gin.Context) {
+	userID := c.GetHeader("userID")
+	jobID := c.GetHeader("jobID")
 	// 表单信息输入验证
-	var user user2.User
+	var user userCore.User
 	if err := c.ShouldBind(&user); err != nil {
-		c.JSON(http.StatusOK, gin.H{
+		c.JSON(http.StatusInternalServerError, gin.H{
 			"msg": "Request error",
 		})
+		return
 	}
 	// 上传到数据库中
 
