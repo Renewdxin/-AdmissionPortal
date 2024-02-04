@@ -82,28 +82,28 @@ func (api AuthorizeApplicationAdapter) RegisterByID(id, password string) error {
 	}
 	return nil
 }
-func (api AuthorizeApplicationAdapter) ForgetPasswordByEmail(email, password string) error {
+func (api AuthorizeApplicationAdapter) ForgetPasswordByID(id, password string) error {
 	// code generate and save to redis
 	code := api.codeGen.GenerateCode()
 	var err error
-	err = api.redisClient.SaveVerificationCode(email, code)
+	err = api.redisClient.SaveVerificationCode(id, code)
 	if err != nil {
 		logger.Logger.Log(logger.ErrorLevel, "Failed to generate the code, plz try again")
 		return err
 	}
 	//code send
-	err = api.mailSender.CodeSend(email, "Verify your email", code)
+	err = api.mailSender.CodeSend(id, "Verify your id", code)
 	if err != nil {
 		logger.Logger.Log(logger.ErrorLevel, "Failed to send code, plz try again")
 		return err
 	}
 	// verify code
-	verify, _ := api.redisClient.GetVerificationCode(email)
+	verify, _ := api.redisClient.GetVerificationCode(id)
 	if verify != code {
 		logger.Logger.Logf(logger.InfoLevel, "INVALID CODE: %v", err)
 		return err
 	}
-	account, errs := api.core.CreateAccount(email, password)
+	account, errs := api.core.CreateAccount(id, password)
 	if errs != nil {
 		return errs
 	}

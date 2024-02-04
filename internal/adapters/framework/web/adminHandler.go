@@ -2,6 +2,7 @@ package web
 
 import (
 	"encoding/json"
+	"github.com/Renewdxin/selfMade/internal/adapters/framework/logger"
 	"github.com/Renewdxin/selfMade/internal/ports/app/job"
 	"github.com/Renewdxin/selfMade/internal/ports/app/user"
 	"github.com/gin-gonic/gin"
@@ -56,10 +57,10 @@ func (adapter AdminHandlerAdapter) ShowAllJobs(c *gin.Context) {
 		// 将每个结构体转换为 JSON
 		jsonData, err := json.Marshal(data)
 		if err != nil {
-			c.JSON(http.StatusInternalServerError, gin.H{"error": "Internal Server Error"})
+			logger.Logger.Logf(logger.ErrorLevel, "Admin_ShowAllJobs : Marshall Error: %v", data)
+			c.JSON(http.StatusInternalServerError, gin.H{"msg": "Error! Please Try Again"})
 			return
 		}
-
 		// 输出 JSON 数据
 		c.String(http.StatusOK, string(jsonData))
 	}
@@ -69,7 +70,8 @@ func (adapter AdminHandlerAdapter) ShowJobDetails(c *gin.Context) {
 	id := c.GetHeader("id")
 	details := adapter.JobApp.FindJobByID(id)
 	if details.Name == "" {
-		c.JSON(http.StatusBadRequest, gin.H{
+		logger.Logger.Logf(logger.ErrorLevel, "AdminHandlerAdapter ShowJobDetails Error, id : %v", id)
+		c.JSON(http.StatusInternalServerError, gin.H{
 			"msg": "Something went wrong",
 		})
 		return
@@ -83,14 +85,16 @@ func (adapter AdminHandlerAdapter) ApproveJobs(c *gin.Context) {
 	id := c.GetHeader("id")
 	details, err := adapter.UserApp.GetUserProfile(id)
 	if err != nil {
-		c.JSON(http.StatusBadRequest, gin.H{
+		logger.Logger.Logf(logger.ErrorLevel, "AdminHandlerAdapter ApproveJobs GetUserInfo Error, id : %v", id)
+		c.JSON(http.StatusInternalServerError, gin.H{
 			"msg": "Something went wrong",
 		})
 		return
 	}
 
 	if !adapter.AdminApp.ApproveJobs(details) {
-		c.JSON(http.StatusBadRequest, gin.H{
+		logger.Logger.Logf(logger.ErrorLevel, "AdminHandlerAdapter ApproveJobs ApproveJobs Error, id : %v", id)
+		c.JSON(http.StatusInternalServerError, gin.H{
 			"msg": "Something went wrong",
 		})
 		return

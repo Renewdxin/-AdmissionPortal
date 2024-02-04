@@ -39,6 +39,6 @@ func (adapter AdminApplicationAdapter) ApproveJobs(u user.User) bool {
 		logger.Logger.Logf(logger.ErrorLevel, "failed to change user's status, userID: %v", u.ID)
 		return false
 	}
-	logger.Logger.Logf(logger.InfoLevel, "change user's status, userID: %v", u.ID)
+	logger.Logger.Logf(logger.InfoLevel, "user's status change , userID: %v", u.ID)
 	return true
 }

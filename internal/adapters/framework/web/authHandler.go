@@ -50,6 +50,7 @@ func (handler AuthHandlerAdapter) Login(c *gin.Context) {
 	}
 
 	c.Header("tok", token)
+
 	c.JSON(http.StatusOK, gin.H{
 		"msg": "welcome",
 	})
@@ -67,7 +68,7 @@ func (handler AuthHandlerAdapter) Register(c *gin.Context) {
 	}
 
 	if err := handler.authCase.RegisterByID(account.ID, account.Password); err != nil {
-		logger.Logger.Log(logger.WarnLevel, "Token Generate Error")
+		logger.Logger.Logf(logger.WarnLevel, "Token Generate Error, id : %v", account.ID)
 		c.JSON(http.StatusInternalServerError, gin.H{
 			"msg": err,
 		})
@@ -84,9 +85,11 @@ func (handler AuthHandlerAdapter) ChangePassword(c *gin.Context) {
 	oldPassword := c.GetString("oldPassword")
 
 	if err := handler.authCase.ChangePassword(id, oldPassword, newPassword); err != nil {
-		c.JSON(http.StatusBadRequest, gin.H{
-			"msg": err,
+		logger.Logger.Logf(logger.WarnLevel, "Password Change Error, id : %v", id)
+		c.JSON(http.StatusInternalServerError, gin.H{
+			"msg": "Error! please try again",
 		})
+		return
 	}
 	c.JSON(http.StatusOK, gin.H{
 		"msg": "ok",
@@ -97,10 +100,12 @@ func (handler AuthHandlerAdapter) ForgetPassword(c *gin.Context) {
 	id := c.GetString("id")
 	newPassword := c.GetString("newPassword")
 
-	if err := handler.authCase.ForgetPasswordByEmail(id, newPassword); err != nil {
+	if err := handler.authCase.ForgetPasswordByID(id, newPassword); err != nil {
+		logger.Logger.Logf(logger.WarnLevel, "Password Change Error, id : %v", id)
 		c.JSON(http.StatusBadRequest, gin.H{
-			"msg": err,
+			"msg": "Error! please try again",
 		})
+		return
 	}
 	c.JSON(http.StatusOK, gin.H{
 		"msg": "ok",
