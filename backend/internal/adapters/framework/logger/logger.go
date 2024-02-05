@@ -54,7 +54,7 @@ func NewLogAdapter() *LogAdapter {
 		panic(err)
 	}
 
-	logFilePath := filepath.Join(currentDir, "storage", "log.txt")
+	logFilePath := filepath.Join(currentDir, "backend/storage", "log.txt")
 
 	fileOutput, _, err := zap.Open(logFilePath)
 	if err != nil {
