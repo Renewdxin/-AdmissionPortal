@@ -2,7 +2,7 @@
 /internal/adapters/framework/global/.env
 /Dockerfile
 /.env
-/cmd/config.yaml
-/storage/log.txt
+/backend/cmd/config.yaml
+/backend/storage/log.txt
 .idea/*.xml
-storage/*
+backend/storage/*

@@ -102,7 +102,7 @@ type User struct {
     State       int    `json:"state" gorm:"type:tinyint" validate:"oneof=0 1"`
     Gender      string `json:"gender"`
     Birth       string `json:"birth"`
-    Email       string `json:"email"`
+    Email       string `json:"id"`
     PhoneNumber string `json:"phoneNumber"`
     Account     account.Account
 }   
@@ -121,7 +121,7 @@ type Account struct {
 }
 ```
 
-账户信息未想好怎么登录，或者用email 作为账户更好？
+账户信息通过学号登录
 
 id前端或者后端自动生成
 
