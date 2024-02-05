@@ -23,7 +23,11 @@ const formModel = ref({
 const rules = {
   tel: [
     { required: true, message: '请输入手机号', trigger: 'blur' },
-    { min: 11, max: 11, message: '用户名必须是11位的字符', trigger: 'blur' }
+    {
+      pattern: /^\d{11}$/,
+      message: '手机号必须11位数字',
+      trigger: 'blur'
+    }
   ],
   pwd: [
     { required: true, message: '请输入密码', trigger: 'blur' },
@@ -34,7 +38,7 @@ const rules = {
     }
   ],
   repwd: [
-    { required: true, message: '请再次输入密码', trigger: 'blur' },
+    { required: true, message: '请确认密码', trigger: 'blur' },
     {
       validator: (rule, value, callback) => {
         if (value !== formModel.value.pwd) {
@@ -50,9 +54,9 @@ const rules = {
 const change = () => {
   isLogin.value = !isLogin.value
   formModel.value = {
-    tel: '15592277810',
-    pwd: '111111hh',
-    repwd: '111111hh'
+    tel: '',
+    pwd: '',
+    repwd: ''
   }
 }
 
@@ -61,8 +65,8 @@ const form = ref(null)
 const signup = async () => {
   await form.value.validate()
   const res = await userSignupService({
-    tel: formModel.value.tel,
-    pwd: formModel.value.pwd
+    id: formModel.value.tel,
+    password: formModel.value.pwd
   })
   console.log(res)
   if (res.data.statue === 0) {
@@ -78,8 +82,8 @@ const signup = async () => {
 const login = async () => {
   await form.value.validate()
   const res = await userLoginService({
-    tel: formModel.value.tel,
-    pwd: formModel.value.pwd
+    id: formModel.value.tel,
+    password: formModel.value.pwd
   })
   console.log(res)
   if (res.data.statue === 0) {

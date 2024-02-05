@@ -1,9 +1,11 @@
 import axios from 'axios'
 
-// const baseURL = '124.70.221.248:8080' // 发送请求的基地址
+const baseURL = 'http://localhost:8080' // 发送请求的基地址
 
 const instance = axios.create({
   // TODO 1. 基础地址，超时时间
+  baseURL,
+  timeout: 5000
 })
 
 // 请求拦截器
