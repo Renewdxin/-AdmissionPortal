@@ -26,5 +26,5 @@ func (u UsrCoreAdapter) CreateUser(name string, gender string, email string, pho
 }
 
 func (u UsrCoreAdapter) TableName() string {
-	return "userinfo"
+	return "userInfo"
 }

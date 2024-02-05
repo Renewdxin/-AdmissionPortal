@@ -13,5 +13,5 @@ func (accountAdapter AuthorizeCoreAdapter) CreateAccount(id, password string) (a
 }
 
 func (accountAdapter AuthorizeCoreAdapter) TableName() string {
-	return "accountInfo"
+	return "user_account"
 }

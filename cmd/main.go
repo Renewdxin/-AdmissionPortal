@@ -14,6 +14,7 @@ import (
 	"github.com/Renewdxin/selfMade/internal/adapters/framework/mail"
 	"github.com/Renewdxin/selfMade/internal/adapters/framework/vaidate"
 	"github.com/Renewdxin/selfMade/internal/adapters/framework/web"
+	"github.com/gin-contrib/cors"
 	"github.com/gin-gonic/gin"
 	"github.com/joho/godotenv"
 	"os"
@@ -66,6 +67,10 @@ func main() {
 	adminHandler := web.NewAdminHandlerAdapter(adminAPI, jobAPI, userAPI)
 
 	r := gin.New()
+	config := cors.DefaultConfig()
+	config.AllowOrigins = []string{"http://localhost:5173"} // 允许的前端域
+	//config.AllowHeaders = []string{"Origin", "Content-Length", "Content-Type", "application/json"}
+	r.Use(cors.New(config))
 	//home page
 	r.POST("/home", homeHandler.HomePage)
 

@@ -6,14 +6,14 @@ import (
 )
 
 type User struct {
-	ID          string `json:"id" gorm:"primarykey;column:id" `
-	Name        string `json:"name" gorm:"column:name"`
-	CreatedAt   time.Time
-	State       int    `json:"state" validate:"oneof=0 1"`
-	Gender      string `json:"gender" gorm:"column:gender"`
-	Birth       string `json:"birth"`
-	Email       string `json:"email" gorm:"column:email"`
-	PhoneNumber string `json:"phoneNumber" gorm:"column:phone"`
+	ID          string    `json:"id" gorm:"primarykey;column:id" `
+	Name        string    `json:"name" gorm:"column:name"`
+	CreatedAt   time.Time `gorm:"column:created_at"`
+	State       int       `json:"state" validate:"oneof=0 1"`
+	Gender      string    `json:"gender" gorm:"column:gender"`
+	Birth       string    `json:"birth"`
+	Email       string    `json:"email" gorm:"column:email"`
+	PhoneNumber string    `json:"phoneNumber" gorm:"column:phone"`
 	Account     auth.Account
 }
 

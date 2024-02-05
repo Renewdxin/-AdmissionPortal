@@ -1,6 +1,7 @@
 package web
 
 import (
+	"fmt"
 	"github.com/Renewdxin/selfMade/internal/adapters/framework/logger"
 	authcase "github.com/Renewdxin/selfMade/internal/ports/app/auth"
 	"github.com/Renewdxin/selfMade/internal/ports/app/middleware"
@@ -23,6 +24,7 @@ func NewAuthHandlerAdapter(authCase authcase.AuthorizeApplicationPort, jwtPorts 
 
 func (handler AuthHandlerAdapter) Login(c *gin.Context) {
 	var account auth.Account
+	fmt.Println("start")
 
 	if err := c.ShouldBindJSON(&account); err != nil {
 		logger.Logger.Log(logger.WarnLevel, "Log In Error")
@@ -31,6 +33,7 @@ func (handler AuthHandlerAdapter) Login(c *gin.Context) {
 		})
 		return
 	}
+	fmt.Println(account)
 
 	if err := handler.authCase.LogIn(account.ID, account.Password); err != nil {
 		logger.Logger.Logf(logger.ErrorLevel, " Password Or Account Invalid, id: %v, password: %v", account.ID, account.Password)
