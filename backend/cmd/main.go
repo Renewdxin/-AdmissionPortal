@@ -14,6 +14,7 @@ import (
 	"github.com/Renewdxin/selfMade/internal/adapters/framework/mail"
 	"github.com/Renewdxin/selfMade/internal/adapters/framework/vaidate"
 	"github.com/Renewdxin/selfMade/internal/adapters/framework/web"
+	"github.com/alibabacloud-go/tea/tea"
 	"github.com/gin-contrib/cors"
 	"github.com/gin-gonic/gin"
 	"github.com/joho/godotenv"
@@ -32,6 +33,10 @@ func main() {
 	mailSender := mail.NewMailAdapter()
 	verification := verify.NewVerificationCodeAdapter()
 	validator := vaidate.NewValidatorAdapter(redisClient)
+	messageSender, err := mail.NewSMSAdapter(tea.String(os.Getenv("ALIBABA_CLOUD_ACCESS_KEY_ID")), tea.String(os.Getenv("ALIBABA_CLOUD_ACCESS_KEY_SECRET")))
+	if err != nil {
+		logger.Logger.Logf(logger.FatalLevel, "无法加载 messageSender, 错误信息：  %v", err)
+	}
 
 	jwtAPI := middleware.NewJWTAdapters()
 	jwtHandler := web.NewJWTHandlerAdapter(jwtAPI)
@@ -64,7 +69,7 @@ func main() {
 	adminCore := userApp.NewAdminCoreAdapter()
 	_ = database.NewAdminDaoAdapter(os.Getenv("DRIVER_NAME"), os.Getenv("DRIVER_SOURCE_NAME"), adminCore)
 	adminAPI := user.NewAdminAppAdapter(jobAPI, jobDao, userDao)
-	adminHandler := web.NewAdminHandlerAdapter(adminAPI, jobAPI, userAPI)
+	adminHandler := web.NewAdminHandlerAdapter(adminAPI, jobAPI, userAPI, messageSender)
 
 	r := gin.New()
 	config := cors.DefaultConfig()
