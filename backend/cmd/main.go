@@ -33,7 +33,10 @@ func main() {
 	mailSender := mail.NewMailAdapter()
 	verification := verify.NewVerificationCodeAdapter()
 	validator := vaidate.NewValidatorAdapter(redisClient)
-	messageSender := mail.NewSMSAdapter(tea.String(os.Getenv("ALIBABA_CLOUD_ACCESS_KEY_ID")), tea.String(os.Getenv("ALIBABA_CLOUD_ACCESS_KEY_SECRET")))
+	messageSender, err := mail.NewSMSAdapter(tea.String(os.Getenv("ALIBABA_CLOUD_ACCESS_KEY_ID")), tea.String(os.Getenv("ALIBABA_CLOUD_ACCESS_KEY_SECRET")))
+	if err != nil {
+		logger.Logger.Logf(logger.FatalLevel, "无法加载 messageSender  %v", err)
+	}
 
 	jwtAPI := middleware.NewJWTAdapters()
 	jwtHandler := web.NewJWTHandlerAdapter(jwtAPI)
