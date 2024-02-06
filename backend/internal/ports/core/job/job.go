@@ -1,8 +1,11 @@
 package job
 
+import "github.com/Renewdxin/selfMade/internal/ports/core/user"
+
 type Job struct {
-	ID   string `json:"id" gorm:"id"`
-	Name string `json:"name" gorm:"name"`
+	ID        string      `json:"id" gorm:"id"`
+	Name      string      `json:"name" gorm:"name"`
+	ApplyList []user.User `json:"apply_list" gorm:"foreignKey:ApplyID"`
 }
 
 type JobsCorePort interface {

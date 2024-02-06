@@ -58,7 +58,7 @@ func main() {
 
 	jobCore := job.NewJobsCoreAdapter()
 	jobDao := database.NewJobsDaoAdapter(os.Getenv("DRIVER_NAME"), os.Getenv("DRIVER_SOURCE_NAME"), jobCore)
-	jobAPI := jobApp.NewJobCaseAdapter(jobCore, jobDao)
+	jobAPI := jobApp.NewJobCaseAdapter(jobCore, jobDao, userDao)
 	jobHandler := web.NewJobHandlerAdapter(jobAPI)
 
 	adminCore := userApp.NewAdminCoreAdapter()

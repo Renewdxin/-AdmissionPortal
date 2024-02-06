@@ -1,91 +1,89 @@
 ## 地址
+
 git仓库地址：先提交到各自的分支
 
 后端：back_branch
 
 前端：front_branch
 
+```
+git@github.com:Renewdxin/-AdmissionPortal.git
+```
 
-路由
+## 后端ip地址
+
+```
+127.0.0.1:8080
+//后期服务器
+unknown
+```
+
+## 路由
 ```go
-func NewRouter() *gin.Engine {
-    r := gin.New()
-    // home page 主要为各个入口，打算直接一个html定死
-    r.POST("/home")
-
-    // account setting
+    //home page
+    r.POST("/home", homeHandler.HomePage)
+    
+    // auth setting
     apiAccount := r.Group("/auth")
-    apiAccount.Use(middleware.JWTHandler())
+    apiAccount.Use()
     {
-       // 密码+手机号
-       apiAccount.POST("/login")
-       // 主要功能为更改cokkie中的max-age，退出登录状态
-       apiAccount.POST("/logout")
-       // 用户注册
-       // 1. 是否已被注册
-       // 2. 验证码
-       // 3. 先用手机号+密码注册
-       // 后续用户进入个人信息页自行完善信息
-       apiAccount.POST("/signup")
-       // 忘记密码： 需要进行手机号或者邮箱验证码验证过后，方能修改密码；这里应该还可以分出链接，通过邮箱还是手机号验证码
-       apiAccount.POST("/password/forget")
-       // 旧密码核对正确即可
-       apiAccount.POST("/password/change")
+        // id（学号）+密码
+        apiAccount.POST("/login", authHandler.Login)
+        //apiAccount.POST("/logout")
+        // id（学号） + 密码 + 手机号
+        apiAccount.POST("/signup", authHandler.Register)
+        // 手机号 + 验证码找回
+        apiAccount.POST("/password/forget", authHandler.ForgetPassword)
+        // 输入旧密码 + 新密码两遍，否则跳转至 /password/forget
+        apiAccount.POST("/password/change", authHandler.ChangePassword)
     }
-
+    
     // personal info
     apiProfile := r.Group("/profile")
-    apiProfile.Use(middleware.JWTHandler())
+    apiProfile.Use(jwtHandler.JWTHandler())
     {
-       // GetUserInfo 通过id得到用户信息，返回项为姓名、性别、出生日期、邮箱、手机号
-        apiProfile.GET("/Info/:id", handler.GetUserInfo)
-        // DeleteUser 用户在删除前需要进行手机验证码验证才能删除
-        apiProfile.DELETE("/delete/:id", handler.DeleteUser)
+        // GetUserInfo 通过id得到用户信息，返回项为姓名、性别、出生日期、邮箱、手机号，空则为""
+        apiProfile.GET("/Info/:id", userHandler.GetUserInfo)
+        // DeleteUser 手机验证码/密码 验证才能删除
+        apiProfile.DELETE("/delete/:id", userHandler.DeleteUser)
         // 更新用户信息，仅限手机号、邮箱
-        apiProfile.PUT("/update/:id", handler.UpdateUserInfo)
-        // 查询是否被录取，这里前端通过后端传回的状态码进行输出，录取还是未录取
-        apiProfile.GET("/status/:id", handler.GetUserStatus)
+        apiProfile.PUT("/update/:id", userHandler.UpdateUserInfo)
+        // 查询是否被录取
+        apiProfile.GET("/status/:id", userHandler.GetUserStatus)
     }
     
-    // admin（账号定死）
-    apiAdmin := r.Group("/admin")
-    apiAdmin.Use() // 使用JWT中间件进行管理员身份验证
-    {
-        // 管理员仪表板或主页，后端解析一个html文件
-        apiAdmin.GET("/dashboard")
-    
-        // 查看所有职位发布（管理员）
-        apiAdmin.GET("/jobs")
-    
-        // 查看职位详情（管理员）
-        apiAdmin.GET("/job/:jobID")
-    
-        // 查看职位申请状态（管理员）
-        apiAdmin.GET("/applications/:jobID")
-    
-        // 审批或拒绝职位申请（管理员）
-        apiAdmin.PUT("/application/:appID")
-    }
-    
-    // recruitment
-    // 职位就4个 前后端、两个客户端
     apiJob := r.Group("/recruitment")
     apiJob.Use()
     {
-        // 岗位总览
-        apiJob.GET("/jobs")
-        // 岗位详细信息，例如应聘要求
-        apiJob.GET("/job/:id")
-        // 申请投递，需确保登录状态，若未登录则先跳转至登录页面；
-        // 后期拓展为可pdf提交简历（原填写框不变）
-        apiJob.POST("/job/:id/apply")
+        // 查看岗位总览
+        apiJob.GET("/jobs", jobHandler.GetJobs)
+        // 查看岗位详细信息
+        apiJob.GET("/job/:jobID", jobHandler.GetJobInfo)
+        // 用户申请投递
+        apiJob.POST("/job/:jobID/apply/:userID", jobHandler.ApplyJob)
     }
-    return r
-}
+    
+    apiAdmin := r.Group("/admin")
+    apiAdmin.Use() // 使用JWT中间件进行管理员身份验证
+    {
+        // 管理员仪表板或主页
+        apiAdmin.GET("/dashboard", adminHandler.HomePage)
+        // 查看所有职位发布（管理员）
+        apiAdmin.GET("/jobs", adminHandler.ShowAllJobs)
+        // 查看职位详情（管理员）
+        apiAdmin.GET("/job/:jobID", adminHandler.ShowJobDetails)
+        // 查看职位申请（管理员）
+        apiAdmin.GET("/applications/:jobID", adminHandler.ShowJobApply)
+        // 审批或拒绝职位申请（管理员）+ 自动发送录取短信
+        apiAdmin.PUT("/application/:appID", adminHandler.ApproveJobs)
+    }
 ```
 
 
 ## 传参信息
+
+字段后有json标识的代表需要接收的参数
+
 用户填写表单时，前端需进行一定的验证，例如手机号为11位，名字不能过长（限定100个字）身份证号有X，不只有数字。生日和身份证号是否对的上。后端则会对重复性和邮箱有效性进行一定的验证
 
 信息分为用户信息、账户信息以及岗位信息
@@ -94,49 +92,51 @@ func NewRouter() *gin.Engine {
 
 用户的必填项为名字、手机号、邮箱、性别，未填写项可设为 ""，不设为nil
 
-```go
-type User struct {
-    ID          uint   `gorm:"primarykey" json:"id"`
-    Name        string `json:"name"`
-    CreatedAt   time.Time
-    State       int    `json:"state" gorm:"type:tinyint" validate:"oneof=0 1"`
-    Gender      string `json:"gender"`
-    Birth       string `json:"birth"`
-    Email       string `json:"id"`
-    PhoneNumber string `json:"phoneNumber"`
-    Account     account.Account
-}   
-```
-
-字段后有json标识的代表需要接收的参数
-
-id可前端设定一并传回，也可以后端自动生成，id为用户标识符，不可重复
-
-账户信息
-
-```go
-type Account struct {
-    ID       string `gorm:"primarykey" json:"id"`
-    Password string `json:"password"`
-}
-```
-
-账户信息通过学号登录
-
-id前端或者后端自动生成
-
-```go
-type Job struct {
-    ID string `json:"id" gorm:"id"`
-    Name string `json:"name" gorm:"name"`
-}
-```
-
-数据库表：用户个人信息表，岗位表，账户密码表
+数据库表：用户个人信息表、岗位表、用户账户表、管理员账户表
 
 使用ID关联三个表之间的关系，前后端数据交互时要根据ID查出信息之后转移数据
 
-后期拓展
+### 用户表
+```go
+    type User struct {
+        ID          string       `json:"id" gorm:"primaryKey;column:id" `
+        Name        string       `json:"name" gorm:"column:name"`
+        CreatedAt   time.Time    `gorm:"column:created_at"`
+        State       int          `json:"state" validate:"oneof=0 1" gorm:"default:0"`
+        Gender      string       `json:"gender" gorm:"column:gender"`
+        Birth       string       `json:"birth"`
+        Email       string       `json:"email" gorm:"column:email"`
+        PhoneNumber string       `json:"phoneNumber" gorm:"column:phone"`
+        ApplyID     int          `json:"applyID"`
+        Account     auth.Account `json:"account"`
+    }
+```
+
+
+
+### 账户信息
+
+用户通过id（学号）+密码的方式登录
+
+```go
+    type Account struct {
+        ID       string `gorm:"primarykey" json:"id"`
+        Password string `json:"password"`
+    }
+```
+
+### 职位表
+
+```go
+    type Job struct {
+        ID        string      `json:"id" gorm:"id"`
+        Name      string      `json:"name" gorm:"name"`
+        ApplyList []user.User `json:"apply_list" gorm:"foreignKey:ApplyID"`
+    }
+```
+
+## 后期拓展
+
 1. 引进ai对话，帮助更好的选择自己喜欢的岗位
 2. 表单填写模式不变的基础上可增加pdf提交简历
 3. 岗位界面增加一级菜单二级菜单，分类更细
