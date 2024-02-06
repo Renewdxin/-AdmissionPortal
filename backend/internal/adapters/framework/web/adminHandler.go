@@ -5,21 +5,25 @@ import (
 	"github.com/Renewdxin/selfMade/internal/adapters/framework/logger"
 	"github.com/Renewdxin/selfMade/internal/ports/app/job"
 	"github.com/Renewdxin/selfMade/internal/ports/app/user"
+	"github.com/Renewdxin/selfMade/internal/ports/framework/mail"
 	"github.com/gin-gonic/gin"
 	"net/http"
+	"os"
 )
 
 type AdminHandlerAdapter struct {
 	AdminApp user.AdminApplicationPort
 	JobApp   job.JobsApplicationPort
 	UserApp  user.UsrApplicationPort
+	Notify   mail.SMSPorts
 }
 
-func NewAdminHandlerAdapter(AdminApp user.AdminApplicationPort, JobApp job.JobsApplicationPort, UserApp user.UsrApplicationPort) AdminHandlerAdapter {
+func NewAdminHandlerAdapter(AdminApp user.AdminApplicationPort, JobApp job.JobsApplicationPort, UserApp user.UsrApplicationPort, Notify mail.SMSPorts) AdminHandlerAdapter {
 	return AdminHandlerAdapter{
 		AdminApp: AdminApp,
 		JobApp:   JobApp,
 		UserApp:  UserApp,
+		Notify:   Notify,
 	}
 }
 
@@ -83,6 +87,7 @@ func (adapter AdminHandlerAdapter) ShowJobDetails(c *gin.Context) {
 
 func (adapter AdminHandlerAdapter) ApproveJobs(c *gin.Context) {
 	id := c.GetHeader("id")
+	// 确认用户是否存在
 	details, err := adapter.UserApp.GetUserProfile(id)
 	if err != nil {
 		logger.Logger.Logf(logger.ErrorLevel, "AdminHandlerAdapter ApproveJobs GetUserInfo Error, id : %v", id)
@@ -92,6 +97,7 @@ func (adapter AdminHandlerAdapter) ApproveJobs(c *gin.Context) {
 		return
 	}
 
+	// 更改用户状态
 	if !adapter.AdminApp.ApproveJobs(details) {
 		logger.Logger.Logf(logger.ErrorLevel, "AdminHandlerAdapter ApproveJobs ApproveJobs Error, id : %v", id)
 		c.JSON(http.StatusInternalServerError, gin.H{
@@ -100,6 +106,10 @@ func (adapter AdminHandlerAdapter) ApproveJobs(c *gin.Context) {
 		return
 	}
 
+	// 发送通知短信
+	if err := adapter.Notify.SendNotifySms(details.PhoneNumber, os.Getenv("SIGN")); err != nil {
+		logger.Logger.Logf(logger.InfoLevel, "failed to send message to user : %v", id)
+	}
 	c.JSON(http.StatusOK, gin.H{
 		"msg": "Successfully Change",
 	})
