@@ -58,10 +58,10 @@ func NewRouter() *gin.Engine {
         apiAdmin.GET("/jobs")
     
         // 查看职位详情（管理员）
-        apiAdmin.GET("/job/:jobID")
+        apiAdmin.GET("/job/:jobIDStr")
     
         // 查看职位申请状态（管理员）
-        apiAdmin.GET("/applications/:jobID")
+        apiAdmin.GET("/applications/:jobIDStr")
     
         // 审批或拒绝职位申请（管理员）
         apiAdmin.PUT("/application/:appID")
