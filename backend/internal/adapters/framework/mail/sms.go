@@ -31,55 +31,6 @@ func NewSMSAdapter(accessKeyId *string, accessKeySecret *string) (SMSAdapter, er
 	return SMSAdapter{Client: client}, nil
 }
 
-/**
- * 使用AK&SK初始化账号Client
- * @param accessKeyId
- * @param accessKeySecret
- * @return Client
- * @throws Exception
- */
-//func (adapter SMSAdapter) CreateClient(accessKeyId *string, accessKeySecret *string) (_result *openapi.Client, _err error) {
-//	config := &openapi.Config{
-//		// 必填，您的 AccessKey ID
-//		AccessKeyId: accessKeyId,
-//		// 必填，您的 AccessKey Secret
-//		AccessKeySecret: accessKeySecret,
-//	}
-//	// Endpoint 请参考 https://api.aliyun.com/product/Dysmsapi
-//	config.Endpoint = tea.String("dysmsapi.aliyuncs.com")
-//	_result = &openapi.Client{}
-//	_result, _err = openapi.NewClient(config)
-//	return _result, _err
-//}
-//
-///**
-// * API 相关
-// * @param path Params
-// * @return OpenApi.Params
-// */
-//func (adapter SMSAdapter) CreateApiInfo() (_result *openapi.Params) {
-//	params := &openapi.Params{
-//		// 接口名称
-//		Action: tea.String("SendBatchSms"),
-//		// 接口版本
-//		Version: tea.String("2017-05-25"),
-//		// 接口协议
-//		Protocol: tea.String("HTTPS"),
-//		// 接口 HTTP 方法
-//		Method:   tea.String("POST"),
-//		AuthType: tea.String("AK"),
-//		Style:    tea.String("RPC"),
-//		// 接口 PATH
-//		Pathname: tea.String("/"),
-//		// 接口请求体内容格式
-//		ReqBodyType: tea.String("formData"),
-//		// 接口响应体内容格式
-//		BodyType: tea.String("json"),
-//	}
-//	_result = params
-//	return _result
-//}
-
 func (adapter SMSAdapter) SendNotifySms(number, sign string) (_err error) {
 	// query Params
 	queries := map[string]interface{}{}
