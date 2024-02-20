@@ -8,8 +8,8 @@ import (
 type HomeHandlerAdapter struct {
 }
 
-func NewHomeHandlerAdapter() HomeHandlerAdapter {
-	return HomeHandlerAdapter{}
+func NewHomeHandlerAdapter() *HomeHandlerAdapter {
+	return &HomeHandlerAdapter{}
 }
 
 func (adapter HomeHandlerAdapter) HomePage(c *gin.Context) {

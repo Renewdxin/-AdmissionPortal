@@ -18,8 +18,8 @@ type AdminHandlerAdapter struct {
 	Notify   mail.SMSPorts
 }
 
-func NewAdminHandlerAdapter(AdminApp user.AdminApplicationPort, JobApp job.JobsApplicationPort, UserApp user.UsrApplicationPort, Notify mail.SMSPorts) AdminHandlerAdapter {
-	return AdminHandlerAdapter{
+func NewAdminHandlerAdapter(AdminApp user.AdminApplicationPort, JobApp job.JobsApplicationPort, UserApp user.UsrApplicationPort, Notify mail.SMSPorts) *AdminHandlerAdapter {
+	return &AdminHandlerAdapter{
 		AdminApp: AdminApp,
 		JobApp:   JobApp,
 		UserApp:  UserApp,
