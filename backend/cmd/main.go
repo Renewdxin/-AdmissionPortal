@@ -88,8 +88,8 @@ func main() {
 		apiAccount.POST("/signup", authHandler.Register)
 		apiAccount.POST("/code/send", authHandler.CodeSend)
 		apiAccount.POST("/code/verify", authHandler.CodeVerify)
-		apiAccount.POST("/password/forget", authHandler.ForgetPassword)
-		apiAccount.POST("/password/change", authHandler.ChangePassword)
+		apiAccount.POST("/password/change/code", authHandler.ChangePasswordByCode)
+		apiAccount.POST("/password/change/pwd", authHandler.ChangePasswordByPwd)
 	}
 
 	// personal info

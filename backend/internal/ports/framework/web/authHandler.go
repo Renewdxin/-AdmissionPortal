@@ -6,8 +6,8 @@ type AuthHandlerPort interface {
 	Login(c *gin.Context)
 	Register(c *gin.Context)
 	//Delete(c *gin.Context)
-	ChangePassword(c *gin.Context)
-	ForgetPassword(c *gin.Context)
+	ChangePasswordByCode(c *gin.Context)
+	ChangePasswordByPwd(c *gin.Context)
 	CodeSend(c *gin.Context)
 	CodeVerify(c *gin.Context)
 }

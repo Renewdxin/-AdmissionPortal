@@ -82,7 +82,7 @@ func (handler AuthHandlerAdapter) Register(c *gin.Context) {
 	})
 }
 
-func (handler AuthHandlerAdapter) ChangePassword(c *gin.Context) {
+func (handler AuthHandlerAdapter) ChangePasswordByCode(c *gin.Context) {
 	id := c.GetString("id")
 	newPassword := c.GetString("newPassword")
 	oldPassword := c.GetString("oldPassword")
@@ -99,14 +99,14 @@ func (handler AuthHandlerAdapter) ChangePassword(c *gin.Context) {
 	})
 }
 
-func (handler AuthHandlerAdapter) ForgetPassword(c *gin.Context) {
+func (handler AuthHandlerAdapter) ChangePasswordByPwd(c *gin.Context) {
 	id := c.GetString("id")
 	newPassword := c.GetString("newPassword")
 
 	if err := handler.authCase.ForgetPasswordByID(id, newPassword); err != nil {
 		logger.Logger.Logf(logger.WarnLevel, "Password Change Error, id : %v", id)
 		c.JSON(http.StatusBadRequest, gin.H{
-			"msg": "Error! please try again",
+			"msg": "Error!",
 		})
 		return
 	}
@@ -133,7 +133,7 @@ func (handler AuthHandlerAdapter) CodeVerify(c *gin.Context) {
 	code := c.GetString("code")
 	id := c.GetString("id")
 	if err := handler.authCase.CodeVerify(id, code); err != nil {
-		logger.Logger.Log(logger.InfoLevel, "Failed to validate code")
+		logger.Logger.Logf(logger.InfoLevel, "id : %v Failed to validate code", id)
 		c.JSON(http.StatusUnauthorized, gin.H{
 			"msg": "wrong code",
 		})
