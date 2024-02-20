@@ -30,17 +30,6 @@ var (
 	jobHandler   *web.JobHandlerAdapter
 )
 
-func LoadENV() {
-	err := godotenv.Load(".env")
-	if err != nil {
-		logger.Logger.Logf(logger.FatalLevel, "无法加载 .env 文件: %v", err)
-	}
-}
-
-func NewLogger() {
-	logger.Logger = logger.NewLogAdapter()
-}
-
 func init() {
 	NewLogger()
 	LoadENV()
@@ -156,6 +145,17 @@ func init() {
 	if err != nil {
 		logger.Logger.Logf(logger.FatalLevel, "falied to start : %v", err)
 	}
+}
+
+func LoadENV() {
+	err := godotenv.Load(".env")
+	if err != nil {
+		logger.Logger.Logf(logger.FatalLevel, "无法加载 .env 文件: %v", err)
+	}
+}
+
+func NewLogger() {
+	logger.Logger = logger.NewLogAdapter()
 }
 
 func InitializeRouter() {
