@@ -114,3 +114,32 @@ func (handler AuthHandlerAdapter) ForgetPassword(c *gin.Context) {
 		"msg": "ok",
 	})
 }
+
+func (handler AuthHandlerAdapter) CodeSend(c *gin.Context) {
+	id := c.GetString("id")
+	if err := handler.authCase.CodeSend(id); err != nil {
+		logger.Logger.Log(logger.ErrorLevel, "Failed to send code, plz try again")
+		c.JSON(http.StatusBadRequest, gin.H{
+			"msg": "Error! please try again",
+		})
+		return
+	}
+	c.JSON(http.StatusOK, gin.H{
+		"msg": "ok",
+	})
+}
+
+func (handler AuthHandlerAdapter) CodeVerify(c *gin.Context) {
+	code := c.GetString("code")
+	id := c.GetString("id")
+	if err := handler.authCase.CodeVerify(id, code); err != nil {
+		logger.Logger.Log(logger.InfoLevel, "Failed to validate code")
+		c.JSON(http.StatusUnauthorized, gin.H{
+			"msg": "wrong code",
+		})
+		return
+	}
+	c.JSON(http.StatusOK, gin.H{
+		"msg": "ok",
+	})
+}
