@@ -24,19 +24,17 @@ unknown
     r.POST("/home", homeHandler.HomePage)
     
     // auth setting
-    apiAccount := r.Group("/auth")
-    apiAccount.Use()
-    {
-        // id（学号）+密码
+	apiAccount := r.Group("/auth")
+	apiAccount.Use()
+	{
         apiAccount.POST("/login", authHandler.Login)
         //apiAccount.POST("/logout")
-        // id（学号） + 密码 + 手机号
         apiAccount.POST("/signup", authHandler.Register)
-        // 手机号 + 验证码找回
-        apiAccount.POST("/password/forget", authHandler.ForgetPassword)
-        // 输入旧密码 + 新密码两遍，否则跳转至 /password/forget
-        apiAccount.POST("/password/change", authHandler.ChangePassword)
-    }
+        apiAccount.POST("/code/send", authHandler.CodeSend)
+        apiAccount.POST("/code/verify", authHandler.CodeVerify)
+        apiAccount.POST("/password/change/code", authHandler.ChangePasswordByCode)
+        apiAccount.POST("/password/change/pwd", authHandler.ChangePasswordByPwd)
+	}
     
     // personal info
     apiProfile := r.Group("/profile")
