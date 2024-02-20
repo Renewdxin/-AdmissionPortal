@@ -86,6 +86,8 @@ func main() {
 		apiAccount.POST("/login", authHandler.Login)
 		//apiAccount.POST("/logout")
 		apiAccount.POST("/signup", authHandler.Register)
+		apiAccount.POST("/code/send", authHandler.CodeSend)
+		apiAccount.POST("/code/verify", authHandler.CodeVerify)
 		apiAccount.POST("/password/forget", authHandler.ForgetPassword)
 		apiAccount.POST("/password/change", authHandler.ChangePassword)
 	}
