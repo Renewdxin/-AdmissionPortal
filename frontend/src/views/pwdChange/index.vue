@@ -2,7 +2,7 @@
 import { ref, computed, watch } from 'vue'
 import {
   Iphone,
-  User,
+  // User,
   Lock,
   View,
   Hide,
@@ -139,21 +139,21 @@ const form = ref(null)
 const sendCode = async () => {
   console.log('hello')
   await form.value.validate()
-  //   const res = await pwdSendCodeService({ id: formModel.value.id })
-  //   if (res.status !== 200) {
-  //     ElMessage.error(res.data.msg)
-  //   } else {
-  //     ElMessage.success('发送成功，请注意查收')
-  //     time.value--
-  //     timer.value = setInterval(() => {
-  //       time.value--
-  //       if (time.value === 0) {
-  //         time.value = 60
-  //         clearInterval(timer.value)
-  //         timer.value = null
-  //       }
-  //     }, 1000)
-  //   }
+  const res = await pwdSendCodeService({ id: formModel.value.id })
+  if (res.status !== 200) {
+    ElMessage.error(res.data.msg)
+  } else {
+    ElMessage.success('发送成功，请注意查收')
+    time.value--
+    timer.value = setInterval(() => {
+      time.value--
+      if (time.value === 0) {
+        time.value = 60
+        clearInterval(timer.value)
+        timer.value = null
+      }
+    }, 1000)
+  }
 }
 
 // 此处与发送验证码显示的文字有关
@@ -171,7 +171,7 @@ const judgeCode = async () => {
     id: formModel.value.id,
     code: formModel.value.code
   })
-  if (res !== 200) {
+  if (res.status !== 200) {
     ElMessage.error(res.data.msg)
   } else {
     ElMessage.error('身份验证成功')
@@ -186,9 +186,9 @@ const changePwdCode = async () => {
   await form.value.validate()
   const res = await pwdCodeService({
     id: formModel.value.id,
-    newPwd: formModel.value.newPwd
+    pwd: formModel.value.newPwd
   })
-  if (res !== 200) {
+  if (res.status !== 200) {
     ElMessage.error(res.data.msg)
   } else {
     ElMessage.error('修改密码成功，即将跳转')
@@ -206,7 +206,7 @@ const changePwdOld = async () => {
     oldPwd: formModel.value.oldPwd,
     newPwd: formModel.value.newPwd
   })
-  if (res !== 200) {
+  if (res.status !== 200) {
     ElMessage.error(res.data.msg)
   } else {
     ElMessage.error('修改密码成功，即将跳转')
@@ -248,7 +248,7 @@ const changeTab = () => {
               </el-form-item>
               <el-form-item prop="id" class="elinput">
                 <el-input
-                  v-model="formModel.tel"
+                  v-model="formModel.id"
                   placeholder="请输入学号"
                   :prefix-icon="Iphone"
                   ><template #append
@@ -400,7 +400,11 @@ const changeTab = () => {
               </el-form-item>
               <el-form-item>
                 <div class="btnGroup">
-                  <el-button type="primary" size="large" class="btn"
+                  <el-button
+                    type="primary"
+                    size="large"
+                    class="btn"
+                    @click="changePwdOld"
                     >确认</el-button
                   >
                   <el-button type="primary" size="large" class="btn"
