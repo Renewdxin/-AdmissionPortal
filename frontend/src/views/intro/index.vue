@@ -5,10 +5,8 @@
       <div class="text">
         <div class="brief">
           <h1>
-            XIYOU•MOBILE&nbsp;&nbsp;<em
-              style="color: rgb(91, 194, 159); font-size: 22px"
-              >/2011/</em
-            >
+            XIYOU•MOBILE&nbsp;&nbsp;
+            <p style="color: rgb(32, 182, 132); font-size: 22px">/2011/</p>
           </h1>
         </div>
         <div class="detail">
@@ -93,27 +91,39 @@ export default {}
   padding: 0px;
   text-decoration: none;
 }
+
 /* 电脑平板设备 */
+.intro {
+  background: url('@/assets/bkg27.jpg') no-repeat;
+  background-size: 100% 100%;
+  background-attachment: fixed;
+}
+
 @media (min-width: 640px) {
   .intro {
+    width: 100vw;
     background: url('@/assets/bkg27.jpg') no-repeat;
     background-size: 100% 100%;
+    background-attachment: fixed;
     margin-top: -53px;
     margin-left: -8px;
   }
+
   .lab,
   .groups {
     width: 84vw;
     margin: 7vh auto;
     box-sizing: content-box;
-    border: 4px solid rgb(121, 115, 115);
+    // border: 4px solid rgb(121, 115, 115);
     background-color: rgba(255, 255, 255, 0.4);
   }
+
   .lab {
     position: relative;
     margin-bottom: 0vh;
     height: 400px;
     border-top-left-radius: 90px;
+
     img {
       position: absolute;
       left: 0px;
@@ -121,6 +131,7 @@ export default {}
       border-radius: 50%;
       margin-right: 30px;
     }
+
     .text {
       width: 60vw;
       height: 100%;
@@ -128,20 +139,23 @@ export default {}
       right: 0px;
       color: rgb(47, 57, 56); //介绍小字的颜色
       top: 0px;
+
       .brief h1 {
         margin-top: 20px;
         margin-bottom: 14px;
       }
+
       .detail {
         // background-color: pink;
         display: -webkit-box;
         -webkit-box-orient: vertical;
         overflow: hidden;
-        -webkit-line-clamp: 15;
+        -webkit-line-clamp: 14;
         text-overflow: ellipsis;
       }
     }
   }
+
   .groups {
     margin-top: 4vh;
     margin-bottom: 0vh;
@@ -150,15 +164,17 @@ export default {}
     padding-top: 20px;
     padding-bottom: 20px;
     height: 860px;
+
     .group {
       box-sizing: content-box;
-      border: 4px solid rgb(138, 138, 138);
+      border: 2px solid rgb(138, 138, 138);
       position: relative;
       width: 18%;
       height: 800px;
       // background-color: pink;
       padding-left: 20px;
       padding-right: 10px;
+
       .nav {
         width: 100px;
         height: 4vw;
@@ -172,38 +188,47 @@ export default {}
         margin-left: -50px;
         background-color: rgb(95, 95, 95);
       }
+
       &:nth-child(even) {
         border-bottom-left-radius: 15.12vw; //84vw*18%=15.12vw
         border-bottom-right-radius: 15.12vw;
+
         img {
           bottom: 0px;
         }
+
         .text {
           width: 85%;
           position: absolute;
           top: 6vw;
           color: rgb(47, 57, 56); //介绍小字的颜色
         }
+
         .nav {
           top: 1vw;
         }
       }
+
       &:nth-child(odd) {
         border-top-left-radius: 15.12vw;
         border-top-right-radius: 15.12vw;
+
         img {
           top: 0px;
         }
+
         .text {
           width: 85%;
           position: absolute;
           color: rgb(47, 57, 56); //介绍小字的颜色
           top: 21vw;
         }
+
         .nav {
           top: 16vw;
         }
       }
+
       img {
         width: 15.12vw;
         border-radius: 50%;
@@ -211,6 +236,7 @@ export default {}
         left: 50%;
         margin-left: -7.56vw;
       }
+
       .text {
         display: -webkit-box;
         -webkit-box-orient: vertical;
@@ -219,6 +245,137 @@ export default {}
         text-overflow: ellipsis;
         // background-color: palegreen;
       }
+    }
+  }
+}
+
+@media (max-width: 640px) {
+  .intro {
+    width: 100vw;
+    // height: 3700px;
+    background: url('@/assets/bkg27.jpg') no-repeat;
+    background-size: 100% 100%;
+    margin-top: -7vh;
+    margin-left: -8px;
+    background-attachment: fixed;
+  }
+
+  .lab,
+  .groups {
+    width: 84vw;
+    margin: 7vh auto;
+    box-sizing: content-box;
+    // border: 4px solid rgb(121, 115, 115);
+    background-color: rgba(255, 255, 255, 0.4);
+  }
+
+  .lab {
+    position: relative;
+    top: 0px;
+    margin-bottom: 0vh;
+    height: 800px;
+    border-top-left-radius: 90px;
+    padding-top: 180px;
+
+    img {
+      position: absolute;
+      left: 0px;
+      top: 0px;
+      width: 180px;
+      border-radius: 50%;
+      margin-right: 30px;
+    }
+
+    .text {
+      width: 90%;
+      height: 100%;
+      margin: 0px auto;
+      // position: absolute;
+      // bottom: 0px;
+      color: rgb(68, 72, 72); //介绍小字的颜色
+
+      // top: 0px;
+      // background-color: pink;
+      .brief h1 {
+        margin-top: 20px;
+        margin-bottom: 14px;
+      }
+
+      .detail {
+        // background-color: pink;
+        display: -webkit-box;
+        -webkit-box-orient: vertical;
+        overflow: hidden;
+        -webkit-line-clamp: 25;
+        text-overflow: ellipsis;
+      }
+    }
+  }
+
+  .groups {
+    margin-top: 4vh;
+    margin-bottom: 0vh;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-evenly;
+    padding-top: 20px;
+    padding-bottom: 20px;
+    height: 2160px;
+
+    .group {
+      box-sizing: border-box;
+      border: 2px solid rgb(138, 138, 138);
+      position: relative;
+      width: 100%;
+      height: 500px;
+      // background-color: pink;
+      padding-left: 20px;
+      padding-right: 10px;
+
+      .nav {
+        width: 160px;
+        height: 7vw;
+        border-radius: 10px;
+        line-height: 7vw;
+        text-align: center;
+        color: azure;
+        font-size: 4vw;
+        position: absolute;
+        left: 50%;
+        margin-left: -80px;
+        background-color: rgb(95, 95, 95);
+        margin-top: 5vw;
+      }
+
+      border-radius: 50px;
+
+      .text {
+        width: 85%;
+        position: absolute;
+        color: rgb(47, 57, 56); //介绍小字的颜色
+        top: 30vw;
+      }
+
+      .nav {
+        top: 16vw;
+      }
+    }
+
+    img {
+      width: 20vw;
+      border-radius: 50%;
+      position: absolute;
+      left: 50%;
+      margin-left: -10vw;
+    }
+
+    .text {
+      display: -webkit-box;
+      -webkit-box-orient: vertical;
+      overflow: hidden;
+      -webkit-line-clamp: 30;
+      text-overflow: ellipsis;
+      // background-color: palegreen;
     }
   }
 }

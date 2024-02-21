@@ -1,7 +1,7 @@
 import { defineStore } from 'pinia' //创建仓库
 import { ref } from 'vue'
 export const useTokenStore = defineStore(
-  '3g-token',
+  'xiyouMobile-token',
   () => {
     const token = ref('')
     const setToken = (newToken) => {

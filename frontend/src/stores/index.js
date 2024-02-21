@@ -6,3 +6,4 @@ const pinia = createPinia().use(persist)
 export default pinia
 
 export * from '@/stores/modules/token'
+export * from '@/stores/modules/id'
