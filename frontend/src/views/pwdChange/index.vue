@@ -1,4 +1,4 @@
-<script lang="ts" setup>
+<script setup>
 import { ref, computed, watch } from 'vue'
 import {
   Iphone,
