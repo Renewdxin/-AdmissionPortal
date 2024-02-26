@@ -4,7 +4,6 @@ import intro from '../views/intro/index.vue'
 import login from '../views/login/index.vue'
 import user from '../views/user/index.vue'
 import pwdChange from '../views/pwdChange/index.vue'
-import test from '../views/test/index.vue'
 import notFound from '../views/notFound/index.vue'
 
 const router = createRouter({
@@ -38,11 +37,6 @@ const router = createRouter({
       path: '/pwdChange',
       name: 'pwdChange',
       component: pwdChange
-    },
-    {
-      path: '/test',
-      name: 'test',
-      component: test
     },
     {
       path: '/:pathMatch(.*)*',
