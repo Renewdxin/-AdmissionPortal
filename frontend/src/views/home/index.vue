@@ -1,32 +1,77 @@
+<script setup>
+import JobBox from '@/components/JobBox.vue'
+import navbarPC from '@/components/navbarPC.vue'
+import { ref } from 'vue'
+// import router from '@/router'
+import { recruitJobsService } from '@/api/recruit'
+
+const jobTitleList = ref([])
+jobTitleList.value = [
+  {
+    name: '前端',
+    id: 1
+  },
+  {
+    name: '后台',
+    id: 2
+  },
+  {
+    name: '安卓',
+    id: 3
+  },
+  {
+    name: 'iOS',
+    id: 4
+  }
+]
+const recruitJobs = async () => {
+  const res = await recruitJobsService()
+  if (res.status === 200) {
+    jobTitleList.value = res.data.title
+  } else {
+    ElMessage.error(res.data.msg)
+  }
+}
+recruitJobs()
+</script>
+
 <template>
   <div class="home">
-    <div class="main">
-      <div class="intro hover" @click="router.push('/intro')">
-        <h1>实验室简介</h1>
-        <p>know more about 3g</p>
-      </div>
-      <div class="login hover" @click="router.push('/login')">
-        <h1>登录</h1>
-        <p>LOGIN</p>
-      </div>
-      <div class="user hover" @click="router.push('/user')">
-        <h1>个人信息</h1>
-        <p>USER</p>
-      </div>
-      <div class="website hover" @click="goWebsite()">
-        <h1>进入官网</h1>
-        <p>WEBSITE</p>
-      </div>
+    <div class="page">
+      <navbarPC class="navbar"></navbarPC>
+      <el-container class="main">
+        <el-aside class="aside">
+          <el-menu
+            default-active="2"
+            @open="handleOpen"
+            @close="handleClose"
+            router
+          >
+            <el-sub-menu>
+              <template #title>
+                <el-icon><location /></el-icon>
+                <span>岗位总览</span>
+              </template>
+              <el-menu-item index="1">item one</el-menu-item>
+              <el-menu-item index="2">item two</el-menu-item>
+            </el-sub-menu>
+          </el-menu>
+        </el-aside>
+        <el-main class="content">
+          <div class="jobBox">
+            <JobBox
+              v-for="item in jobTitleList"
+              :key="item.id"
+              :name="item.name"
+              :id="item.id"
+            >
+            </JobBox>
+          </div>
+        </el-main>
+      </el-container>
     </div>
   </div>
 </template>
-
-<script setup>
-import router from '@/router'
-const goWebsite = () => {
-  return (location.href = 'https://mobile.xupt.edu.cn/')
-}
-</script>
 
 <style lang="scss" scoped>
 * {
@@ -34,101 +79,20 @@ const goWebsite = () => {
   padding: 0px;
   box-sizing: border-box;
 }
-
 .home {
   margin: -8px;
-  width: 100vw;
-  height: 100vh;
-  padding-top: 15vh;
-  background: url('@/assets/bkg27.jpg') no-repeat;
-  background-size: 100% 100%;
-  background-attachment: fixed;
-
-  .main {
-    width: 67vw;
-    height: 55vh;
-    margin: 0px auto;
-    display: flex;
-    justify-content: space-around;
-
-    .intro {
-      background-color: rgba(244, 63, 94, 0.8);
-    }
-
-    .website {
-      background-color: rgba(59, 130, 246, 0.8);
-    }
-
-    .login {
-      background-color: rgba(34, 197, 94, 0.8);
-    }
-
-    .user {
-      background-color: rgba(255, 223, 80, 0.8);
-    }
-
-    .intro,
-    .website,
-    .login,
-    .user {
-      width: 15vw;
-      height: 50vh;
-      margin-top: 2vh;
-      border-radius: 3vh;
-      transition: all 0.5s;
-
-      p {
-        font-size: 20px;
-      }
-
-      p,
-      h1 {
-        text-align: center;
-        margin-top: 25%;
-        color: azure;
-      }
-    }
-  }
-
-  .main:hover.main .hover:not(:hover) {
-    filter: blur(10px);
-  }
-
-  .hover:hover {
-    transform: scale(1.1, 1.1);
-  }
-}
-
-@media (max-width: 640px) {
-  .home {
+  min-height: 100vh;
+  background-color: rgb(242, 242, 242);
+  padding-bottom: 2vh;
+  .page {
+    width: 90vw;
+    margin: 0 auto;
     .main {
-      width: 65vw;
-      height: 400px;
-      flex-direction: column;
-      justify-content: space-around;
-
-      .intro,
-      .website,
-      .login,
-      .user {
-        margin: 0 auto;
-        width: 88%;
-        height: 23%;
-        margin-top: 0vh;
-        box-sizing: content-box;
-        border-radius: 3vh;
-        transition: all 0.5s;
-
-        p {
-          font-size: 18px;
-        }
-
-        p,
-        h1 {
-          text-align: center;
-          margin-top: 4%;
-          color: azure;
-        }
+      margin-top: 4vh;
+      min-height: 85vh;
+      .aside {
+        background-color: rgb(255, 255, 255);
+        margin-right: 1vw;
       }
     }
   }

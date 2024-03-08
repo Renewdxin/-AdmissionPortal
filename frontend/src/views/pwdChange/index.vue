@@ -14,6 +14,7 @@ import {
   pwdCodeService,
   pwdOldService
 } from '@/api/pwdChange'
+import navbarPC from '@/components/navbarPC.vue'
 import { useRouter } from 'vue-router'
 const router = useRouter()
 
@@ -230,192 +231,195 @@ const changeTab = () => {
 </script>
 <template>
   <div class="pwdChange">
-    <div class="main">
-      <el-tabs class="demo-tabs" stretch @tab-change="changeTab">
-        <el-tab-pane>
-          <template #label>
-            <span class="tag"> 使用验证码修改 </span>
-          </template>
-          <div class="before" v-if="isBefore">
-            <el-form
-              class="elform"
-              :model="formModel"
-              :rules="rules"
-              ref="form"
-            >
-              <el-form-item>
-                <h2>身份验证</h2>
-              </el-form-item>
-              <el-form-item prop="id" class="elinput">
-                <el-input
-                  v-model="formModel.id"
-                  placeholder="请输入学号"
-                  :prefix-icon="Iphone"
-                  ><template #append
-                    ><el-button
-                      style="padding: 7px"
-                      @click="sendCode"
-                      :disabled="time !== 60"
-                      >{{ sendCodeText }}</el-button
-                    ></template
-                  ></el-input
-                >
-              </el-form-item>
-              <el-form-item prop="code" class="elinput">
-                <el-input
-                  v-model="formModel.code"
-                  placeholder="请输入短信验证码"
-                  :prefix-icon="Message"
-                ></el-input>
-              </el-form-item>
-              <el-form-item>
-                <div class="btnGroup">
-                  <el-button
-                    type="primary"
-                    size="large"
-                    class="btn"
-                    @click="judgeCode"
-                    >确认</el-button
+    <div class="page">
+      <navbarPC class="navbar"></navbarPC>
+      <div class="main">
+        <el-tabs class="demo-tabs" stretch @tab-change="changeTab">
+          <el-tab-pane>
+            <template #label>
+              <span class="tag"> 使用验证码修改 </span>
+            </template>
+            <div class="before" v-if="isBefore">
+              <el-form
+                class="elform"
+                :model="formModel"
+                :rules="rules"
+                ref="form"
+              >
+                <el-form-item>
+                  <h2>身份验证</h2>
+                </el-form-item>
+                <el-form-item prop="id" class="elinput">
+                  <el-input
+                    v-model="formModel.id"
+                    placeholder="请输入学号"
+                    :prefix-icon="Iphone"
+                    ><template #append
+                      ><el-button
+                        style="padding: 7px"
+                        @click="sendCode"
+                        :disabled="time !== 60"
+                        >{{ sendCodeText }}</el-button
+                      ></template
+                    ></el-input
                   >
-                  <el-button
-                    type="primary"
-                    size="large"
-                    class="btn"
-                    @click="router.back"
-                    >取消</el-button
-                  >
-                </div>
-              </el-form-item>
-            </el-form>
-          </div>
-          <div class="after" v-else>
-            <el-form
-              class="elform"
-              :model="formModel"
-              :rules="rules"
-              ref="form"
-            >
-              <el-form-item>
-                <h2>修改密码</h2>
-              </el-form-item>
-              <el-form-item prop="newPwd" class="elinput">
-                <el-input
-                  v-model="formModel.newPwd"
-                  placeholder="请输入新密码"
-                  :type="showPwdType.pwd1"
-                  :prefix-icon="Lock"
-                  ><template #append
-                    ><el-icon v-if="!showPwd.pwd1" @click="switchFun.pwd1()">
-                      <View /> </el-icon
-                    ><el-icon v-else @click="switchFun.pwd1()">
-                      <Hide /> </el-icon></template
-                ></el-input>
-              </el-form-item>
-              <el-form-item prop="rePwd" class="elinput">
-                <el-input
-                  v-model="formModel.rePwd"
-                  placeholder="请确认密码"
-                  :type="showPwdType.pwd2"
-                  :prefix-icon="Lock"
-                  ><template #append
-                    ><el-icon v-if="!showPwd.pwd2" @click="switchFun.pwd2()">
-                      <View /> </el-icon
-                    ><el-icon v-else @click="switchFun.pwd2()">
-                      <Hide /> </el-icon></template
-                ></el-input>
-              </el-form-item>
-              <el-form-item>
-                <div class="btnGroup">
-                  <el-button
-                    type="primary"
-                    size="large"
-                    class="btn"
-                    @click="changePwdCode"
-                    >确认</el-button
-                  >
-                  <el-button
-                    type="primary"
-                    size="large"
-                    class="btn"
-                    @click="isBefore = true"
-                    >取消</el-button
-                  >
-                </div>
-              </el-form-item>
-            </el-form>
-          </div>
-        </el-tab-pane>
-        <el-tab-pane>
-          <template #label>
-            <span class="tag"> 使用旧密码修改 </span>
-          </template>
-          <div class="before">
-            <el-form
-              class="elform"
-              :model="formModel"
-              :rules="rules"
-              ref="form"
-            >
-              <el-form-item>
-                <h2>修改密码</h2>
-              </el-form-item>
-              <el-form-item prop="oldPwd" class="elinput">
-                <el-input
-                  v-model="formModel.oldPwd"
-                  placeholder="请输入旧密码"
-                  :type="showPwdType.pwd1"
-                  :prefix-icon="Lock"
-                  ><template #append
-                    ><el-icon v-if="!showPwd.pwd1" @click="switchFun.pwd1()">
-                      <View /> </el-icon
-                    ><el-icon v-else @click="switchFun.pwd1()">
-                      <Hide /> </el-icon></template
-                ></el-input>
-              </el-form-item>
-              <el-form-item prop="newPwd" class="elinput">
-                <el-input
-                  v-model="formModel.newPwd"
-                  placeholder="请确认密码"
-                  :type="showPwdType.pwd2"
-                  :prefix-icon="Lock"
-                  ><template #append
-                    ><el-icon v-if="!showPwd.pwd2" @click="switchFun.pwd2()">
-                      <View /> </el-icon
-                    ><el-icon v-else @click="switchFun.pwd2()">
-                      <Hide /> </el-icon></template
-                ></el-input>
-              </el-form-item>
-              <el-form-item prop="rePwd" class="elinput">
-                <el-input
-                  v-model="formModel.rePwd"
-                  placeholder="请确认密码"
-                  :type="showPwdType.pwd3"
-                  :prefix-icon="Lock"
-                  ><template #append
-                    ><el-icon v-if="!showPwd.pwd3" @click="switchFun.pwd3()">
-                      <View /> </el-icon
-                    ><el-icon v-else @click="switchFun.pwd3()">
-                      <Hide /> </el-icon></template
-                ></el-input>
-              </el-form-item>
-              <el-form-item>
-                <div class="btnGroup">
-                  <el-button
-                    type="primary"
-                    size="large"
-                    class="btn"
-                    @click="changePwdOld"
-                    >确认</el-button
-                  >
-                  <el-button type="primary" size="large" class="btn"
-                    >取消</el-button
-                  >
-                </div>
-              </el-form-item>
-            </el-form>
-          </div>
-        </el-tab-pane>
-      </el-tabs>
+                </el-form-item>
+                <el-form-item prop="code" class="elinput">
+                  <el-input
+                    v-model="formModel.code"
+                    placeholder="请输入短信验证码"
+                    :prefix-icon="Message"
+                  ></el-input>
+                </el-form-item>
+                <el-form-item>
+                  <div class="btnGroup">
+                    <el-button
+                      type="primary"
+                      size="large"
+                      class="btn"
+                      @click="judgeCode"
+                      >确认</el-button
+                    >
+                    <el-button
+                      type="primary"
+                      size="large"
+                      class="btn"
+                      @click="router.back"
+                      >取消</el-button
+                    >
+                  </div>
+                </el-form-item>
+              </el-form>
+            </div>
+            <div class="after" v-else>
+              <el-form
+                class="elform"
+                :model="formModel"
+                :rules="rules"
+                ref="form"
+              >
+                <el-form-item>
+                  <h2>修改密码</h2>
+                </el-form-item>
+                <el-form-item prop="newPwd" class="elinput">
+                  <el-input
+                    v-model="formModel.newPwd"
+                    placeholder="请输入新密码"
+                    :type="showPwdType.pwd1"
+                    :prefix-icon="Lock"
+                    ><template #append
+                      ><el-icon v-if="!showPwd.pwd1" @click="switchFun.pwd1()">
+                        <View /> </el-icon
+                      ><el-icon v-else @click="switchFun.pwd1()">
+                        <Hide /> </el-icon></template
+                  ></el-input>
+                </el-form-item>
+                <el-form-item prop="rePwd" class="elinput">
+                  <el-input
+                    v-model="formModel.rePwd"
+                    placeholder="请确认密码"
+                    :type="showPwdType.pwd2"
+                    :prefix-icon="Lock"
+                    ><template #append
+                      ><el-icon v-if="!showPwd.pwd2" @click="switchFun.pwd2()">
+                        <View /> </el-icon
+                      ><el-icon v-else @click="switchFun.pwd2()">
+                        <Hide /> </el-icon></template
+                  ></el-input>
+                </el-form-item>
+                <el-form-item>
+                  <div class="btnGroup">
+                    <el-button
+                      type="primary"
+                      size="large"
+                      class="btn"
+                      @click="changePwdCode"
+                      >确认</el-button
+                    >
+                    <el-button
+                      type="primary"
+                      size="large"
+                      class="btn"
+                      @click="isBefore = true"
+                      >取消</el-button
+                    >
+                  </div>
+                </el-form-item>
+              </el-form>
+            </div>
+          </el-tab-pane>
+          <el-tab-pane>
+            <template #label>
+              <span class="tag"> 使用旧密码修改 </span>
+            </template>
+            <div class="before">
+              <el-form
+                class="elform"
+                :model="formModel"
+                :rules="rules"
+                ref="form"
+              >
+                <el-form-item>
+                  <h2>修改密码</h2>
+                </el-form-item>
+                <el-form-item prop="oldPwd" class="elinput">
+                  <el-input
+                    v-model="formModel.oldPwd"
+                    placeholder="请输入旧密码"
+                    :type="showPwdType.pwd1"
+                    :prefix-icon="Lock"
+                    ><template #append
+                      ><el-icon v-if="!showPwd.pwd1" @click="switchFun.pwd1()">
+                        <View /> </el-icon
+                      ><el-icon v-else @click="switchFun.pwd1()">
+                        <Hide /> </el-icon></template
+                  ></el-input>
+                </el-form-item>
+                <el-form-item prop="newPwd" class="elinput">
+                  <el-input
+                    v-model="formModel.newPwd"
+                    placeholder="请确认密码"
+                    :type="showPwdType.pwd2"
+                    :prefix-icon="Lock"
+                    ><template #append
+                      ><el-icon v-if="!showPwd.pwd2" @click="switchFun.pwd2()">
+                        <View /> </el-icon
+                      ><el-icon v-else @click="switchFun.pwd2()">
+                        <Hide /> </el-icon></template
+                  ></el-input>
+                </el-form-item>
+                <el-form-item prop="rePwd" class="elinput">
+                  <el-input
+                    v-model="formModel.rePwd"
+                    placeholder="请确认密码"
+                    :type="showPwdType.pwd3"
+                    :prefix-icon="Lock"
+                    ><template #append
+                      ><el-icon v-if="!showPwd.pwd3" @click="switchFun.pwd3()">
+                        <View /> </el-icon
+                      ><el-icon v-else @click="switchFun.pwd3()">
+                        <Hide /> </el-icon></template
+                  ></el-input>
+                </el-form-item>
+                <el-form-item>
+                  <div class="btnGroup">
+                    <el-button
+                      type="primary"
+                      size="large"
+                      class="btn"
+                      @click="changePwdOld"
+                      >确认</el-button
+                    >
+                    <el-button type="primary" size="large" class="btn"
+                      >取消</el-button
+                    >
+                  </div>
+                </el-form-item>
+              </el-form>
+            </div>
+          </el-tab-pane>
+        </el-tabs>
+      </div>
     </div>
   </div>
 </template>
@@ -427,49 +431,52 @@ const changeTab = () => {
 }
 .pwdChange {
   margin: -8px;
-  //   width: 100vw;
-  background: url('@/assets/bkg27.jpg') no-repeat;
-  background-size: 100% 100%;
-  background-attachment: fixed;
-  .main {
-    padding-top: 20px; //这个属性是为了让标签栏高度变大，不然看着怪怪的
-    border: 3px solid rgb(222, 154, 154);
-    // background-color: rgba(255, 255, 255, 0.2);
-    border-radius: 20px;
-    .demo-tabs {
-      .tag {
-        color: rgb(55, 55, 55);
-        margin-bottom: 15px;
-      }
-    }
-    .elform {
-      height: 50vh; // 这里是写死的，因为用%不起作用，尚不清楚原因
-      margin: 0px auto;
-      border: 1px solid rgb(255, 255, 255);
+  // background: url('@/assets/bkg27.jpg') no-repeat;
+  // background-size: 100% 100%;
+  // background-attachment: fixed;
+  .page {
+    width: 80vw;
+    margin: 0 auto;
+    .main {
+      padding-top: 20px; //这个属性是为了让标签栏高度变大，不然看着怪怪的
+      border: 3px solid rgb(222, 154, 154);
+      // background-color: rgba(255, 255, 255, 0.2);
       border-radius: 20px;
-      background-color: rgba(255, 255, 255, 0.3);
-      display: flex;
-      flex-direction: column;
-      justify-content: space-around;
-      .elinput {
-        margin: 0px auto;
+      .demo-tabs {
+        .tag {
+          color: rgb(55, 55, 55);
+          margin-bottom: 15px;
+        }
       }
-      h2 {
-        color: rgb(0, 73, 182);
-        font-size: 30px;
-        letter-spacing: 20px;
+      .elform {
+        height: 50vh; // 这里是写死的，因为用%不起作用，尚不清楚原因
         margin: 0px auto;
-      }
-      .btnGroup {
-        width: 90%;
-        margin: 0px auto;
+        border: 1px solid rgb(255, 255, 255);
+        border-radius: 20px;
+        background-color: rgba(255, 255, 255, 0.3);
         display: flex;
-        justify-content: space-evenly;
-        // margin-top: -30px;
-        .btn {
-          font-size: 2vw;
-          border-radius: 4px;
-          padding: 25px;
+        flex-direction: column;
+        justify-content: space-around;
+        .elinput {
+          margin: 0px auto;
+        }
+        h2 {
+          color: rgb(0, 73, 182);
+          font-size: 30px;
+          letter-spacing: 20px;
+          margin: 0px auto;
+        }
+        .btnGroup {
+          width: 90%;
+          margin: 0px auto;
+          display: flex;
+          justify-content: space-evenly;
+          // margin-top: -30px;
+          .btn {
+            font-size: 2vw;
+            border-radius: 4px;
+            padding: 25px;
+          }
         }
       }
     }
@@ -479,7 +486,6 @@ const changeTab = () => {
   .pwdChange {
     width: 100vw;
     height: 100vh;
-    padding-top: 8vh;
     .main {
       width: 60vw;
       height: 74vh;
@@ -506,7 +512,6 @@ const changeTab = () => {
   .pwdChange {
     width: 100vw;
     height: 100vh;
-    padding-top: 8vh;
     .main {
       width: 85vw;
       height: 74vh;
