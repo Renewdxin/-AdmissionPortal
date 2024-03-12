@@ -127,7 +127,7 @@ func RegisterHomePage(r *gin.Engine) {
 
 func RegisterAuthRoutes(r *gin.Engine) {
 	apiAccount := r.Group("/auth")
-	apiAccount.Use()
+	apiAccount.Use(jwtHandler.JWTHandler())
 	{
 		apiAccount.POST("/login", authHandler.Login)
 		apiAccount.POST("/signup", authHandler.Register)
@@ -183,9 +183,14 @@ func RegisterAdminRoutes(r *gin.Engine) {
 
 		// 查看职位申请（管理员）
 		apiAdmin.GET("/applications/:jobID", adminHandler.ShowJobApply)
+		apiAdmin.GET("/applications/all", adminHandler.ShowAllJobApply)
+
+		// 获取未处理的人
+		apiAdmin.GET("/applications/unhandled", adminHandler.ShowAllUnhandledApply)
+		apiAdmin.GET("/applications/unhandled/:jobID", adminHandler.ShowUnhandledApply)
 
 		// 审批或拒绝职位申请（管理员）
-		apiAdmin.PUT("/application/:appID", adminHandler.ApproveJobs)
+		apiAdmin.PUT("/application/approve", adminHandler.ApproveJobs)
 	}
 }
 

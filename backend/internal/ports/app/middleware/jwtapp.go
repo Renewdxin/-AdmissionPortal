@@ -1,6 +1,8 @@
 package middleware
 
-import "github.com/dgrijalva/jwt-go"
+import (
+	"github.com/dgrijalva/jwt-go"
+)
 
 type TokenDetails struct {
 	AccessToken  string
@@ -19,5 +21,5 @@ type Claims struct {
 type JwtApplicationPort interface {
 	GetJWTSecret() []byte
 	GenerateToken(userid string, AppKey string) (string, error)
-	ParseToken(tokenString string) (*jwt.MapClaims, error)
+	ParseToken(tokenString string) (*Claims, error)
 }

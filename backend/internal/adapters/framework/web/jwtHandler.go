@@ -6,6 +6,7 @@ import (
 	"github.com/dgrijalva/jwt-go"
 	"github.com/gin-gonic/gin"
 	"net/http"
+	"time"
 )
 
 type JWTHandlerAdapter struct {
@@ -17,7 +18,6 @@ func NewJWTHandlerAdapter(jwtPorts middleware.JwtApplicationPort) *JWTHandlerAda
 	return &JWTHandlerAdapter{jwtPorts: jwtPorts}
 }
 
-// JWTHandler returns a middleware function that validates JWT tokens.
 func (j *JWTHandlerAdapter) JWTHandler() gin.HandlerFunc {
 	return func(c *gin.Context) {
 		token := extractToken(c)
@@ -27,14 +27,33 @@ func (j *JWTHandlerAdapter) JWTHandler() gin.HandlerFunc {
 			return
 		}
 
-		_, err := j.jwtPorts.ParseToken(token)
+		claims, err := j.jwtPorts.ParseToken(token)
 		if err != nil {
 			handleTokenError(c, err)
 			return
 		}
 
+		// Check if the token is about to expire and refresh it
+		if shouldRefreshToken(claims) {
+			newToken, err := j.jwtPorts.GenerateToken(claims.UserID, claims.AppKey)
+			if err != nil {
+				c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to refresh token"})
+				c.Abort()
+				return
+			}
+			c.Header("Authorization", "Bearer "+newToken)
+		}
+
 		c.Next()
 	}
+}
+
+// shouldRefreshToken checks if the token should be refreshed based on its expiration time.
+func shouldRefreshToken(claims *middleware.Claims) bool {
+	// Define the duration before expiration to refresh the token
+	const refreshDuration = time.Minute * 30
+	expirationTime := time.Unix(claims.ExpiresAt, 0)
+	return time.Until(expirationTime) < refreshDuration
 }
 
 // extractToken extracts the token from the query parameters or headers.

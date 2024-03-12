@@ -30,24 +30,24 @@ func NewUsrDaoAdapter(driveName, dataSourceName string, user user.UsrCorePort) (
 
 // IfExist
 // true exist
-func (userDao UsrDaoAdapter) IfExist(email string) bool {
+func (dao UsrDaoAdapter) IfExist(email string) bool {
 	var u user.User
-	if err := userDao.db.Table(userDao.user.TableName()).Where("email = ?", email).First(&u).Error; err != nil {
+	if err := dao.db.Table(dao.user.TableName()).Where("email = ?", email).First(&u).Error; err != nil {
 		return false
 	}
 	return true
 }
 
-func (userDao UsrDaoAdapter) SaveUser(user user.User) error {
-	if err := userDao.db.Table(userDao.user.TableName()).Select("name", "gender", "email", "phone").Create(&user).Error; err != nil {
+func (dao UsrDaoAdapter) SaveUser(user user.User) error {
+	if err := dao.db.Table(dao.user.TableName()).Select("name", "gender", "email", "phone").Create(&user).Error; err != nil {
 		log.Printf("Failed to save user %v: %v", user.Name, err)
 		return err
 	}
 	return nil
 }
 
-func (userDao UsrDaoAdapter) DeleteUser(id string) error {
-	result := userDao.db.Table(userDao.user.TableName()).Delete(&user.User{}, id)
+func (dao UsrDaoAdapter) DeleteUser(id string) error {
+	result := dao.db.Table(dao.user.TableName()).Delete(&user.User{}, id)
 	if result.Error != nil {
 		log.Printf("Failed to delete user with ID %v: %v", id, result.Error)
 		return result.Error
@@ -59,8 +59,8 @@ func (userDao UsrDaoAdapter) DeleteUser(id string) error {
 	return nil
 }
 
-func (userDao UsrDaoAdapter) UpdateUser(user user.User) error {
-	result := userDao.db.Table(userDao.user.TableName()).Model(&user).Updates(map[string]interface{}{
+func (dao UsrDaoAdapter) UpdateUser(user user.User) error {
+	result := dao.db.Table(dao.user.TableName()).Model(&user).Updates(map[string]interface{}{
 		"name":   user.Name,
 		"gender": user.Gender,
 		"email":  user.Email,
@@ -73,29 +73,69 @@ func (userDao UsrDaoAdapter) UpdateUser(user user.User) error {
 	return nil
 }
 
-func (userDao UsrDaoAdapter) FindUserByID(id string) (user.User, error) {
+func (dao UsrDaoAdapter) FindUserByID(id string) (user.User, error) {
 	var newUser user.User
-	if err := userDao.db.Table(userDao.user.TableName()).Where("id = ?", id).First(&newUser).Error; err != nil {
+	if err := dao.db.Table(dao.user.TableName()).Where("id = ?", id).First(&newUser).Error; err != nil {
 		log.Printf("Failed to find user by ID %v: %v", id, err)
 		return user.User{}, err
 	}
 	return newUser, nil
 }
 
-func (userDao UsrDaoAdapter) FindUserByEmail(email string) (user.User, error) {
+func (dao UsrDaoAdapter) FindUserByEmail(email string) (user.User, error) {
 	var newUser user.User
-	if err := userDao.db.Table(userDao.user.TableName()).Where("email = ?", email).First(&newUser).Error; err != nil {
+	if err := dao.db.Table(dao.user.TableName()).Where("email = ?", email).First(&newUser).Error; err != nil {
 		log.Printf("Failed to find user by email %v: %v", email, err)
 		return user.User{}, err
 	}
 	return newUser, nil
 }
 
-func (userDao UsrDaoAdapter) ChangeUserStatus(id string, state int) bool {
+func (dao UsrDaoAdapter) ChangeUserStatus(id string, state int) bool {
 	update := user.User{State: state}
-	if err := userDao.db.Table(userDao.user.TableName()).Where("id = ?", id).Updates(update).Error; err != nil {
+	if err := dao.db.Table(dao.user.TableName()).Where("id = ?", id).Updates(update).Error; err != nil {
 		log.Printf("Failed to find user by ID %v: %v", id, err)
 		return false
 	}
 	return true
+}
+
+// ShowAllUsers 返回数据库中所有用户的切片。
+func (dao UsrDaoAdapter) ShowAllUsers() ([]user.User, error) {
+	var users []user.User
+	if err := dao.db.Find(&users).Error; err != nil {
+		log.Printf("Failed to retrieve all users: %v", err)
+		return nil, err
+	}
+	return users, nil
+}
+
+// ShowJobApplyByJobID 根据岗位ID返回对应岗位的申请者的切片。
+func (dao UsrDaoAdapter) ShowJobApplyByJobID(jobID string) ([]user.User, error) {
+	var users []user.User
+	if err := dao.db.Where("job_id = ?", jobID).Find(&users).Error; err != nil {
+		log.Printf("Failed to retrieve applicants for job ID %v: %v", jobID, err)
+		return nil, err
+	}
+	return users, nil
+}
+
+// ShowAllUnhandledApplications 返回所有未处理的申请者的切片。
+func (dao UsrDaoAdapter) ShowAllUnhandledApplications() ([]user.User, error) {
+	var users []user.User
+	if err := dao.db.Where("state = ?", "UNHANDLED").Find(&users).Error; err != nil {
+		log.Printf("Failed to retrieve unhandled applications: %v", err)
+		return nil, err
+	}
+	return users, nil
+}
+
+// ShowUnhandledApplicationsByJobID 根据岗位ID返回未处理的申请者的切片。
+func (dao UsrDaoAdapter) ShowUnhandledApplicationsByJobID(jobID string) ([]user.User, error) {
+	var users []user.User
+	if err := dao.db.Where("job_id = ? AND state = ?", jobID, "UNHANDLED").Find(&users).Error; err != nil {
+		log.Printf("Failed to retrieve unhandled applications for job ID %v: %v", jobID, err)
+		return nil, err
+	}
+	return users, nil
 }
