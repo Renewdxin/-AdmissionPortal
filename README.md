@@ -60,21 +60,32 @@ unknown
         // 用户申请投递
         apiJob.POST("/job/:jobID/apply/:userID", jobHandler.ApplyJob)
     }
-    
+
+func RegisterAdminRoutes(r *gin.Engine) {
     apiAdmin := r.Group("/admin")
     apiAdmin.Use() // 使用JWT中间件进行管理员身份验证
     {
         // 管理员仪表板或主页
         apiAdmin.GET("/dashboard", adminHandler.HomePage)
+        
         // 查看所有职位发布（管理员）
         apiAdmin.GET("/jobs", adminHandler.ShowAllJobs)
+        
         // 查看职位详情（管理员）
         apiAdmin.GET("/job/:jobID", adminHandler.ShowJobDetails)
+        
         // 查看职位申请（管理员）
         apiAdmin.GET("/applications/:jobID", adminHandler.ShowJobApply)
-        // 审批或拒绝职位申请（管理员）+ 自动发送录取短信
-        apiAdmin.PUT("/application/:appID", adminHandler.ApproveJobs)
+        apiAdmin.GET("/applications/all", adminHandler.ShowAllJobApply)
+        
+        // 获取未处理的人
+        apiAdmin.GET("/applications/unhandled", adminHandler.ShowAllUnhandledApply)
+        apiAdmin.GET("/applications/unhandled/:jobID", adminHandler.ShowUnhandledApply)
+        
+        // 审批或拒绝职位申请（管理员）
+        apiAdmin.PUT("/application/approve", adminHandler.ApproveJobs)
     }
+}
 ```
 
 
