@@ -8,6 +8,7 @@ import (
 	"github.com/Renewdxin/selfMade/internal/ports/core/auth"
 	"github.com/gin-gonic/gin"
 	"net/http"
+	"os"
 )
 
 type AuthHandlerAdapter struct {
@@ -27,13 +28,12 @@ func (handler AuthHandlerAdapter) Login(c *gin.Context) {
 	fmt.Println("start")
 
 	if err := c.ShouldBindJSON(&account); err != nil {
-		logger.Logger.Log(logger.WarnLevel, "Log In Error")
+		logger.Logger.Logf(logger.ErrorLevel, "Failed to bind account JSON during login: %v", err)
 		c.JSON(http.StatusInternalServerError, gin.H{
 			"msg": "error",
 		})
 		return
 	}
-	fmt.Println(account)
 
 	if err := handler.authCase.LogIn(account.ID, account.Password); err != nil {
 		logger.Logger.Logf(logger.ErrorLevel, " Password Or Account Invalid, id: %v, password: %v", account.ID, account.Password)
@@ -43,22 +43,24 @@ func (handler AuthHandlerAdapter) Login(c *gin.Context) {
 		return
 	}
 
-	token, err := handler.jwtPorts.GenerateToken(account.ID, "gvgkjbjkttsrt")
+	appKey := os.Getenv("APP_KEY")
+	token, err := handler.jwtPorts.GenerateToken(account.ID, appKey)
 	if err != nil {
-		logger.Logger.Log(logger.WarnLevel, "Token Generate Error")
+		logger.Logger.Logf(logger.ErrorLevel, "Failed to generate token: %v", err)
 		c.JSON(http.StatusInternalServerError, gin.H{
 			"msg": "please try again",
 		})
 		return
 	}
 
-	c.Header("tok", token)
+	c.Header("Authorization", "Bearer "+token)
 
 	c.JSON(http.StatusOK, gin.H{
 		"msg": "welcome",
 	})
 }
 
+// ... rest of the code remains the same
 func (handler AuthHandlerAdapter) Register(c *gin.Context) {
 	var account auth.Account
 
@@ -82,7 +84,7 @@ func (handler AuthHandlerAdapter) Register(c *gin.Context) {
 	})
 }
 
-func (handler AuthHandlerAdapter) ChangePassword(c *gin.Context) {
+func (handler AuthHandlerAdapter) ChangePasswordByCode(c *gin.Context) {
 	id := c.GetString("id")
 	newPassword := c.GetString("newPassword")
 	oldPassword := c.GetString("oldPassword")
@@ -99,14 +101,14 @@ func (handler AuthHandlerAdapter) ChangePassword(c *gin.Context) {
 	})
 }
 
-func (handler AuthHandlerAdapter) ForgetPassword(c *gin.Context) {
+func (handler AuthHandlerAdapter) ChangePasswordByPwd(c *gin.Context) {
 	id := c.GetString("id")
 	newPassword := c.GetString("newPassword")
 
 	if err := handler.authCase.ForgetPasswordByID(id, newPassword); err != nil {
 		logger.Logger.Logf(logger.WarnLevel, "Password Change Error, id : %v", id)
 		c.JSON(http.StatusBadRequest, gin.H{
-			"msg": "Error! please try again",
+			"msg": "Error!",
 		})
 		return
 	}
@@ -133,7 +135,7 @@ func (handler AuthHandlerAdapter) CodeVerify(c *gin.Context) {
 	code := c.GetString("code")
 	id := c.GetString("id")
 	if err := handler.authCase.CodeVerify(id, code); err != nil {
-		logger.Logger.Log(logger.InfoLevel, "Failed to validate code")
+		logger.Logger.Logf(logger.InfoLevel, "id : %v Failed to validate code", id)
 		c.JSON(http.StatusUnauthorized, gin.H{
 			"msg": "wrong code",
 		})

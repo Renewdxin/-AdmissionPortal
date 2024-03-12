@@ -15,8 +15,8 @@ type JobHandlerAdapter struct {
 	app job.JobsApplicationPort
 }
 
-func NewJobHandlerAdapter(app job.JobsApplicationPort) JobHandlerAdapter {
-	return JobHandlerAdapter{
+func NewJobHandlerAdapter(app job.JobsApplicationPort) *JobHandlerAdapter {
+	return &JobHandlerAdapter{
 		app: app,
 	}
 }

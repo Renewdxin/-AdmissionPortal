@@ -88,10 +88,9 @@ func (api AuthorizeApplicationAdapter) ForgetPasswordByID(id, password string) e
 		return errs
 	}
 	if api.dao.UpdateAccount(account) {
-		return errors.New("failed to change, plz try again")
+		return errors.New("failed to change the password ")
 	}
 	return nil
-
 }
 
 func (api AuthorizeApplicationAdapter) ChangePassword(id, oldPassword, newPassword string) error {

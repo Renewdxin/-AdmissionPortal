@@ -1,6 +1,8 @@
 package middleware
 
-import "github.com/dgrijalva/jwt-go"
+import (
+	"github.com/dgrijalva/jwt-go"
+)
 
 type TokenDetails struct {
 	AccessToken  string

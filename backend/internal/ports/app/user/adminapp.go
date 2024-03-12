@@ -8,6 +8,9 @@ import (
 type AdminApplicationPort interface {
 	ShowJobsDetails(id string) job.Job
 	ShowAllJobs() []job.Job
-	ShowJobsApply() []user.User
+	ShowJobsApply() ([]user.User, error)
 	ApproveJobs(u user.User) bool
+	ShowJobApplyByJobID(jobID string) ([]user.User, error)
+	ShowAllUnhandledApplications() ([]user.User, error)
+	ShowUnhandledApplicationsByJobID(jobID string) ([]user.User, error)
 }

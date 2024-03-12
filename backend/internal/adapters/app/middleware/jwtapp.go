@@ -1,29 +1,28 @@
 package middleware
 
 import (
-	"github.com/Renewdxin/selfMade/internal/adapters/framework/logger"
 	"github.com/Renewdxin/selfMade/internal/ports/app/middleware"
 	"github.com/dgrijalva/jwt-go"
+	"github.com/sirupsen/logrus"
+	"os"
 	"time"
 )
 
-// JWTAdapter is a struct that encapsulates functionality related to JWT (JSON Web Token) operations.
 type JWTAdapter struct{}
 
-// NewJWTAdapters is a constructor function for JWTAdapter, initializing it with the provided logger.
+// NewJWTAdapters is a constructor function for JWTAdapter.
 func NewJWTAdapters() *JWTAdapter {
 	return &JWTAdapter{}
 }
 
-// GetJWTSecret returns the JWT secret key from the global configuration.
+// GetJWTSecret returns the JWT secret key from the environment variable.
 func (j JWTAdapter) GetJWTSecret() []byte {
-	return []byte("xiyou3g")
+	return []byte(os.Getenv("JWT_SECRET"))
 }
 
 // GenerateToken generates a JWT token with the specified user ID and application key.
-// It returns the generated token as a string and any error encountered during the process.
 func (j JWTAdapter) GenerateToken(userid string, AppKey string) (string, error) {
-	expireTime := time.Now().Add(7200)
+	expireTime := time.Now().Add(2 * time.Hour) // Use time.Hour for clarity
 	claims := middleware.Claims{
 		UserID: userid,
 		AppKey: AppKey,
@@ -37,19 +36,19 @@ func (j JWTAdapter) GenerateToken(userid string, AppKey string) (string, error) 
 }
 
 // ParseToken parses the provided JWT token string and returns the claims if the token is valid.
-// It returns an error if the token is invalid or any other error occurs during parsing.
 func (j JWTAdapter) ParseToken(tokenString string) (*middleware.Claims, error) {
 	tokenClaims, err := jwt.ParseWithClaims(tokenString, &middleware.Claims{}, func(token *jwt.Token) (interface{}, error) {
 		return j.GetJWTSecret(), nil
 	})
 	if err != nil {
+		logrus.WithField("error", err).Error("Error parsing token")
 		return nil, err
 	}
-	if claims, ok := tokenClaims.Claims.(*middleware.Claims); tokenClaims.Valid && ok {
+	if claims, ok := tokenClaims.Claims.(*middleware.Claims); ok && tokenClaims.Valid {
 		return claims, nil
+	} else {
+		err := jwt.NewValidationError("invalid token", jwt.ValidationErrorSignatureInvalid)
+		logrus.WithField("error", err).Error("Invalid token")
+		return nil, err
 	}
-
-	// Log a message for an invalid token.
-	logger.Logger.Log(4, "INVALID TOKEN")
-	return nil, err
 }

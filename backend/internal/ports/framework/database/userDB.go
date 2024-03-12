@@ -10,4 +10,8 @@ type UserDBPort interface {
 	FindUserByEmail(email string) (user.User, error)
 	IfExist(email string) bool
 	ChangeUserStatus(id string, state int) bool
+	ShowAllUsers() ([]user.User, error)
+	ShowJobApplyByJobID(jobID string) ([]user.User, error)
+	ShowAllUnhandledApplications() ([]user.User, error)
+	ShowUnhandledApplicationsByJobID(jobID string) ([]user.User, error)
 }

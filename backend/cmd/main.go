@@ -21,13 +21,18 @@ import (
 	"os"
 )
 
-func main() {
-	logger.Logger = logger.NewLogAdapter()
-	err := godotenv.Load(".env")
-	if err != nil {
-		logger.Logger.Logf(logger.FatalLevel, "无法加载 .env 文件: %v", err)
-	}
+var (
+	authHandler  *web.AuthHandlerAdapter
+	homeHandler  *web.HomeHandlerAdapter
+	jwtHandler   *web.JWTHandlerAdapter
+	adminHandler *web.AdminHandlerAdapter
+	userHandler  *web.UsrHandlerAdapter
+	jobHandler   *web.JobHandlerAdapter
+)
 
+func init() {
+	NewLogger()
+	LoadENV()
 	redisClient := database.NewRedisClientAdapter()
 
 	mailSender := mail.NewMailAdapter()
@@ -39,7 +44,7 @@ func main() {
 	}
 
 	jwtAPI := middleware.NewJWTAdapters()
-	jwtHandler := web.NewJWTHandlerAdapter(jwtAPI)
+	jwtHandler = web.NewJWTHandlerAdapter(jwtAPI)
 
 	userCore := userApp.NewUsrCoreAdapter()
 	userDao, err := database.NewUsrDaoAdapter(os.Getenv("DRIVER_NAME"), os.Getenv("DRIVER_SOURCE_NAME"), userCore)
@@ -54,45 +59,86 @@ func main() {
 	}
 
 	userAPI := user.NewUsrApplicationAdapter(userCore, userDao, mailSender, verification, redisClient, validator)
-	userHandler := web.NewUserHandlerAdapter(userAPI)
+	userHandler = web.NewUserHandlerAdapter(userAPI)
 
 	authAPI := auth.NewAuthCaseAdapter(authCore, authDao, verification, redisClient, validator, mailSender)
-	authHandler := web.NewAuthHandlerAdapter(authAPI, jwtAPI)
+	authHandler = web.NewAuthHandlerAdapter(authAPI, jwtAPI)
 
-	homeHandler := web.NewHomeHandlerAdapter()
+	homeHandler = web.NewHomeHandlerAdapter()
 
 	jobCore := job.NewJobsCoreAdapter()
 	jobDao := database.NewJobsDaoAdapter(os.Getenv("DRIVER_NAME"), os.Getenv("DRIVER_SOURCE_NAME"), jobCore)
 	jobAPI := jobApp.NewJobCaseAdapter(jobCore, jobDao, userDao)
-	jobHandler := web.NewJobHandlerAdapter(jobAPI)
+	jobHandler = web.NewJobHandlerAdapter(jobAPI)
 
 	adminCore := userApp.NewAdminCoreAdapter()
 	_ = database.NewAdminDaoAdapter(os.Getenv("DRIVER_NAME"), os.Getenv("DRIVER_SOURCE_NAME"), adminCore)
 	adminAPI := user.NewAdminAppAdapter(jobAPI, jobDao, userDao)
-	adminHandler := web.NewAdminHandlerAdapter(adminAPI, jobAPI, userAPI, messageSender)
+	adminHandler = web.NewAdminHandlerAdapter(adminAPI, jobAPI, userAPI, messageSender)
+}
 
+func LoadENV() {
+	err := godotenv.Load(".env")
+	if err != nil {
+		logger.Logger.Logf(logger.FatalLevel, "无法加载 .env 文件: %v", err)
+	}
+}
+
+func NewLogger() {
+	logger.Logger = logger.NewLogAdapter()
+}
+
+func InitializeRouter() {
 	r := gin.New()
 	config := cors.DefaultConfig()
 	config.AllowOrigins = []string{"http://localhost:5173"} // 允许的前端域
-	//config.AllowHeaders = []string{"Origin", "Content-Length", "Content-Type", "application/json"}
 	r.Use(cors.New(config))
-	//home page
-	r.POST("/home", homeHandler.HomePage)
 
-	// auth setting
+	// 注册路由和中间件
+	RegisterRoutes(r)
+
+	err := r.Run(":8080")
+	if err != nil {
+		logger.Logger.Logf(logger.FatalLevel, "failed to start : %v", err)
+	}
+}
+
+func RegisterRoutes(r *gin.Engine) {
+	// 注册 home 页面路由
+	RegisterHomePage(r)
+
+	// 注册 auth 相关路由
+	RegisterAuthRoutes(r)
+
+	// 注册 profile 相关路由
+	RegisterProfileRoutes(r)
+
+	// 注册 recruitment 相关路由
+	RegisterRecruitmentRoutes(r)
+
+	// 注册 admin 相关路由
+	RegisterAdminRoutes(r)
+}
+
+func RegisterHomePage(r *gin.Engine) {
+	homeHandler := web.NewHomeHandlerAdapter()
+	r.POST("/home", homeHandler.HomePage)
+}
+
+func RegisterAuthRoutes(r *gin.Engine) {
 	apiAccount := r.Group("/auth")
-	apiAccount.Use()
+	apiAccount.Use(jwtHandler.JWTHandler())
 	{
 		apiAccount.POST("/login", authHandler.Login)
-		//apiAccount.POST("/logout")
 		apiAccount.POST("/signup", authHandler.Register)
 		apiAccount.POST("/code/send", authHandler.CodeSend)
 		apiAccount.POST("/code/verify", authHandler.CodeVerify)
-		apiAccount.POST("/password/forget", authHandler.ForgetPassword)
-		apiAccount.POST("/password/change", authHandler.ChangePassword)
+		apiAccount.POST("/password/change/code", authHandler.ChangePasswordByCode)
+		apiAccount.POST("/password/change/pwd", authHandler.ChangePasswordByPwd)
 	}
+}
 
-	// personal info
+func RegisterProfileRoutes(r *gin.Engine) {
 	apiProfile := r.Group("/profile")
 	apiProfile.Use(jwtHandler.JWTHandler())
 	{
@@ -105,6 +151,9 @@ func main() {
 		// 查询是否被录取
 		apiProfile.GET("/status/:id", userHandler.GetUserStatus)
 	}
+}
+
+func RegisterRecruitmentRoutes(r *gin.Engine) {
 
 	apiJob := r.Group("/recruitment")
 	apiJob.Use()
@@ -117,6 +166,9 @@ func main() {
 		apiJob.POST("/job/:jobID/apply/:userID", jobHandler.ApplyJob)
 	}
 
+}
+
+func RegisterAdminRoutes(r *gin.Engine) {
 	apiAdmin := r.Group("/admin")
 	apiAdmin.Use() // 使用JWT中间件进行管理员身份验证
 	{
@@ -131,14 +183,18 @@ func main() {
 
 		// 查看职位申请（管理员）
 		apiAdmin.GET("/applications/:jobID", adminHandler.ShowJobApply)
+		apiAdmin.GET("/applications/all", adminHandler.ShowAllJobApply)
+
+		// 获取未处理的人
+		apiAdmin.GET("/applications/unhandled", adminHandler.ShowAllUnhandledApply)
+		apiAdmin.GET("/applications/unhandled/:jobID", adminHandler.ShowUnhandledApply)
 
 		// 审批或拒绝职位申请（管理员）
-		apiAdmin.PUT("/application/:appID", adminHandler.ApproveJobs)
+		apiAdmin.PUT("/application/approve", adminHandler.ApproveJobs)
 	}
+}
 
-	err = r.Run(":8080")
-
-	if err != nil {
-		logger.Logger.Logf(logger.FatalLevel, "falied to start : %v", err)
-	}
+func main() {
+	// 初始化路由和中间件
+	InitializeRouter()
 }
