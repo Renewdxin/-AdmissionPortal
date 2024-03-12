@@ -33,6 +33,7 @@ module.exports = {
     'no-undef': 'error'
   },
   globals: {
-    ElMessage: 'readonly'
+    ElMessage: 'readonly',
+    ElMessageBox: 'readonly'
   }
 }
