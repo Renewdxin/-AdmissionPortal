@@ -39,7 +39,7 @@ func (dao UsrDaoAdapter) IfExist(email string) bool {
 }
 
 func (dao UsrDaoAdapter) SaveUser(user user.User) error {
-	if err := dao.db.Table(dao.user.TableName()).Select("name", "gender", "email", "phone").Create(&user).Error; err != nil {
+	if err := dao.db.Table(dao.user.TableName()).Create(&user).Error; err != nil {
 		log.Printf("Failed to save user %v: %v", user.Name, err)
 		return err
 	}
@@ -60,15 +60,9 @@ func (dao UsrDaoAdapter) DeleteUser(id string) error {
 }
 
 func (dao UsrDaoAdapter) UpdateUser(user user.User) error {
-	result := dao.db.Table(dao.user.TableName()).Model(&user).Updates(map[string]interface{}{
-		"name":   user.Name,
-		"gender": user.Gender,
-		"email":  user.Email,
-		"phone":  user.PhoneNumber,
-	})
-	if result.Error != nil {
-		log.Printf("Failed to update user: %v", result.Error)
-		return result.Error
+	if err := dao.db.Table(dao.user.TableName()).Model(&user).Updates(map[string]interface{}{
+		"apply_id": user.ApplyID}).Error; err != nil {
+		return err
 	}
 	return nil
 }
@@ -76,7 +70,6 @@ func (dao UsrDaoAdapter) UpdateUser(user user.User) error {
 func (dao UsrDaoAdapter) FindUserByID(id string) (user.User, error) {
 	var newUser user.User
 	if err := dao.db.Table(dao.user.TableName()).Where("id = ?", id).First(&newUser).Error; err != nil {
-		log.Printf("Failed to find user by ID %v: %v", id, err)
 		return user.User{}, err
 	}
 	return newUser, nil
@@ -85,7 +78,6 @@ func (dao UsrDaoAdapter) FindUserByID(id string) (user.User, error) {
 func (dao UsrDaoAdapter) FindUserByEmail(email string) (user.User, error) {
 	var newUser user.User
 	if err := dao.db.Table(dao.user.TableName()).Where("email = ?", email).First(&newUser).Error; err != nil {
-		log.Printf("Failed to find user by email %v: %v", email, err)
 		return user.User{}, err
 	}
 	return newUser, nil
@@ -94,7 +86,6 @@ func (dao UsrDaoAdapter) FindUserByEmail(email string) (user.User, error) {
 func (dao UsrDaoAdapter) ChangeUserStatus(id string, state int) bool {
 	update := user.User{State: state}
 	if err := dao.db.Table(dao.user.TableName()).Where("id = ?", id).Updates(update).Error; err != nil {
-		log.Printf("Failed to find user by ID %v: %v", id, err)
 		return false
 	}
 	return true
@@ -104,7 +95,6 @@ func (dao UsrDaoAdapter) ChangeUserStatus(id string, state int) bool {
 func (dao UsrDaoAdapter) ShowAllUsers() ([]user.User, error) {
 	var users []user.User
 	if err := dao.db.Find(&users).Error; err != nil {
-		log.Printf("Failed to retrieve all users: %v", err)
 		return nil, err
 	}
 	return users, nil
@@ -114,7 +104,6 @@ func (dao UsrDaoAdapter) ShowAllUsers() ([]user.User, error) {
 func (dao UsrDaoAdapter) ShowJobApplyByJobID(jobID string) ([]user.User, error) {
 	var users []user.User
 	if err := dao.db.Where("job_id = ?", jobID).Find(&users).Error; err != nil {
-		log.Printf("Failed to retrieve applicants for job ID %v: %v", jobID, err)
 		return nil, err
 	}
 	return users, nil
@@ -124,7 +113,6 @@ func (dao UsrDaoAdapter) ShowJobApplyByJobID(jobID string) ([]user.User, error) 
 func (dao UsrDaoAdapter) ShowAllUnhandledApplications() ([]user.User, error) {
 	var users []user.User
 	if err := dao.db.Where("state = ?", "UNHANDLED").Find(&users).Error; err != nil {
-		log.Printf("Failed to retrieve unhandled applications: %v", err)
 		return nil, err
 	}
 	return users, nil
@@ -134,7 +122,6 @@ func (dao UsrDaoAdapter) ShowAllUnhandledApplications() ([]user.User, error) {
 func (dao UsrDaoAdapter) ShowUnhandledApplicationsByJobID(jobID string) ([]user.User, error) {
 	var users []user.User
 	if err := dao.db.Where("job_id = ? AND state = ?", jobID, "UNHANDLED").Find(&users).Error; err != nil {
-		log.Printf("Failed to retrieve unhandled applications for job ID %v: %v", jobID, err)
 		return nil, err
 	}
 	return users, nil

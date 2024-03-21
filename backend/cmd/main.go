@@ -163,7 +163,7 @@ func RegisterRecruitmentRoutes(r *gin.Engine) {
 		//查看岗位详细信息
 		apiJob.GET("/job/:jobID", jobHandler.GetJobInfo)
 		//申请投递
-		apiJob.POST("/job/:jobID/apply/:userID", jobHandler.ApplyJob)
+		apiJob.POST("/job/apply", jobHandler.ApplyJob)
 	}
 
 }

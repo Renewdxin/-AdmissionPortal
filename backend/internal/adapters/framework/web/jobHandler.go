@@ -8,7 +8,6 @@ import (
 	userCore "github.com/Renewdxin/selfMade/internal/ports/core/user"
 	"github.com/gin-gonic/gin"
 	"net/http"
-	"strconv"
 )
 
 type JobHandlerAdapter struct {
@@ -78,8 +77,6 @@ func (adapter JobHandlerAdapter) UpdateJob(c *gin.Context) {
 }
 
 func (adapter JobHandlerAdapter) ApplyJob(c *gin.Context) {
-	userID := c.GetHeader("userID")
-	jobIDStr := c.GetHeader("jobIDStr")
 	// 表单信息输入验证
 	var user userCore.User
 
@@ -92,14 +89,13 @@ func (adapter JobHandlerAdapter) ApplyJob(c *gin.Context) {
 	}
 
 	// 上传到数据库中
-	jobID, _ := strconv.Atoi(jobIDStr)
-	if !adapter.app.ApplyJob(user, jobID, userID) {
+	if !adapter.app.ApplyJob(user, user.ApplyID, user.ID) {
 		c.JSON(http.StatusBadRequest, gin.H{
-			"msg": "please try again",
+			"msg": "error",
 		})
 		return
 	}
 	c.JSON(http.StatusOK, gin.H{
-		"msg": "Successful",
+		"msg": "ok",
 	})
 }

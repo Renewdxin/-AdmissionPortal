@@ -51,7 +51,7 @@ func (adapter JobsApplicationAdapter) UpdateJob(job job.Job) bool {
 
 func (adapter JobsApplicationAdapter) ApplyJob(usr user.User, jobID int, userID string) bool {
 	if jobID < 0 || jobID > 4 {
-		logger.Logger.Logf(logger.InfoLevel, "failed to apply job : %v user : %v", jobID, userID)
+		logger.Logger.Logf(logger.ErrorLevel, "failed to apply job : %v user : %v", jobID, userID)
 		return false
 	}
 	// 查找用户是否已注册
@@ -59,29 +59,33 @@ func (adapter JobsApplicationAdapter) ApplyJob(usr user.User, jobID int, userID 
 	_, err = adapter.usrDao.FindUserByID(userID)
 	// 第一种情况 ： 用户未注册过
 	if err != nil {
-		usr.ID = userID
-		usr.Account.ID = userID
-		usr.ApplyID = jobID
-		err := adapter.usrDao.SaveUser(usr)
-		if err != nil {
-			logger.Logger.Logf(logger.InfoLevel, "failed to apply job : %v user : %v", jobID, userID)
+		if err := adapter.usrDao.SaveUser(usr); err != nil {
+			logger.Logger.Logf(logger.ErrorLevel, "failed to apply job : %v user : %v", jobID, userID)
 			return false
 		}
 		logger.Logger.Logf(logger.InfoLevel, "new user : %v apply the job : %v ", userID, jobID)
-	}
-	// 第二种情况 ： 已注册
-	// 已经注册过方向:予以驳回
-	if usr.ApplyID != 10 {
-		logger.Logger.Logf(logger.InfoLevel, "already apply the job : %v user : %v", jobID, userID)
-		return false
-	}
-	usr.ApplyID = jobID
-	err = adapter.usrDao.SaveUser(usr)
-	if err != nil {
-		logger.Logger.Logf(logger.InfoLevel, "failed to apply job : %v user : %v", jobID, userID)
-		return false
+		return true
+	} else {
+		if err := adapter.usrDao.UpdateUser(usr); err != nil {
+			logger.Logger.Logf(logger.ErrorLevel, "failed to apply job : %v user : %v", jobID, userID)
+			return false
+		}
+		logger.Logger.Logf(logger.InfoLevel, "new user : %v change the job to : %v ", userID, jobID)
 	}
 	return true
+	// 第二种情况 ： 已注册
+	// 已经注册过方向:予以驳回
+	//if usr.ApplyID != 10 {
+	//	logger.Logger.Logf(logger.InfoLevel, "already apply the job : %v user : %v", jobID, userID)
+	//	return false
+	//}
+	//usr.ApplyID = jobID
+	//err = adapter.usrDao.SaveUser(usr)
+	//if err != nil {
+	//	logger.Logger.Logf(logger.InfoLevel, "failed to apply job : %v user : %v", jobID, userID)
+	//	return false
+	//}
+	//return true
 }
 
 func (adapter JobsApplicationAdapter) ShowAllJobs() []job.Job {
